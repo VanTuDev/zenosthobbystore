@@ -133,3 +133,5 @@ To reset all demo state, clear `localStorage` for the site (or run `localStorage
 - Google sign-in is fully simulated — no real OAuth, no real session/cookies
 - Products created from `/admin/products/new` use `blob:` object URLs for images, which only live in the browser tab that created them, and are not included in the storefront's static generation (`generateStaticParams`), so their "view on store" link is intentionally disabled
 - Checkout does not process real payments or persist real orders
+#   z e n o s t h o b b y s t o r e  
+ 
