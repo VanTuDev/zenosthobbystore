@@ -6,3 +6,23 @@ export function fetchPromotionByCode(code: string) {
     `/promotions/code/${encodeURIComponent(code)}`,
   );
 }
+
+/** Mirrors the backend's `promotionSchema` (src/routes/promotions.routes.ts) — admin create payload. */
+export type CreatePromotionInput = {
+  name: string;
+  code: string;
+  type: "percentage" | "fixed";
+  value: number;
+  appliesTo?: string;
+  startDate: string;
+  endDate: string;
+  status: "active" | "scheduled";
+  usageLimit?: number;
+};
+
+export function createPromotion(input: CreatePromotionInput) {
+  return apiFetch<{ promotion: ApiPromotion }>("/promotions", {
+    method: "POST",
+    body: input,
+  });
+}
