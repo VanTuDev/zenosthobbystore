@@ -1,26 +1,300 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Zenith Collector color tokens (Material-3 inspired) */
+  --color-surface: #f8f9fa;
+  --color-surface-dim: #d9dadb;
+  --color-surface-bright: #f8f9fa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container: #edeeef;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-variant: #e1e3e4;
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #434656;
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #f0f1f2;
+  --color-outline: #737688;
+  --color-outline-variant: #c3c5d9;
+  --color-surface-tint: #004dea;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-primary: #0041c8;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #0055ff;
+  --color-on-primary-container: #e3e6ff;
+  --color-inverse-primary: #b6c4ff;
+  --color-primary-fixed: #dce1ff;
+  --color-primary-fixed-dim: #b6c4ff;
+  --color-on-primary-fixed: #001551;
+  --color-on-primary-fixed-variant: #0039b3;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-secondary: #5f5e5f;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e2dfe0;
+  --color-on-secondary-container: #636263;
+  --color-secondary-fixed: #e5e2e3;
+  --color-secondary-fixed-dim: #c8c6c7;
+  --color-on-secondary-fixed: #1b1b1c;
+  --color-on-secondary-fixed-variant: #474647;
+
+  --color-tertiary: #a40007;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #cf1113;
+  --color-on-tertiary-container: #ffe1dc;
+  --color-tertiary-fixed: #ffdad5;
+  --color-tertiary-fixed-dim: #ffb4aa;
+  --color-on-tertiary-fixed: #410001;
+  --color-on-tertiary-fixed-variant: #930005;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-background: #f8f9fa;
+  --color-on-background: #191c1d;
+
+  /* Spacing scale (8px base unit) */
+  --spacing-xs: 4px;
+  --spacing-base: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 24px;
+  --spacing-gutter: 24px;
+  --spacing-lg: 48px;
+  --spacing-xl: 80px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 64px;
+
+  /* Radius scale */
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Font families (paired with matching text-* size utilities below) */
+  --font-display-lg: var(--font-montserrat), sans-serif;
+  --font-display-lg-mobile: var(--font-montserrat), sans-serif;
+  --font-headline-md: var(--font-montserrat), sans-serif;
+  --font-headline-sm: var(--font-montserrat), sans-serif;
+  --font-body-lg: var(--font-inter), sans-serif;
+  --font-body-md: var(--font-inter), sans-serif;
+  --font-label-md: var(--font-inter), sans-serif;
+  --font-label-sm: var(--font-inter), sans-serif;
+
+  /* Type scale */
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+
+  --text-display-lg-mobile: 32px;
+  --text-display-lg-mobile--line-height: 40px;
+  --text-display-lg-mobile--letter-spacing: -0.01em;
+  --text-display-lg-mobile--font-weight: 700;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+
+  --text-headline-sm: 20px;
+  --text-headline-sm--line-height: 28px;
+  --text-headline-sm--font-weight: 600;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.05em;
+  --text-label-md--font-weight: 600;
+
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 16px;
+  --text-label-sm--font-weight: 500;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+}
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a,
+input[type="checkbox"],
+input[type="radio"],
+select,
+summary {
+  cursor: pointer;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.hover-glow:hover {
+  box-shadow: 0px 10px 30px rgba(0, 65, 200, 0.12);
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.premium-shadow {
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+/* Shared "decelerate" curve for hover/press micro-interactions (card lift, image zoom, quick-view
+   reveal, ...) — same feel as .hero-zoom/.reveal-on-scroll below, just reusable as a utility. */
+@utility ease-premium {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Slim scrollbar for compact internal scroll areas (filter lists, cart summary, ...) — the
+   browser-default scrollbar reads chunky/heavy at this size. */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-outline-variant) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--color-outline-variant);
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-outline);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/*
+ * Input rule: every text/number field in this app must render as a plain,
+ * unstyled-by-the-browser input — no native number spin buttons, no native
+ * search "x" clear icon. Component styling (ring, radius, background) is
+ * applied per-component via Tailwind classes; this block only strips
+ * browser chrome so every input looks the same across Chrome/Firefox/Safari.
+ * Applies everywhere (storefront + admin) — do not scope this to a class.
+ */
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.hero-zoom {
+  animation: hero-zoom 12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes soft-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.animate-soft-bounce {
+  animation: soft-bounce 2.2s ease-in-out infinite;
+}
+
+/* Confirmation "pop" — favorite heart toggling on, add-to-cart success icon, etc. */
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.35);
+  }
+  65% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pop {
+  animation: pop 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Crossfade-in for swapped content (gallery main image on thumbnail change, etc.) */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 300ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-zoom,
+  .animate-soft-bounce,
+  .animate-pop,
+  .animate-fade-in {
+    animation: none;
+  }
 }

@@ -1,0 +1,375 @@
+import type { Product } from "@/lib/types";
+
+export const products: Product[] = [
+  {
+    id: "p-001",
+    slug: "rebecca-edgerunners-ver",
+    name: "Rebecca: Edgerunners Ver.",
+    brand: "Good Smile Company",
+    universe: "Naruto",
+    category: "Mô hình Scale",
+    scale: "1/7",
+    price: 4650000,
+    compareAtPrice: 5200000,
+    currency: "VND",
+    stockStatus: "pre_order",
+    stockCount: 0,
+    badges: ["pre_order", "limited"],
+    rating: 4.9,
+    reviewCount: 124,
+    description:
+      'Từ series anime đình đám "Cyberpunk: Edgerunners", mô hình tỉ lệ 1/7 của cô nàng Rebecca đầy bốc lửa và năng động đã chính thức ra mắt. Được tái hiện trung thực dựa trên hình ảnh chủ đạo của series, mô hình nắm bắt trọn vẹn phong thái nổi loạn và sự cuồng nhiệt đặc trưng của nhân vật.',
+    highlights: [
+      "Độ hoàn thiện Premium với PVC & ABS cao cấp",
+      "Đế mô hình hiệu ứng neon độc bản Night City",
+      "Full box, nguyên seal, nhập khẩu chính hãng",
+    ],
+    specs: [
+      { label: "Chất liệu", value: "PVC, ABS, POM (Sơn hoàn thiện)" },
+      { label: "Tỉ lệ", value: "1/7 Scale Figure" },
+      { label: "Nhà sản xuất", value: "Good Smile Company" },
+      { label: "Ngày phát hành", value: "Tháng 09, 2024" },
+      { label: "Chiều cao", value: "Xấp xỉ 210mm" },
+      { label: "Trọng lượng", value: "Khoảng 850g (Bao gồm hộp)" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAVKBai5DBjJuQHAwW_T-1uy18T496g2bx0xehyq7FsOKkhWsfep_xPaMdVGchjeiFu7BPrBrAgYOEb2_YZ2NVyYxk3qAK-SZcewkMJyC7GqKPu9fF-2F3a-kM44cuul3bfq7lpqJdCv0vtPDHPsqZufOOIRcHO7S8uwLpresawm0q2sMEGSCnWlccqPS5XvS8pSDJzpTfVDuonop3R5sohVnyqxDpMTEPHgEb79VfEVk8uKwQt-ngT31boVO_5Rey1GM2nNRReRfI",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCI9EmqeqO-syaQQJe_9fgQcJCwxeRoPNvkSor_jFyjHwXL3VMjhVUWzgtYi9nQgiB-hK1p1VOoOx6kj7SPgbTJN55ctLeglIhonYFu3D0qseDjn9riYvgEdL9rA--Q3z0ieRgLA5fSp3M15YEqlqE_dpkFW55yvhQbTFpZAu7FYhadKjFXn9N26Jd-ObGwJGZE-6J78idKD9wauh-7LJYIrn5PuRNtb698Jr7Ci3gsXEM3OJB2n_b-oFyENPZhiRXMFfj84Ci_jrI",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuChetfvuHCNlm9zV-_T7Woav7Etxx2vxoUN5LbH_xzOlCnacy_yurozQ_Ei9eMjGY4Mo_lY3G9oUbefZx-ziegFk_PTd_G8aKxJFJBeSO2mJGYkAmgmj6WicR0-aAz7MSa-5-tLSeydtS0KDKuIKRBge-KmqV3ns8YQFKLgrgORZP3-p2iX2InuB7DSp2Bi_lmNdGVNjSDoojUKIRTy4v4Q__NI-UF8G-qHFdyrVqej-6DXr-hg3mcgCnthCfuohgF7gZkF3EtCVOU",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuB_Nt49KGVGsNDBtMiWRn24T28zGOmvdSe6FIvopHBJlom9eUxuHHzEFVamXCnrFf7kD66Ry5uPJhuB-1L8WA9UKk5s3bZYendF7dC356f5-WUhGAv03GqdX5P0Usmub096hmRyHOXqS4TAgfZ-7K822sOv0HYgY7wzSYl0Ft0ALYocYDbRh0FAlt40G7mW1IMZo3GRAUlHakrLvRtwT6PoR78P1Re7CUQDd-_NH7JJIqkIti4tomNE0qWb8_MkHVD_0hj2x5mleg0",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuB6aTZN6ZEiRedb-TTx4w_bEMOtVW1RQx_RJvMkMXoxLEW3VeOEXa24n4Z1M0GEZpQjTMxAxmRHcVgc_G4gq7QYw4C9jAtn8HmtGZA1tFcUdocwfSywXUMWjWILrv4iumNJYm2REL0gG8_4b5aqO8VrAnL8VbH_7YwJJYt6qUsQmBJ7zC-f5-IbaOY6-7ULl_Aui6m3_dq9B0NIVaTbgLfQmn9WIGMBGw24lMLnkE0mBsKAeOJGbThcgmhGDfri2QEEPWnOZi2-QkU",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCcRbx2SQqa1UIcbu5uwjQ1unakEiDltROin5Wd4N5395G4PfrH7DAb-JtjPStXmdlLlwTs9XzHpZDLQeD5JQtawl5hlq68T9bOItbu_zP8Y6eoIH9RA4jrad8TQMgoUVXFCQMZpmDl3yUGifG5ShQ4xrDBVyMpxi_QhkvLkYosXZEls9lOAJ59HPdhByqK29emI7bomub-m5pzY8Buhn1zpObBOs4B6reEtc9-dWHoQt7BEzECMQD8WCerCQt60WQI19kq0QowYVA",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAVKBai5DBjJuQHAwW_T-1uy18T496g2bx0xehyq7FsOKkhWsfep_xPaMdVGchjeiFu7BPrBrAgYOEb2_YZ2NVyYxk3qAK-SZcewkMJyC7GqKPu9fF-2F3a-kM44cuul3bfq7lpqJdCv0vtPDHPsqZufOOIRcHO7S8uwLpresawm0q2sMEGSCnWlccqPS5XvS8pSDJzpTfVDuonop3R5sohVnyqxDpMTEPHgEb79VfEVk8uKwQt-ngT31boVO_5Rey1GM2nNRReRfI",
+  },
+  {
+    id: "p-002",
+    slug: "raiden-shogun-genshin-1-7",
+    name: "Genshin Impact: Raiden Shogun Tỷ lệ 1/7",
+    brand: "Good Smile Company",
+    universe: "Genshin Impact",
+    category: "Mô hình Scale",
+    scale: "1/7",
+    price: 4750000,
+    compareAtPrice: 5490000,
+    currency: "VND",
+    stockStatus: "pre_order",
+    stockCount: 0,
+    badges: ["pre_order", "limited"],
+    rating: 4.8,
+    reviewCount: 98,
+    description:
+      "Raiden Shogun sải bước uy nghi trong bộ giáp Chiến Thần với hiệu ứng tia sét đặc trưng của Inazuma. Từng chi tiết trang phục, kiếm Musou Isshin và mái tóc tím được điêu khắc tỉ mỉ theo đúng tạo hình game gốc.",
+    highlights: [
+      "Hiệu ứng tia sét trong suốt độc quyền",
+      "Chi tiết giáp trụ sơn tay thủ công",
+      "Đế trưng bày phong cách điện Inazuma",
+    ],
+    specs: [
+      { label: "Chất liệu", value: "PVC, ABS" },
+      { label: "Tỉ lệ", value: "1/7 Scale Figure" },
+      { label: "Nhà sản xuất", value: "Good Smile Company" },
+      { label: "Chiều cao", value: "Xấp xỉ 280mm" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCwdf0UvmmhUjYbOsnFUb1X4PlqZmu64vXvyQvZ-UvfHzbzZCGPN6sKjvniRKxhQ9P11jRNiSjBbpbZ4DugMi7gLV2T73Fu6ob4Ey3lYGC9Jq8Xmq84-ujn0aAkWZeFBVtQBzVZndin-ogvdkIh68S9MS6ZVusKWvpw0CSiYxq5g1Iit7SiTaq1Brs3ImqDN9mB_xor7gL0vDHwRntblXyJ42KH_WzdXkrZpCchrqY-W-kGaFrkLeUIEOcSb3Dx1kNu8WX1OXtJuZs",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCwdf0UvmmhUjYbOsnFUb1X4PlqZmu64vXvyQvZ-UvfHzbzZCGPN6sKjvniRKxhQ9P11jRNiSjBbpbZ4DugMi7gLV2T73Fu6ob4Ey3lYGC9Jq8Xmq84-ujn0aAkWZeFBVtQBzVZndin-ogvdkIh68S9MS6ZVusKWvpw0CSiYxq5g1Iit7SiTaq1Brs3ImqDN9mB_xor7gL0vDHwRntblXyJ42KH_WzdXkrZpCchrqY-W-kGaFrkLeUIEOcSb3Dx1kNu8WX1OXtJuZs",
+  },
+  {
+    id: "p-003",
+    slug: "metal-build-gundam-exia-repair-iv",
+    name: "Metal Build: Gundam Exia (Repair IV)",
+    brand: "Bandai Spirits",
+    universe: "Gundam",
+    category: "Mô hình Gundam",
+    scale: "Không tỷ lệ",
+    price: 8600000,
+    currency: "VND",
+    stockStatus: "in_stock",
+    stockCount: 6,
+    badges: ["best_seller"],
+    rating: 4.9,
+    reviewCount: 210,
+    description:
+      "Metal Build Exia Repair IV tái hiện diện mạo hoàn thiện của cỗ máy Gundam huyền thoại với khung kim loại die-cast, các khớp chuyển động chuẩn xác và GN Sword II đi kèm.",
+    highlights: [
+      "Khung kim loại die-cast cao cấp",
+      "Khớp chuyển động đa hướng chuẩn diorama",
+      "Đầy đủ phụ kiện vũ khí GN",
+    ],
+    specs: [
+      { label: "Chất liệu", value: "Die-cast & ABS" },
+      { label: "Nhà sản xuất", value: "Bandai Spirits" },
+      { label: "Chiều cao", value: "Xấp xỉ 180mm" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCHolhb1tIqlwsIUDctO992GwoGKsooagRwfjLc1gWHZ0XkQuN4HzoUbWnmj1GCo4gbY1ghvc2wCMRY22QVGErig4MejQc-R40RBz7gEMbMXqHatoyhPdf5G9zpkUBHAi6QrsMaoIr1Olm2dhoPuKolUwlOo0A9zX-QrR2LY840oxWu9wyWxDdcaImlP38463yf04tGiENm0TKnmY6MZuIlvbpIqABTR7URR4VCGTcqxLnKWOwQ_b_I6gXWgdD26YHrOkBpIKdrkwE",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCHolhb1tIqlwsIUDctO992GwoGKsooagRwfjLc1gWHZ0XkQuN4HzoUbWnmj1GCo4gbY1ghvc2wCMRY22QVGErig4MejQc-R40RBz7gEMbMXqHatoyhPdf5G9zpkUBHAi6QrsMaoIr1Olm2dhoPuKolUwlOo0A9zX-QrR2LY840oxWu9wyWxDdcaImlP38463yf04tGiENm0TKnmY6MZuIlvbpIqABTR7URR4VCGTcqxLnKWOwQ_b_I6gXWgdD26YHrOkBpIKdrkwE",
+  },
+  {
+    id: "p-004",
+    slug: "azur-lane-prinz-eugen-1-7",
+    name: "Azur Lane: Prinz Eugen Tỷ lệ 1/7",
+    brand: "Alter",
+    universe: "Azur Lane",
+    category: "Mô hình Scale",
+    scale: "1/7",
+    price: 6450000,
+    currency: "VND",
+    stockStatus: "in_stock",
+    stockCount: 12,
+    badges: [],
+    rating: 4.7,
+    reviewCount: 66,
+    description:
+      "Prinz Eugen được Alter tái hiện với trang phục hải quân thanh lịch và chi tiết ren voan mỏng manh, thể hiện đẳng cấp điêu khắc hàng đầu ngành mô hình.",
+    highlights: [
+      "Chi tiết ren voan mỏng, sơn tay tỉ mỉ",
+      "Đế trưng bày phong cách hải quân",
+    ],
+    specs: [
+      { label: "Chất liệu", value: "PVC, ABS" },
+      { label: "Nhà sản xuất", value: "Alter" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuA7f9HDiSmbBY67ijxysR8-SlQ2Zeikl2MzxCwURvFAn8LeY8VLdrZHnBEOG7j8nodm_QRqBRQFYdTDFDRKs5rhKMdVEkfDIH4pJymdjBg0RhSN3tpFB6LmGAfxQw8klbNqbOPXR1KlAfKiQB-jXRRm-9wgcvU9ymaQ4KrJWATNSLF2CPacvFyvih9R9BZjvslArRzliKTdll08x3_rOM4Y2trzzbRolHXOP9Tc-J2kWyJDKtsagwG7RSGQ4cxnYBY0PnX5h-cC5SM",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuA7f9HDiSmbBY67ijxysR8-SlQ2Zeikl2MzxCwURvFAn8LeY8VLdrZHnBEOG7j8nodm_QRqBRQFYdTDFDRKs5rhKMdVEkfDIH4pJymdjBg0RhSN3tpFB6LmGAfxQw8klbNqbOPXR1KlAfKiQB-jXRRm-9wgcvU9ymaQ4KrJWATNSLF2CPacvFyvih9R9BZjvslArRzliKTdll08x3_rOM4Y2trzzbRolHXOP9Tc-J2kWyJDKtsagwG7RSGQ4cxnYBY0PnX5h-cC5SM",
+  },
+  {
+    id: "p-005",
+    slug: "nendoroid-anya-forger-odekeke",
+    name: "Nendoroid: Anya Forger (Phiên bản Odekeke)",
+    brand: "Good Smile Company",
+    universe: "Naruto",
+    category: "Nendoroids",
+    scale: "Không tỷ lệ",
+    price: 1300000,
+    currency: "VND",
+    stockStatus: "in_stock",
+    stockCount: 40,
+    badges: ["new_arrival"],
+    rating: 4.9,
+    reviewCount: 152,
+    description:
+      "Anya Forger phiên bản Nendoroid đáng yêu đi kèm gấu bông Odekeke và các biểu cảm gương mặt đặc trưng của cô bé thần giao cách cảm.",
+    highlights: ["Kèm 3 gương mặt biểu cảm thay thế", "Phụ kiện Odekeke đi kèm"],
+    specs: [
+      { label: "Chất liệu", value: "PVC, ABS" },
+      { label: "Nhà sản xuất", value: "Good Smile Company" },
+      { label: "Chiều cao", value: "Xấp xỉ 100mm" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAe-ievR1rg9kiDJzx1IXahayXhVMraBa-RmpV-FbC-dAWgU9f7kD3njihmHjTf2tqQQDnGBwxFiYLRxHPqxmjERJMF6qq0rKVHp6RvTqDxo-1KU-bO3ab38wJG4zOsWSXEWhF5yGxmSCoe0diWxHvza5IfVz765vG2OWnq1KM6X8h6O7FD6MOg3qRxvcV-h2ed4Xb8cQZ6umVgGZwOdkRcGsUOcZpKo9Mr_oHap2_RbekqlaRU0_sxVS6zUe4fb_oDDPh9sKu-KfI",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAe-ievR1rg9kiDJzx1IXahayXhVMraBa-RmpV-FbC-dAWgU9f7kD3njihmHjTf2tqQQDnGBwxFiYLRxHPqxmjERJMF6qq0rKVHp6RvTqDxo-1KU-bO3ab38wJG4zOsWSXEWhF5yGxmSCoe0diWxHvza5IfVz765vG2OWnq1KM6X8h6O7FD6MOg3qRxvcV-h2ed4Xb8cQZ6umVgGZwOdkRcGsUOcZpKo9Mr_oHap2_RbekqlaRU0_sxVS6zUe4fb_oDDPh9sKu-KfI",
+  },
+  {
+    id: "p-006",
+    slug: "gem-pokemon-lugia-ho-oh",
+    name: "G.E.M. Series: Pokemon Lugia & Ho-Oh",
+    brand: "MegaHouse",
+    universe: "Pokemon",
+    category: "Pokemon Gems",
+    scale: "Không tỷ lệ",
+    price: 3725000,
+    currency: "VND",
+    stockStatus: "sold_out",
+    stockCount: 0,
+    badges: ["sold_out"],
+    rating: 4.6,
+    reviewCount: 40,
+    description:
+      "Cặp đôi Pokemon huyền thoại Lugia và Ho-Oh sải cánh trên cùng một đế trưng bày, khắc họa sức mạnh nguyên bản qua từng lớp vảy và cánh chim.",
+    highlights: ["Diorama đôi hiếm có", "Chi tiết ánh kim đặc trưng dòng G.E.M."],
+    specs: [
+      { label: "Chất liệu", value: "PVC" },
+      { label: "Nhà sản xuất", value: "MegaHouse" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBEZmv4kP0Tl7a5hj3Yo83WHqM2dm-bXHlc7YD1EOPKDxDGyD5M8K8vBkMpf7EPim1s183Y4-yUrIbRpU8O_2gHd9WFzb7-9fXIkxz28xCdPv3xsB-nGpspYDysrFk9I2gdva6Yss6o4NmUVfzX3-Ua723w37mTaiQSgR_L_zwXTCMMNlJLTXgagTsHkqUH_wC6SnJifyydcVtADMrusU9zWXz4Froq7KrA5PyZOXEcgkThtL7Scv7QynP9JxZn9SVd5EolZ9EQjqo",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBEZmv4kP0Tl7a5hj3Yo83WHqM2dm-bXHlc7YD1EOPKDxDGyD5M8K8vBkMpf7EPim1s183Y4-yUrIbRpU8O_2gHd9WFzb7-9fXIkxz28xCdPv3xsB-nGpspYDysrFk9I2gdva6Yss6o4NmUVfzX3-Ua723w37mTaiQSgR_L_zwXTCMMNlJLTXgagTsHkqUH_wC6SnJifyydcVtADMrusU9zWXz4Froq7KrA5PyZOXEcgkThtL7Scv7QynP9JxZn9SVd5EolZ9EQjqo",
+  },
+  {
+    id: "p-007",
+    slug: "dark-magician-girl-1-7-reissue",
+    name: "Dark Magician Girl Tỷ lệ 1/7 (Sản xuất lại)",
+    brand: "Kotobukiya",
+    universe: "Yu-Gi-Oh",
+    category: "Mô hình Scale",
+    scale: "1/7",
+    price: 2875000,
+    currency: "VND",
+    stockStatus: "in_stock",
+    stockCount: 18,
+    badges: [],
+    rating: 4.8,
+    reviewCount: 87,
+    description:
+      "Dark Magician Girl trở lại trong lần sản xuất giới hạn, giữ nguyên vẻ đẹp phép thuật huyền bí với trang phục xanh tím đặc trưng và cây trượng phép thuật.",
+    highlights: ["Bản sản xuất lại giới hạn", "Chi tiết trang phục lấp lánh"],
+    specs: [
+      { label: "Chất liệu", value: "PVC, ABS" },
+      { label: "Nhà sản xuất", value: "Kotobukiya" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDY5aAhW9THDQR6bw2I0NxoKHVC-FHVgohHl_WgAqdgUWNOIHfoUbCCunVDokrZw_5V2hN3MFK54rd6CT286RY_rS9xvOZVV7_khz_CIhQXnIBE4qpRt3bFckPyX_SwJ1ApLHVw064d47Mr7Kj1aEDLJ1B-DNtp-pFIoWuAlDFrRBqFffbS3Dy2TwTyRk1-UPNd5LJTl-QqEuzbkJYps2QNXMqUEQod14w4h-wM6U8QUCXar3ZrVWVvV-P2ylun6mm09w6VH6KuQmE",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDY5aAhW9THDQR6bw2I0NxoKHVC-FHVgohHl_WgAqdgUWNOIHfoUbCCunVDokrZw_5V2hN3MFK54rd6CT286RY_rS9xvOZVV7_khz_CIhQXnIBE4qpRt3bFckPyX_SwJ1ApLHVw064d47Mr7Kj1aEDLJ1B-DNtp-pFIoWuAlDFrRBqFffbS3Dy2TwTyRk1-UPNd5LJTl-QqEuzbkJYps2QNXMqUEQod14w4h-wM6U8QUCXar3ZrVWVvV-P2ylun6mm09w6VH6KuQmE",
+  },
+  {
+    id: "p-008",
+    slug: "one-piece-luffy-gear5-special",
+    name: "One Piece: Monkey D. Luffy Gear 5 Special",
+    brand: "Banpresto",
+    universe: "One Piece",
+    category: "Mô hình Scale",
+    scale: "Không tỷ lệ",
+    price: 1850000,
+    currency: "VND",
+    stockStatus: "in_stock",
+    stockCount: 30,
+    badges: ["exclusive"],
+    rating: 4.9,
+    reviewCount: 133,
+    description:
+      "Luffy Gear 5 bùng nổ khí thế với tạo hình năng lượng Nika trắng toát, chi tiết vải và mây bao phủ mang đậm phong cách vô âu vô lo.",
+    highlights: ["Phiên bản độc quyền cửa hàng", "Tạo hình năng lượng Nika đặc trưng"],
+    specs: [
+      { label: "Chất liệu", value: "PVC" },
+      { label: "Nhà sản xuất", value: "Banpresto" },
+    ],
+    images: ["/placeholder-product.svg"],
+    heroImage: "/placeholder-product.svg",
+  },
+  {
+    id: "p-009",
+    slug: "hatsune-miku-1-8-symphony-ver",
+    name: "Vocaloid: Hatsune Miku Tỷ lệ 1/8 Symphony Ver.",
+    brand: "Good Smile Company",
+    universe: "Vocaloid",
+    category: "Mô hình Scale",
+    scale: "1/8",
+    price: 5120000,
+    currency: "VND",
+    stockStatus: "coming_soon",
+    stockCount: 0,
+    badges: ["new_arrival"],
+    rating: 4.8,
+    reviewCount: 55,
+    description:
+      "Hatsune Miku trong tà váy dạ hội Symphony, tay cầm đũa chỉ huy dàn nhạc, tôn vinh vẻ đẹp thanh lịch của thần tượng ảo huyền thoại.",
+    highlights: ["Trang phục dạ hội chi tiết cao", "Đế trưng bày phong cách nhà hát"],
+    specs: [
+      { label: "Chất liệu", value: "PVC, ABS" },
+      { label: "Nhà sản xuất", value: "Good Smile Company" },
+    ],
+    images: ["/placeholder-product.svg"],
+    heroImage: "/placeholder-product.svg",
+  },
+  {
+    id: "p-010",
+    slug: "kimetsu-rengoku-kyojuro-1-8",
+    name: "Kimetsu no Yaiba: Rengoku Kyojuro Tỷ lệ 1/8",
+    brand: "Aniplex+",
+    universe: "Demon Slayer",
+    category: "Mô hình Scale",
+    scale: "1/8",
+    price: 4990000,
+    currency: "VND",
+    stockStatus: "in_stock",
+    stockCount: 9,
+    badges: ["recommended"],
+    rating: 4.9,
+    reviewCount: 76,
+    description:
+      "Rengoku Kyojuro trong thế công phá với thanh đao Hỏa Trụ rực lửa, khắc họa trọn vẹn tinh thần Trụ Cột Hỏa của Trụ Sát Quỷ Đoàn.",
+    highlights: ["Hiệu ứng lửa trong suốt độc quyền", "Chi tiết áo choàng Hỏa Trụ"],
+    specs: [
+      { label: "Chất liệu", value: "PVC, ABS" },
+      { label: "Nhà sản xuất", value: "Aniplex+" },
+    ],
+    images: ["/placeholder-product.svg"],
+    heroImage: "/placeholder-product.svg",
+  },
+  {
+    id: "p-011",
+    slug: "pikachu-volt-strike-1-8",
+    name: "Pikachu Volt Strike",
+    brand: "Good Smile Company",
+    universe: "Pokemon",
+    category: "Pokemon Gems",
+    scale: "1/8",
+    price: 3096000,
+    currency: "VND",
+    stockStatus: "in_stock",
+    stockCount: 22,
+    badges: ["best_seller"],
+    rating: 4.9,
+    reviewCount: 180,
+    description:
+      "Pikachu Volt Strike với hiệu ứng tia điện trong suốt bao quanh, khắc họa khoảnh khắc tung đòn Sấm Sét mạnh mẽ nhất.",
+    highlights: ["Hiệu ứng tia điện trong suốt", "Tư thế động lực cao"],
+    specs: [
+      { label: "Chất liệu", value: "PVC" },
+      { label: "Nhà sản xuất", value: "Good Smile Company" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAET73fSTBQ2Z64Do1DfgHE1NktbvPQNo6E7SyYfV_kkolN_fyymcwuLNWg6q5KKv_UpTwR7vbC_7_m69oBHxf6UAKSMUJYtLYcieXYqvrslciuzb9y5UzFzOKgAj10CwRYc9Km5s_x4tmZ5024cpyd4LgC1j7Kws-ZA_8tuHhk3xbQNi3NJ-g0X-IS0ZbJvufh-OQxgOQ8abxZEV0BsHYT5btX4pXJz8DJm3KMZA3cQnGj3W8pEmvGcl8w5LhLof3r6cgxDuuoXyA",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAET73fSTBQ2Z64Do1DfgHE1NktbvPQNo6E7SyYfV_kkolN_fyymcwuLNWg6q5KKv_UpTwR7vbC_7_m69oBHxf6UAKSMUJYtLYcieXYqvrslciuzb9y5UzFzOKgAj10CwRYc9Km5s_x4tmZ5024cpyd4LgC1j7Kws-ZA_8tuHhk3xbQNi3NJ-g0X-IS0ZbJvufh-OQxgOQ8abxZEV0BsHYT5btX4pXJz8DJm3KMZA3cQnGj3W8pEmvGcl8w5LhLof3r6cgxDuuoXyA",
+  },
+  {
+    id: "p-012",
+    slug: "charizard-flame-burst",
+    name: "Charizard Flame Burst",
+    brand: "Good Smile Company",
+    universe: "Pokemon",
+    category: "Pokemon Gems",
+    scale: "1/8",
+    price: 8376000,
+    currency: "VND",
+    stockStatus: "in_stock",
+    stockCount: 5,
+    badges: ["limited"],
+    rating: 4.9,
+    reviewCount: 91,
+    description:
+      "Charizard Flame Burst bùng cháy với hiệu ứng lửa thực tế bao trùm đôi cánh, một trong những tượng Pokemon được săn đón nhất bộ sưu tập.",
+    highlights: ["Hiệu ứng lửa thực tế", "Kích thước trưng bày ấn tượng"],
+    specs: [
+      { label: "Chất liệu", value: "PVC" },
+      { label: "Nhà sản xuất", value: "Good Smile Company" },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBZesABHRb1kUyzFkhmp6NbxCXjrgjp1wDK5hEe4G1khGhyaXYZToWrjztLAfOCNXQV83EB6Ydj_KblIeaQG18ACyULkg6db5rzlayAj6G7krclYeFUaX3Jg9pT4_RjHHvYjzrWYDuypUqABfpLGueK68anOO45jkvgGZ6MUPracCNvtBoZBGd9pf_VrVgccuLk857dxGqXmJQeHkDW48NKMzf8XA0Po36BP0wNy8ox9ZJe4JEiyfOU9QwQQI1KZmRPSWOb7Dw4y-A",
+    ],
+    heroImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBZesABHRb1kUyzFkhmp6NbxCXjrgjp1wDK5hEe4G1khGhyaXYZToWrjztLAfOCNXQV83EB6Ydj_KblIeaQG18ACyULkg6db5rzlayAj6G7krclYeFUaX3Jg9pT4_RjHHvYjzrWYDuypUqABfpLGueK68anOO45jkvgGZ6MUPracCNvtBoZBGd9pf_VrVgccuLk857dxGqXmJQeHkDW48NKMzf8XA0Po36BP0wNy8ox9ZJe4JEiyfOU9QwQQI1KZmRPSWOb7Dw4y-A",
+  },
+];
+
+export function getProductBySlug(slug: string) {
+  return products.find((p) => p.slug === slug);
+}
+
+export function getProductById(id: string) {
+  return products.find((p) => p.id === id);
+}
+
+export function getRelatedProducts(product: Product, limit = 4) {
+  return products
+    .filter((p) => p.id !== product.id && p.category === product.category)
+    .slice(0, limit);
+}
