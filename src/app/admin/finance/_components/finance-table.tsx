@@ -5,7 +5,7 @@ import { Icon } from "@/components/ui/icon";
 import { formatVnd } from "@/lib/format";
 import { TabGroup } from "@/components/admin/tab-group";
 import { StatusDot, type StatusTone } from "@/components/admin/status-dot";
-import type { FinanceTransaction } from "@/lib/types";
+import type { ApiFinanceTransaction } from "@/lib/api-types";
 
 const TYPE_TABS = [
   { key: "all", label: "Tất cả" },
@@ -16,24 +16,23 @@ const TYPE_TABS = [
 
 type TypeKey = (typeof TYPE_TABS)[number]["key"];
 
-const TYPE_ICON: Record<FinanceTransaction["type"], string> = {
+const TYPE_ICON: Record<ApiFinanceTransaction["type"], string> = {
   revenue: "payments",
   refund: "assignment_return",
   payout: "shopping_cart",
 };
 
-const STATUS_META: Record<FinanceTransaction["status"], { label: string; tone: StatusTone }> = {
+const STATUS_META: Record<ApiFinanceTransaction["status"], { label: string; tone: StatusTone }> = {
   completed: { label: "Thành công", tone: "primary" },
   pending: { label: "Đang xử lý", tone: "outline" },
   failed: { label: "Thất bại", tone: "tertiary" },
 };
 
 function formatDateVn(iso: string) {
-  const [y, m, d] = iso.split("-");
-  return `${d}/${m}/${y}`;
+  return new Date(iso).toLocaleDateString("vi-VN");
 }
 
-export function FinanceTable({ transactions }: { transactions: FinanceTransaction[] }) {
+export function FinanceTable({ transactions }: { transactions: ApiFinanceTransaction[] }) {
   const [activeTab, setActiveTab] = useState<TypeKey>("all");
 
   const filtered = useMemo(

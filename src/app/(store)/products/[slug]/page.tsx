@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
+import { StarRating } from "@/components/ui/star-rating";
 import { ProductCard } from "@/components/store/product-card";
 import { ProductGallery } from "./_components/product-gallery";
 import { ProductCtaButtons } from "./_components/product-cta-buttons";
@@ -9,9 +10,11 @@ import { Breadcrumbs } from "@/components/store/breadcrumbs";
 import { Reveal } from "@/components/ui/reveal";
 import { RecentlyViewedSection } from "./_components/recently-viewed-section";
 import { StockNotifyForm } from "./_components/stock-notify-form";
+import { ReviewsSection } from "./_components/reviews-section";
 import { formatVnd } from "@/lib/format";
 import { fetchProductBySlug, fetchProducts } from "@/lib/api/products";
 import { fetchCategories } from "@/lib/api/categories";
+import { fetchReviews } from "@/lib/api/reviews";
 import { mapApiProduct } from "@/lib/api/map-product";
 import { ApiRequestError } from "@/lib/api-client";
 import type { StockStatus } from "@/lib/types";
@@ -29,23 +32,6 @@ const SCHEMA_AVAILABILITY: Record<StockStatus, string> = {
   sold_out: "https://schema.org/OutOfStock",
   coming_soon: "https://schema.org/PreOrder",
 };
-
-const MOCK_REVIEWS = [
-  {
-    initials: "AR",
-    name: "Anh Rồng.",
-    timeAgo: "2 ngày trước",
-    title: "Chi tiết không thể tin nổi",
-    body: "Màu sơn hoàn thiện vượt xa các bản trước đây. Zenos đóng gói cực kỳ cẩn thận với 2 lớp hộp, mình là người sưu tầm giữ box nên rất hài lòng.",
-  },
-  {
-    initials: "HT",
-    name: "Huyền Trang",
-    timeAgo: "1 tuần trước",
-    title: "Tư thế hoàn hảo",
-    body: "Tư thế động nhìn thực tế đẹp hơn trong ảnh nhiều. Đóng gói chắc chắn, giao hàng nhanh. Rất đáng tiền!",
-  },
-];
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -98,9 +84,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const categoryNameById = new Map(categories.map((c) => [c.id, c.name]));
   const product = mapApiProduct(apiProduct, categoryNameById);
 
-  const relatedResponse = apiProduct.categoryId
-    ? await fetchProducts({ categoryIds: [apiProduct.categoryId], pageSize: 5 })
-    : null;
+  const [relatedResponse, initialReviews] = await Promise.all([
+    apiProduct.categoryId ? fetchProducts({ categoryIds: [apiProduct.categoryId], pageSize: 5 }) : null,
+    fetchReviews(product.id, { pageSize: 6 }),
+  ]);
   const relatedProducts = (relatedResponse?.items ?? [])
     .filter((p) => p.id !== product.id)
     .slice(0, 4)
@@ -111,7 +98,6 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     : null;
   const isPreOrder = product.stockStatus === "pre_order" || product.stockStatus === "coming_soon";
   const isSoldOut = product.stockStatus === "sold_out";
-  const filledStars = Math.round(product.rating);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -206,11 +192,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             </div>
 
             <div className="flex items-center gap-2 mb-6">
-              <div className="flex text-primary" aria-hidden="true">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Icon key={i} name="star" filled={i < filledStars} className="text-[18px]" />
-                ))}
-              </div>
+              <StarRating value={product.rating} size="sm" />
               <span className="font-label-sm text-label-sm text-on-surface-variant">
                 ({product.reviewCount} đánh giá)
               </span>
@@ -340,60 +322,20 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                   <span className="text-label-sm text-on-surface-variant uppercase">Trung bình</span>
                 </div>
                 <div className="flex flex-col">
-                  <div className="flex text-primary" aria-hidden="true">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Icon key={i} name="star" filled={i < filledStars} />
-                    ))}
-                  </div>
+                  <StarRating value={product.rating} />
                   <span className="text-label-sm text-on-surface-variant">
-                    Dựa trên {product.reviewCount} lượt mua
+                    Dựa trên {product.reviewCount} đánh giá
                   </span>
                 </div>
               </div>
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-            {MOCK_REVIEWS.map((review, i) => (
-              <Reveal key={review.name} delay={i * 100}>
-                <article className="flex flex-col gap-4 p-8 rounded-3xl bg-white premium-shadow border border-surface-container-highest/30 transition-shadow duration-300 hover:shadow-lg">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center font-bold text-primary"
-                        aria-hidden="true"
-                      >
-                        {review.initials}
-                      </div>
-                      <div>
-                        <p className="font-label-md text-on-surface">{review.name}</p>
-                        <p className="text-[12px] text-on-surface-variant flex items-center gap-1">
-                          <Icon name="verified_user" filled className="text-[14px] text-primary" />
-                          Đã mua hàng
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-label-sm text-on-surface-variant">{review.timeAgo}</span>
-                  </div>
-                  <div className="flex text-primary" aria-hidden="true">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Icon key={i} name="star" filled className="text-[18px]" />
-                    ))}
-                  </div>
-                  <p className="font-label-md text-on-surface">&quot;{review.title}&quot;</p>
-                  <p className="font-body-md text-on-surface-variant leading-relaxed">{review.body}</p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="mx-auto mt-12 px-8 py-3 border-2 border-primary text-primary font-label-md rounded-full hover:bg-primary hover:text-on-primary active:scale-95 transition-all flex items-center gap-2"
-          >
-            Xem thêm đánh giá
-            <Icon name="expand_more" />
-          </button>
+          <ReviewsSection
+            productId={product.id}
+            initialReviews={initialReviews.items}
+            initialPagination={initialReviews.pagination}
+          />
         </section>
 
         {/* Related products */}

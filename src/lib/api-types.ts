@@ -142,6 +142,11 @@ export type ApiOrder = {
   paymentStatus: "paid" | "unpaid" | "refunded";
   placedAt: string;
   userId: string | null;
+  promotionCode: string | null;
+  promotionId: string | null;
+  paymentProvider: "payos" | null;
+  paymentRef: string | null;
+  paidAt: string | null;
 };
 
 /** Mirrors FinanceTransactionDoc#toJSON() from src/models/finance-transaction.model.ts */
@@ -157,3 +162,27 @@ export type ApiFinanceTransaction = {
 };
 
 export type FinanceSummary = { revenue: number; refunds: number; payouts: number; net: number };
+
+/** Mirrors the response of GET /finance/stats. */
+export type FinanceStats = {
+  days: number;
+  revenueSeries: { date: string; revenue: number; orders: number }[];
+  ordersByStatus: { status: ApiOrder["status"]; count: number }[];
+  topProducts: { productId: string; name: string; image: string; quantity: number; revenue: number }[];
+  totals: { totalOrders: number; totalRevenue: number; totalCustomers: number; aov: number };
+};
+
+/** Mirrors the response of POST /payments/payos/:orderId. */
+export type PayosPaymentSession = { orderId: string; paymentRef: string; amount: number; qrPayload: string };
+
+/** Mirrors ReviewDoc#toJSON() from Backend-zenosthobbystore/src/models/review.model.ts */
+export type ApiReview = {
+  id: string;
+  productId: string;
+  userId: string;
+  customerName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+};

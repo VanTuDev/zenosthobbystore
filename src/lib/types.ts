@@ -76,14 +76,3 @@ export type AuthUser = {
   avatarUrl: string | null;
   initials: string;
 };
-
-export type FinanceTransaction = {
-  id: string;
-  orderId: string;
-  customer: string;
-  date: string;
-  amount: number;
-  type: "revenue" | "refund" | "payout";
-  method: "Chuyển khoản" | "COD" | "Thẻ tín dụng" | "Ví điện tử";
-  status: "completed" | "pending" | "failed";
-};

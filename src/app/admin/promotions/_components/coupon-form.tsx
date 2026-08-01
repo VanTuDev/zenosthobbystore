@@ -28,7 +28,7 @@ function formatDateVn(iso: string) {
   return `${d}/${m}/${y}`;
 }
 
-export function CouponForm() {
+export function CouponForm({ onCreated }: { onCreated?: (promotion: ApiPromotion) => void }) {
   const { showToast } = useToast();
 
   const [name, setName] = useState("");
@@ -86,6 +86,7 @@ export function CouponForm() {
       });
       showToast(`Đã tạo mã "${promotion.code}".`, "success");
       setCreated(promotion);
+      onCreated?.(promotion);
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : "Tạo mã thất bại, vui lòng thử lại.");
     } finally {
@@ -103,7 +104,7 @@ export function CouponForm() {
         <p className="text-on-surface-variant font-body-md mb-lg">
           Mã đã sẵn sàng sử dụng {created.status === "active" ? "ngay" : `từ ${formatDateVn(startDate)}`}.
         </p>
-        <div className="flex items-center justify-center gap-sm p-md bg-surface-container-low rounded-xl border border-outline-variant/30 mb-lg max-w-xs mx-auto">
+        <div className="flex items-center justify-center gap-sm p-md bg-surface-container-low rounded-xl border border-outline-variant/30 mb-lg max-w-80 mx-auto">
           <span className="font-headline-sm text-headline-sm uppercase tracking-widest text-on-surface">
             {created.code}
           </span>

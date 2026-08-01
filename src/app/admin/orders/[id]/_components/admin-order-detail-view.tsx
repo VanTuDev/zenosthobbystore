@@ -118,7 +118,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
               )}
               {order.discount > 0 && (
                 <div className="flex justify-between text-label-md text-primary">
-                  <span>Giảm giá</span>
+                  <span>Giảm giá{order.promotionCode ? ` (${order.promotionCode})` : ""}</span>
                   <span>-{formatVnd(order.discount)}</span>
                 </div>
               )}
@@ -159,6 +159,18 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
               <Icon name="credit_card" className="text-primary" />
               {order.paymentMethod}
             </p>
+            {order.paymentProvider === "payos" && (
+              <p className="flex items-center gap-sm text-label-sm text-on-surface-variant">
+                <Icon name="qr_code_2" className="text-primary !text-[18px]" />
+                Cổng PayOS · Mã GD: {order.paymentRef}
+              </p>
+            )}
+            {order.paidAt && (
+              <p className="flex items-center gap-sm text-label-sm text-on-surface-variant">
+                <Icon name="event_available" className="text-primary !text-[18px]" />
+                Thanh toán lúc {new Date(order.paidAt).toLocaleString("vi-VN")}
+              </p>
+            )}
           </section>
         </div>
       </div>

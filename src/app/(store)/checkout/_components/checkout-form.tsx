@@ -12,13 +12,14 @@ import { Icon } from "@/components/ui/icon";
 import { formatVnd } from "@/lib/format";
 import { fetchPromotionByCode } from "@/lib/api/promotions";
 import { createOrder } from "@/lib/api/orders";
+import { createPayosPayment } from "@/lib/api/payments";
 import { fetchProvinces, fetchWards } from "@/lib/api/locations";
 import { SearchCombobox } from "@/components/ui/search-combobox";
 import { ApiRequestError } from "@/lib/api-client";
 import type { ApiOrder, ApiPromotion, ApiProvince, ApiWard } from "@/lib/api-types";
 
 type ShippingMethodId = "standard" | "express";
-type PaymentMethodId = "bank_transfer" | "cod";
+type PaymentMethodId = "bank_transfer" | "cod" | "payos";
 
 const SHIPPING_METHODS: {
   id: ShippingMethodId;
@@ -58,6 +59,12 @@ const PAYMENT_METHODS: {
     detail: "Kiểm tra hàng trước khi thanh toán",
     icon: "local_shipping",
   },
+  {
+    id: "payos",
+    label: "Thanh toán qua PayOS (QR)",
+    detail: "Quét mã QR để thanh toán tức thì",
+    icon: "qr_code_2",
+  },
 ];
 
 const TAX_RATE = 0.08;
@@ -65,6 +72,7 @@ const TAX_RATE = 0.08;
 const PAYMENT_METHOD_LABEL: Record<PaymentMethodId, ApiOrder["paymentMethod"]> = {
   bank_transfer: "Chuyển khoản",
   cod: "COD",
+  payos: "Ví điện tử",
 };
 
 export function CheckoutForm() {
@@ -185,12 +193,17 @@ export function CheckoutForm() {
         })),
         shippingFee,
         tax,
-        discount,
+        promotionCode: appliedPromo?.code,
         paymentMethod: PAYMENT_METHOD_LABEL[paymentMethod],
         paymentStatus: "unpaid",
       });
 
       clear();
+      if (paymentMethod === "payos") {
+        await createPayosPayment(order.id);
+        router.push(`/checkout/payos?orderId=${order.id}`);
+        return;
+      }
       router.push(`/order-confirmation?orderId=${order.id}`);
     } catch (err) {
       setPlacing(false);

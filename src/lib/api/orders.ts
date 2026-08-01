@@ -13,12 +13,16 @@ export type CreateOrderInput = {
   items: { productId?: string; slug: string; name: string; image: string; price: number; quantity: number }[];
   shippingFee: number;
   tax?: number;
-  discount: number;
+  promotionCode?: string;
   paymentMethod: ApiOrder["paymentMethod"];
   paymentStatus: ApiOrder["paymentStatus"];
 };
 
-/** subtotal/total/status/id/shippingAddress are intentionally absent — the backend always computes those. */
+/**
+ * subtotal/total/status/id/shippingAddress/discount are intentionally absent — the backend
+ * always computes those (a `promotionCode` is validated and priced server-side, never a
+ * raw discount number from the client).
+ */
 export function createOrder(input: CreateOrderInput) {
   return apiFetch<{ order: ApiOrder }>("/orders", {
     method: "POST",
