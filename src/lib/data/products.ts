@@ -43,6 +43,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAVKBai5DBjJuQHAwW_T-1uy18T496g2bx0xehyq7FsOKkhWsfep_xPaMdVGchjeiFu7BPrBrAgYOEb2_YZ2NVyYxk3qAK-SZcewkMJyC7GqKPu9fF-2F3a-kM44cuul3bfq7lpqJdCv0vtPDHPsqZufOOIRcHO7S8uwLpresawm0q2sMEGSCnWlccqPS5XvS8pSDJzpTfVDuonop3R5sohVnyqxDpMTEPHgEb79VfEVk8uKwQt-ngT31boVO_5Rey1GM2nNRReRfI",
     videos: [],
+    variants: [],
   },
   {
     id: "p-002",
@@ -79,6 +80,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuCwdf0UvmmhUjYbOsnFUb1X4PlqZmu64vXvyQvZ-UvfHzbzZCGPN6sKjvniRKxhQ9P11jRNiSjBbpbZ4DugMi7gLV2T73Fu6ob4Ey3lYGC9Jq8Xmq84-ujn0aAkWZeFBVtQBzVZndin-ogvdkIh68S9MS6ZVusKWvpw0CSiYxq5g1Iit7SiTaq1Brs3ImqDN9mB_xor7gL0vDHwRntblXyJ42KH_WzdXkrZpCchrqY-W-kGaFrkLeUIEOcSb3Dx1kNu8WX1OXtJuZs",
     videos: [],
+    variants: [],
   },
   {
     id: "p-003",
@@ -113,6 +115,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuCHolhb1tIqlwsIUDctO992GwoGKsooagRwfjLc1gWHZ0XkQuN4HzoUbWnmj1GCo4gbY1ghvc2wCMRY22QVGErig4MejQc-R40RBz7gEMbMXqHatoyhPdf5G9zpkUBHAi6QrsMaoIr1Olm2dhoPuKolUwlOo0A9zX-QrR2LY840oxWu9wyWxDdcaImlP38463yf04tGiENm0TKnmY6MZuIlvbpIqABTR7URR4VCGTcqxLnKWOwQ_b_I6gXWgdD26YHrOkBpIKdrkwE",
     videos: [],
+    variants: [],
   },
   {
     id: "p-004",
@@ -145,6 +148,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuA7f9HDiSmbBY67ijxysR8-SlQ2Zeikl2MzxCwURvFAn8LeY8VLdrZHnBEOG7j8nodm_QRqBRQFYdTDFDRKs5rhKMdVEkfDIH4pJymdjBg0RhSN3tpFB6LmGAfxQw8klbNqbOPXR1KlAfKiQB-jXRRm-9wgcvU9ymaQ4KrJWATNSLF2CPacvFyvih9R9BZjvslArRzliKTdll08x3_rOM4Y2trzzbRolHXOP9Tc-J2kWyJDKtsagwG7RSGQ4cxnYBY0PnX5h-cC5SM",
     videos: [],
+    variants: [],
   },
   {
     id: "p-005",
@@ -175,6 +179,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAe-ievR1rg9kiDJzx1IXahayXhVMraBa-RmpV-FbC-dAWgU9f7kD3njihmHjTf2tqQQDnGBwxFiYLRxHPqxmjERJMF6qq0rKVHp6RvTqDxo-1KU-bO3ab38wJG4zOsWSXEWhF5yGxmSCoe0diWxHvza5IfVz765vG2OWnq1KM6X8h6O7FD6MOg3qRxvcV-h2ed4Xb8cQZ6umVgGZwOdkRcGsUOcZpKo9Mr_oHap2_RbekqlaRU0_sxVS6zUe4fb_oDDPh9sKu-KfI",
     videos: [],
+    variants: [],
   },
   {
     id: "p-006",
@@ -204,6 +209,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBEZmv4kP0Tl7a5hj3Yo83WHqM2dm-bXHlc7YD1EOPKDxDGyD5M8K8vBkMpf7EPim1s183Y4-yUrIbRpU8O_2gHd9WFzb7-9fXIkxz28xCdPv3xsB-nGpspYDysrFk9I2gdva6Yss6o4NmUVfzX3-Ua723w37mTaiQSgR_L_zwXTCMMNlJLTXgagTsHkqUH_wC6SnJifyydcVtADMrusU9zWXz4Froq7KrA5PyZOXEcgkThtL7Scv7QynP9JxZn9SVd5EolZ9EQjqo",
     videos: [],
+    variants: [],
   },
   {
     id: "p-007",
@@ -233,6 +239,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuDY5aAhW9THDQR6bw2I0NxoKHVC-FHVgohHl_WgAqdgUWNOIHfoUbCCunVDokrZw_5V2hN3MFK54rd6CT286RY_rS9xvOZVV7_khz_CIhQXnIBE4qpRt3bFckPyX_SwJ1ApLHVw064d47Mr7Kj1aEDLJ1B-DNtp-pFIoWuAlDFrRBqFffbS3Dy2TwTyRk1-UPNd5LJTl-QqEuzbkJYps2QNXMqUEQod14w4h-wM6U8QUCXar3ZrVWVvV-P2ylun6mm09w6VH6KuQmE",
     videos: [],
+    variants: [],
   },
   {
     id: "p-008",
@@ -259,6 +266,7 @@ export const products: Product[] = [
     images: ["/placeholder-product.svg"],
     heroImage: "/placeholder-product.svg",
     videos: [],
+    variants: [],
   },
   {
     id: "p-009",
@@ -285,6 +293,7 @@ export const products: Product[] = [
     images: ["/placeholder-product.svg"],
     heroImage: "/placeholder-product.svg",
     videos: [],
+    variants: [],
   },
   {
     id: "p-010",
@@ -311,6 +320,7 @@ export const products: Product[] = [
     images: ["/placeholder-product.svg"],
     heroImage: "/placeholder-product.svg",
     videos: [],
+    variants: [],
   },
   {
     id: "p-011",
@@ -340,6 +350,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAET73fSTBQ2Z64Do1DfgHE1NktbvPQNo6E7SyYfV_kkolN_fyymcwuLNWg6q5KKv_UpTwR7vbC_7_m69oBHxf6UAKSMUJYtLYcieXYqvrslciuzb9y5UzFzOKgAj10CwRYc9Km5s_x4tmZ5024cpyd4LgC1j7Kws-ZA_8tuHhk3xbQNi3NJ-g0X-IS0ZbJvufh-OQxgOQ8abxZEV0BsHYT5btX4pXJz8DJm3KMZA3cQnGj3W8pEmvGcl8w5LhLof3r6cgxDuuoXyA",
     videos: [],
+    variants: [],
   },
   {
     id: "p-012",
@@ -369,6 +380,7 @@ export const products: Product[] = [
     heroImage:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBZesABHRb1kUyzFkhmp6NbxCXjrgjp1wDK5hEe4G1khGhyaXYZToWrjztLAfOCNXQV83EB6Ydj_KblIeaQG18ACyULkg6db5rzlayAj6G7krclYeFUaX3Jg9pT4_RjHHvYjzrWYDuypUqABfpLGueK68anOO45jkvgGZ6MUPracCNvtBoZBGd9pf_VrVgccuLk857dxGqXmJQeHkDW48NKMzf8XA0Po36BP0wNy8ox9ZJe4JEiyfOU9QwQQI1KZmRPSWOb7Dw4y-A",
     videos: [],
+    variants: [],
   },
 ];
 

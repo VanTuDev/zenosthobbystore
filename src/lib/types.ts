@@ -15,6 +15,13 @@ export type ProductVideo = {
   provider: "tiktok" | "youtube";
 };
 
+export type ProductVariant = {
+  name: string;
+  price: number;
+  stockCount: number;
+  image: string;
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -47,6 +54,7 @@ export type Product = {
   images: string[];
   heroImage: string;
   videos: ProductVideo[];
+  variants: ProductVariant[];
 };
 
 export type Category = {

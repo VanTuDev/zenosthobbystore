@@ -7,6 +7,14 @@ export type ApiProductVideo = {
   provider: "tiktok" | "youtube";
 };
 
+/** Mirrors ProductVariant from Backend-zenosthobbystore/src/models/product.model.ts */
+export type ApiProductVariant = {
+  name: string;
+  price: number;
+  stockCount: number;
+  image: string;
+};
+
 /** Mirrors ProductDoc#toJSON() from Backend-zenosthobbystore/src/models/product.model.ts */
 export type ApiProduct = {
   id: string;
@@ -32,6 +40,7 @@ export type ApiProduct = {
   images: string[];
   heroImage: string;
   videos: ApiProductVideo[];
+  variants: ApiProductVariant[];
   categoryId: string | null;
   createdAt: string;
   updatedAt: string;
@@ -182,24 +191,6 @@ export type FinanceStats = {
 
 /** Mirrors the response of POST /payments/payos/:orderId. */
 export type PayosPaymentSession = { orderId: string; paymentRef: string; amount: number; qrPayload: string };
-
-/** Mirrors ReviewDoc#toJSON() from Backend-zenosthobbystore/src/models/review.model.ts */
-export type ApiReview = {
-  id: string;
-  productId: string;
-  userId: string;
-  customerName: string;
-  rating: number;
-  comment: string;
-  images: string[];
-  createdAt: string;
-  updatedAt: string;
-};
-
-/** The real rating aggregate for a product, computed from Review documents — see GET /reviews. */
-export type ReviewsRatingSummary = { averageRating: number; count: number };
-
-export type ReviewsResponse = PaginatedResponse<ApiReview> & { summary: ReviewsRatingSummary };
 
 /** Mirrors ContactTicketDoc#toJSON() from Backend-zenosthobbystore/src/models/contact-ticket.model.ts */
 export type ApiContactTicket = {

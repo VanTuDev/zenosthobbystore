@@ -2,29 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
-import { StarRating } from "@/components/ui/star-rating";
 import { ProductCard } from "@/components/store/product-card";
-import { ProductGallery } from "./_components/product-gallery";
-import { ProductCtaButtons } from "./_components/product-cta-buttons";
+import { ProductDetailShell } from "./_components/product-detail-shell";
+import { VideoShowcaseSection } from "./_components/video-showcase-section";
 import { Breadcrumbs } from "@/components/store/breadcrumbs";
 import { Reveal } from "@/components/ui/reveal";
 import { RecentlyViewedSection } from "./_components/recently-viewed-section";
-import { StockNotifyForm } from "./_components/stock-notify-form";
-import { ReviewsSection } from "./_components/reviews-section";
-import { formatVnd } from "@/lib/format";
 import { fetchProductBySlug, fetchProducts } from "@/lib/api/products";
 import { fetchCategories } from "@/lib/api/categories";
-import { fetchReviews } from "@/lib/api/reviews";
 import { mapApiProduct } from "@/lib/api/map-product";
 import { ApiRequestError } from "@/lib/api-client";
 import type { StockStatus } from "@/lib/types";
-
-const STOCK_LABEL: Record<StockStatus, string> = {
-  in_stock: "Còn hàng",
-  pre_order: "Đặt trước",
-  sold_out: "Hết hàng",
-  coming_soon: "Sắp ra mắt",
-};
 
 const SCHEMA_AVAILABILITY: Record<StockStatus, string> = {
   in_stock: "https://schema.org/InStock",
@@ -62,7 +50,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   }
 
   return {
-    title: `${product.name} | ZENOS Hobby Store`,
+    title: `${product.name} | ZENOST Hobby Store`,
     description: product.description.slice(0, 160),
     alternates: { canonical: `/products/${product.slug}` },
     openGraph: {
@@ -84,10 +72,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const categoryNameById = new Map(categories.map((c) => [c.id, c.name]));
   const product = mapApiProduct(apiProduct, categoryNameById);
 
-  const [relatedResponse, initialReviews] = await Promise.all([
-    apiProduct.categoryId ? fetchProducts({ categoryIds: [apiProduct.categoryId], pageSize: 5 }) : null,
-    fetchReviews(product.id, { pageSize: 6 }),
-  ]);
+  const relatedResponse = apiProduct.categoryId
+    ? await fetchProducts({ categoryIds: [apiProduct.categoryId], pageSize: 5 })
+    : null;
   const relatedProducts = (relatedResponse?.items ?? [])
     .filter((p) => p.id !== product.id)
     .slice(0, 4)
@@ -115,34 +102,26 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       price: product.price,
       priceCurrency: product.currency,
       availability: SCHEMA_AVAILABILITY[product.stockStatus],
-      url: `https://zenoshobbystore.vn/products/${product.slug}`,
+      url: `https://zenosthobbystore.com/products/${product.slug}`,
     },
-    aggregateRating:
-      initialReviews.summary.count > 0
-        ? {
-            "@type": "AggregateRating",
-            ratingValue: initialReviews.summary.averageRating,
-            reviewCount: initialReviews.summary.count,
-          }
-        : undefined,
   };
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Trang chủ", item: "https://zenoshobbystore.vn/" },
+      { "@type": "ListItem", position: 1, name: "Trang chủ", item: "https://zenosthobbystore.com/" },
       {
         "@type": "ListItem",
         position: 2,
         name: product.category,
-        item: "https://zenoshobbystore.vn/products",
+        item: "https://zenosthobbystore.com/products",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: product.name,
-        item: `https://zenoshobbystore.vn/products/${product.slug}`,
+        item: `https://zenosthobbystore.com/products/${product.slug}`,
       },
     ],
   };
@@ -169,107 +148,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         />
 
         {/* Product shell */}
-        <div className="flex flex-col lg:flex-row gap-xl items-start">
-          <ProductGallery
-            images={product.images}
-            videos={product.videos}
-            name={product.name}
-            badgeLabel={isPreOrder ? "Pre-order" : undefined}
-          />
-
-          {/* Right: Product info & CTAs */}
-          <div className="w-full lg:w-[35%] flex flex-col">
-            <div className="mb-6">
-              <p className="font-label-md text-label-md text-primary tracking-widest uppercase mb-2">
-                Nhà sản xuất: {product.brand}
-              </p>
-              <h1 className="font-display-lg text-display-lg-mobile md:text-[40px] text-on-surface leading-tight mb-2">
-                {product.name}
-              </h1>
-              <p className="font-headline-sm text-headline-sm text-on-surface-variant font-medium">
-                {product.category}
-                {product.scale !== "Không tỷ lệ" ? ` ${product.scale}` : ""} | {product.universe}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 mb-6">
-              <StarRating value={initialReviews.summary.averageRating} size="sm" />
-              <span className="font-label-sm text-label-sm text-on-surface-variant">
-                ({initialReviews.summary.count} đánh giá)
-              </span>
-            </div>
-
-            <div className="mb-8 py-6 border-y border-surface-container-highest">
-              <div className="flex items-baseline gap-md mb-2 flex-wrap">
-                <span className="font-display-lg text-[36px] text-on-surface">
-                  {formatVnd(product.price)}
-                </span>
-                {product.compareAtPrice && (
-                  <span className="font-body-md text-body-md text-on-surface-variant line-through">
-                    {formatVnd(product.compareAtPrice)}
-                  </span>
-                )}
-                {discountPercent !== null && (
-                  <span className="bg-tertiary/10 text-tertiary px-2 py-0.5 rounded font-label-md text-label-sm">
-                    -{discountPercent}%
-                  </span>
-                )}
-              </div>
-              <p
-                className={`font-label-md text-label-md flex items-center gap-1 ${
-                  isSoldOut ? "text-outline" : isPreOrder ? "text-tertiary" : "text-primary"
-                }`}
-              >
-                <Icon name={isPreOrder ? "calendar_today" : "inventory_2"} className="text-[18px]" />
-                {isSoldOut
-                  ? STOCK_LABEL.sold_out.toUpperCase()
-                  : isPreOrder
-                    ? "DỰ KIẾN PHÁT HÀNH: SẮP CẬP NHẬT"
-                    : `CÒN ${product.stockCount} SẢN PHẨM`}
-              </p>
-            </div>
-
-            <div className="mb-8">
-              <h2 className="font-label-md text-label-md text-on-surface mb-3 uppercase tracking-wider">
-                Mô tả sản phẩm
-              </h2>
-              <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                {product.description}
-              </p>
-              {product.highlights.length > 0 && (
-                <ul className="mt-4 space-y-2">
-                  {product.highlights.map((highlight) => (
-                    <li key={highlight} className="flex items-start gap-2 text-body-md text-on-surface-variant">
-                      <Icon name="check_circle" className="text-primary text-[18px] mt-0.5" />
-                      {highlight}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            {/* CTAs */}
-            <ProductCtaButtons productName={product.name} isPreOrder={isPreOrder} isSoldOut={isSoldOut} />
-
-            {isSoldOut && <StockNotifyForm productName={product.name} />}
-
-            {/* Trust badges */}
-            <div className="space-y-4">
-              <div className="p-4 bg-surface-container-low rounded-xl border border-surface-container-highest/50 flex items-start gap-4">
-                <Icon name="local_shipping" className="text-primary text-[28px]" />
-                <div>
-                  <p className="font-label-sm text-label-sm text-on-surface font-bold uppercase">
-                    Giao hàng &amp; Bảo quản
-                  </p>
-                  <p className="font-body-md text-[13px] text-on-surface-variant">
-                    Đóng gói 2 lớp hộp chống sốc chuyên dụng. Miễn phí vận chuyển cho đơn hàng đặt
-                    trước.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProductDetailShell
+          product={product}
+          isPreOrder={isPreOrder}
+          isSoldOut={isSoldOut}
+          discountPercent={discountPercent}
+        />
 
         {/* Specification section */}
         {product.specs.length > 0 && (
@@ -292,15 +176,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </Reveal>
         )}
 
-        {/* Reviews section */}
-        <section className="mt-24">
-          <ReviewsSection
-            productId={product.id}
-            initialReviews={initialReviews.items}
-            initialPagination={initialReviews.pagination}
-            initialSummary={initialReviews.summary}
-          />
-        </section>
+        {/* Video showcase — every video for this product, above Related products */}
+        <VideoShowcaseSection videos={product.videos} name={product.name} />
 
         {/* Related products */}
         {relatedProducts.length > 0 && (

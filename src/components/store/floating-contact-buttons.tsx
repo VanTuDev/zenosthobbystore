@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { Icon } from "@/components/ui/icon";
 import { BUSINESS_INFO, SOCIAL_LINKS } from "@/lib/business-info";
 
 /** Material Symbols has no brand glyphs — hand-drawn outlines sized to match. */
@@ -37,11 +41,14 @@ const BUBBLES: {
 ];
 
 /**
- * Floating "boxchat"-style contact bubbles fixed to the right edge of the
- * viewport (Facebook / TikTok / Shopee / hotline) — the pattern seen on most
- * Vietnamese storefronts, distinct from the in-header nav icons.
+ * Floating "boxchat"-style contact bubbles fixed to the right edge of the viewport (Facebook /
+ * TikTok / Shopee / hotline). On phones (below `sm`) they'd stack tall enough to cover real
+ * content, so they start collapsed behind one toggle button and expand on tap; tablet/desktop
+ * have the screen space to just show all four straight away, same as before.
  */
 export function FloatingContactButtons() {
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="fixed right-4 bottom-24 sm:bottom-8 z-40 flex flex-col items-center gap-sm">
       {BUBBLES.map((bubble) => (
@@ -51,7 +58,7 @@ export function FloatingContactButtons() {
           {...(bubble.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
           aria-label={bubble.label}
           title={bubble.label}
-          className={`relative flex items-center justify-center w-12 h-12 rounded-full text-white shadow-xl hover:scale-110 active:scale-95 transition-transform ${bubble.bg}`}
+          className={`relative ${open ? "flex" : "hidden"} sm:flex items-center justify-center w-12 h-12 rounded-full text-white shadow-xl hover:scale-110 active:scale-95 transition-transform ${bubble.bg}`}
         >
           {bubble.pulse && (
             <span className={`absolute inset-0 rounded-full ${bubble.bg} opacity-60 animate-ping`} aria-hidden="true" />
@@ -61,6 +68,18 @@ export function FloatingContactButtons() {
           </svg>
         </a>
       ))}
+
+      {/* Mobile-only toggle — tablet/desktop always show all four bubbles above, no toggle needed. */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label={open ? "Ẩn các nút liên hệ" : "Hiện các nút liên hệ"}
+        aria-expanded={open}
+        className="sm:hidden relative flex items-center justify-center w-12 h-12 rounded-full bg-primary text-on-primary shadow-xl active:scale-95 transition-transform"
+      >
+        {!open && <span className="absolute inset-0 rounded-full bg-primary opacity-60 animate-ping" aria-hidden="true" />}
+        <Icon name={open ? "close" : "chat"} filled={!open} className="relative !text-[22px]" />
+      </button>
     </div>
   );
 }

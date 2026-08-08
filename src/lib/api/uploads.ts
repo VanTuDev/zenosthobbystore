@@ -29,27 +29,6 @@ export async function uploadProductImage(file: File): Promise<UploadImageRespons
   return body as UploadImageResponse;
 }
 
-/** Any signed-in customer — attaches a photo to a product review. Separate endpoint/folder from admin product images. */
-export async function uploadReviewImage(file: File): Promise<UploadImageResponse> {
-  const form = new FormData();
-  form.append("file", file);
-
-  const res = await fetch(`${API_BASE_URL}/uploads/review-image`, {
-    method: "POST",
-    credentials: "include",
-    body: form,
-  });
-
-  const body: unknown = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    const errorBody = body as BackendErrorBody | null;
-    throw new ApiRequestError(res.status, errorBody ? errorBody.error : `Tải ảnh lên thất bại (${res.status})`);
-  }
-
-  return body as UploadImageResponse;
-}
-
 /** Public — attaches a photo to a support ticket on the "Liên hệ" form, no login required. */
 export async function uploadContactImage(file: File): Promise<UploadImageResponse> {
   const form = new FormData();

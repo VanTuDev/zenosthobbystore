@@ -1,49 +1,26 @@
-"use client";
-
 import { Icon } from "@/components/ui/icon";
-import { BUSINESS_INFO, SOCIAL_LINKS } from "@/lib/business-info";
 
 /**
- * No online checkout — orders are placed by contacting the shop directly
- * (phone or Facebook), then entered into the system by an admin.
+ * No online checkout and no per-product ordering CTA — this site is browse-only, purchases
+ * happen off-site via Facebook/TikTok (reachable through the floating contact bubbles). The one
+ * action here scrolls down to the full video showcase section instead of linking off-page.
  */
-export function ProductCtaButtons({
-  productName,
-  isPreOrder,
-  isSoldOut,
-}: {
-  productName: string;
-  isPreOrder: boolean;
-  isSoldOut: boolean;
-}) {
-  const phoneHref = `tel:${BUSINESS_INFO.phone.replace(/\s+/g, "")}`;
-  const messagePrefill = `Chào ZENOS, mình muốn hỏi về sản phẩm "${productName}"`;
+export function ProductCtaButtons({ hasVideos, isSoldOut }: { hasVideos: boolean; isSoldOut: boolean }) {
+  if (!hasVideos) return null;
 
   return (
     <div className="flex flex-col gap-4 mb-8">
       <a
-        href={phoneHref}
+        href="#video-san-pham"
         className="w-full py-4 bg-primary text-on-primary font-label-md text-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
       >
-        <Icon name="call" />
-        GỌI ĐẶT HÀNG: {BUSINESS_INFO.phone}
-      </a>
-      <a
-        href={SOCIAL_LINKS.facebook}
-        target="_blank"
-        rel="noopener noreferrer"
-        title={messagePrefill}
-        className="w-full py-4 border-2 border-on-surface text-on-surface font-label-md text-label-md rounded-xl hover:bg-surface-container-low active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-      >
-        <Icon name="chat" />
-        NHẮN TIN QUA FACEBOOK
+        <Icon name="play_circle" filled />
+        XEM VIDEO THỰC TẾ
       </a>
       <p className="text-center text-label-sm text-on-surface-variant">
         {isSoldOut
-          ? "Sản phẩm tạm hết hàng — liên hệ để được báo khi có hàng trở lại."
-          : isPreOrder
-            ? "Liên hệ để đặt trước và giữ suất mua sản phẩm này."
-            : "Liên hệ trực tiếp để được tư vấn giá và tình trạng hàng mới nhất."}
+          ? "Sản phẩm tạm hết hàng — xem video thực tế để tham khảo trước khi có hàng trở lại."
+          : "Video quay thực tế sản phẩm — xem chi tiết trước khi liên hệ."}
       </p>
     </div>
   );

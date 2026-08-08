@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
 import type { ProductVideo } from "@/lib/types";
@@ -10,6 +9,9 @@ type ProductGalleryProps = {
   videos: ProductVideo[];
   name: string;
   badgeLabel?: string;
+  /** Controlled from the parent shell so a variant pick (with its own image) can also drive the main viewer. */
+  activeImage: string;
+  onSelectImage: (image: string) => void;
 };
 
 const PROVIDER_ICON: Record<ProductVideo["provider"], string> = {
@@ -17,10 +19,7 @@ const PROVIDER_ICON: Record<ProductVideo["provider"], string> = {
   youtube: "smart_display",
 };
 
-export function ProductGallery({ images, videos, name, badgeLabel }: ProductGalleryProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeImage = images[activeIndex] ?? images[0];
-
+export function ProductGallery({ images, videos, name, badgeLabel, activeImage, onSelectImage }: ProductGalleryProps) {
   return (
     <div className="w-full lg:w-[65%] flex flex-col gap-md lg:sticky lg:top-28">
       <div className="flex gap-sm">
@@ -29,12 +28,12 @@ export function ProductGallery({ images, videos, name, badgeLabel }: ProductGall
             no arbitrary magic-number cap. */}
         <div className="flex flex-col gap-sm w-16 sm:w-20 shrink-0 overflow-y-auto scrollbar-thin">
           {images.map((image, index) => {
-            const isActive = index === activeIndex;
+            const isActive = image === activeImage;
             return (
               <button
                 key={image + index}
                 type="button"
-                onClick={() => setActiveIndex(index)}
+                onClick={() => onSelectImage(image)}
                 aria-label={`Xem góc ảnh ${index + 1}`}
                 aria-pressed={isActive}
                 className={`relative w-full aspect-square bg-white rounded-lg border overflow-hidden transition-all duration-300 ease-premium p-1 shrink-0 ${

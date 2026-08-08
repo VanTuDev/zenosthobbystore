@@ -51,5 +51,6 @@ export function mapApiProduct(apiProduct: ApiProduct, categoryNameById: Readonly
     images: apiProduct.images.length > 0 ? apiProduct.images : [PLACEHOLDER_IMAGE],
     heroImage: apiProduct.heroImage || PLACEHOLDER_IMAGE,
     videos: apiProduct.videos,
+    variants: apiProduct.variants,
   };
 }

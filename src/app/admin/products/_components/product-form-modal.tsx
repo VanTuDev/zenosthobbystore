@@ -5,6 +5,7 @@ import { ImageDropzone, type DraftImage } from "@/components/ui/image-dropzone";
 import { HighlightsEditor } from "./highlights-editor";
 import { SpecsEditor, type Spec } from "./specs-editor";
 import { VideoInputEditor } from "./video-input-editor";
+import { VariantsEditor, draftFromVariant, type DraftVariant } from "./variants-editor";
 import { CategoryPicker } from "@/components/admin/category-picker";
 import { PriceInput } from "./price-input";
 import { Icon } from "@/components/ui/icon";
@@ -27,12 +28,13 @@ const inputClass =
   "w-full bg-surface-container-lowest border border-outline-variant/60 rounded-xl px-3.5 py-2.5 font-body-md text-body-md text-on-surface placeholder:text-outline/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all";
 const labelClass = "block font-label-md text-[12px] uppercase tracking-wider font-semibold text-on-surface-variant mb-1.5";
 
-type TabId = "basic" | "media" | "pricing" | "details";
+type TabId = "basic" | "media" | "pricing" | "variants" | "details";
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: "basic", label: "Cơ bản", icon: "info" },
   { id: "media", label: "Hình ảnh", icon: "image" },
   { id: "pricing", label: "Giá & Kho", icon: "sell" },
+  { id: "variants", label: "Biến thể", icon: "style" },
   { id: "details", label: "Chi tiết & Danh mục", icon: "category" },
 ];
 
@@ -84,6 +86,7 @@ export function ProductFormModal({
   const [specs, setSpecs] = useState<Spec[]>(product?.specs ?? []);
   const [images, setImages] = useState<DraftImage[]>(() => imagesFromProduct(product));
   const [videos, setVideos] = useState<ApiProductVideo[]>(product?.videos ?? []);
+  const [variants, setVariants] = useState<DraftVariant[]>(() => (product?.variants ?? []).map(draftFromVariant));
   const [categoryId, setCategoryId] = useState<string | null>(product?.categoryId ?? null);
   const [originalPrice, setOriginalPrice] = useState(product?.originalPrice ? String(product.originalPrice) : "");
   const [sellingPrice, setSellingPrice] = useState(
@@ -133,9 +136,10 @@ export function ProductFormModal({
       basic: name.trim() ? "ok" : "warn",
       media: images.length > 0 ? "ok" : "idle",
       pricing: sellingPriceNum ? "ok" : "warn",
+      variants: variants.length > 0 ? "ok" : "idle",
       details: categoryId ? "ok" : "idle",
     }),
-    [name, images.length, sellingPriceNum, categoryId],
+    [name, images.length, sellingPriceNum, variants.length, categoryId],
   );
 
   async function handleSubmit(event: React.FormEvent) {
@@ -157,6 +161,14 @@ export function ProductFormModal({
 
     const readyImages = images.filter((img) => img.status === "done").map((img) => img.url);
     const cleanSpecs = specs.filter((s) => s.label.trim() && s.value.trim());
+    const cleanVariants = variants
+      .filter((v) => v.name.trim())
+      .map((v) => ({
+        name: v.name.trim(),
+        price: parseNumber(v.price) ?? 0,
+        stockCount: parseNumber(v.stockCount) ?? 0,
+        image: v.image,
+      }));
 
     setSaving(true);
     try {
@@ -180,6 +192,7 @@ export function ProductFormModal({
         images: readyImages.length > 0 ? readyImages : ["/placeholder-product.svg"],
         heroImage: readyImages[0] ?? "/placeholder-product.svg",
         videos,
+        variants: cleanVariants,
         categoryId,
       };
 
@@ -232,7 +245,7 @@ export function ProductFormModal({
                 {isEdit ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm mới"}
               </h2>
               <p className="font-body-sm text-xs text-on-surface-variant truncate mt-0.5">
-                {isEdit ? product?.name : `zenos.vn/products/${slugPreview}`}
+                {isEdit ? product?.name : `zenosthobbystore.com/products/${slugPreview}`}
               </p>
             </div>
           </div>
@@ -459,6 +472,18 @@ export function ProductFormModal({
                   />
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB: VARIANTS */}
+          {activeTab === "variants" && (
+            <div className="max-w-2xl mx-auto space-y-3">
+              <p className={labelClass}>Biến thể sản phẩm (Tối đa 100)</p>
+              <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed -mt-2">
+                Mỗi biến thể (màu sắc, kích thước...) có giá và tồn kho riêng, độc lập với giá/tồn kho ở tab
+                &quot;Giá &amp; Kho&quot;. Để trống nếu sản phẩm không có biến thể.
+              </p>
+              <VariantsEditor variants={variants} onChange={setVariants} />
             </div>
           )}
 

@@ -72,17 +72,35 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${montserrat.variable} ${inter.variable} scroll-smooth h-full antialiased`}
+      translate="no"
+      className={`${montserrat.variable} ${inter.variable} scroll-smooth h-full antialiased notranslate`}
       suppressHydrationWarning
     >
       <head>
+        {/*
+          Chrome's built-in "Translate this page" prompt (and several translate/dictionary
+          extensions that respect this convention) inject DOM nodes into <head>/<body> before
+          React hydrates, which then shows up as a false-positive hydration mismatch in the
+          console — nothing in this app renders that markup. These two signals opt the page out.
+        */}
+        <meta name="google" content="notranslate" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- App Router root layout is the correct place for a global font stylesheet next/font/google doesn't cover */}
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-surface text-on-surface font-body-md text-body-md">
+      {/*
+        suppressHydrationWarning here (same as on <html> above) only ignores attribute mismatches
+        on this exact tag — not its children — so it can't hide a real bug deeper in the tree.
+        It's needed because browser extensions (ColorZilla's `cz-shortcut-listen`, Grammarly's
+        `data-gramm`, password managers, dark-mode extensions, ...) commonly stamp attributes onto
+        <body> before React hydrates; that's expected noise, not something this app renders.
+      */}
+      <body
+        className="min-h-full flex flex-col bg-surface text-on-surface font-body-md text-body-md"
+        suppressHydrationWarning
+      >
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

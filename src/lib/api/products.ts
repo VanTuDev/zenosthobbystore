@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api-client";
-import type { ApiProduct, ApiProductVideo, PaginatedResponse, ProductFacets } from "@/lib/api-types";
+import type { ApiProduct, ApiProductVariant, ApiProductVideo, PaginatedResponse, ProductFacets } from "@/lib/api-types";
 
 export type ProductListParams = {
   page?: number;
@@ -69,6 +69,8 @@ export type ProductInput = {
   images?: string[];
   heroImage?: string;
   videos?: ApiProductVideo[];
+  /** Up to 100 — backend rejects more. */
+  variants?: ApiProductVariant[];
   categoryId?: string | null;
 };
 
