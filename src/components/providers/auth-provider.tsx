@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { API_BASE_URL } from "@/lib/config";
-import { apiFetch, ApiRequestError } from "@/lib/api-client";
+import { apiFetch, ApiRequestError, setAuthToken } from "@/lib/api-client";
 import type { AuthUser } from "@/lib/types";
 
 type AuthContextValue = {
@@ -34,6 +34,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
+
+    // Google-login (and dev-login) hand back the session token directly whenever the browser
+    // might reject the cross-site cookie — see auth.routes.ts. A URL *fragment* (never sent to
+    // any server, unlike a query param) is how the callback redirect passes it here; grab it
+    // once, persist it, and strip it from the visible URL before it lingers in history.
+    if (window.location.hash.startsWith("#token=")) {
+      const token = decodeURIComponent(window.location.hash.slice("#token=".length));
+      setAuthToken(token);
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
 
     apiFetch<{ user: AuthUser }>("/auth/me")
       .then((body) => {
@@ -62,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     setUser(null);
+    setAuthToken(null);
     apiFetch("/auth/logout", { method: "POST" }).catch((err) => {
       console.error("Đăng xuất thất bại:", err);
     });

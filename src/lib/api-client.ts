@@ -19,6 +19,29 @@ const client = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+const AUTH_TOKEN_KEY = "zenos.auth_token";
+
+/**
+ * Fallback session storage for when the browser blocks the cross-site session cookie outright
+ * (frontend and backend are different registrable domains) — see auth-provider.tsx, which
+ * captures the token Google-login/dev-login hand back and calls this. Cookie auth still works
+ * wherever the browser allows it; this only kicks in via the request interceptor below when a
+ * token has actually been stored.
+ */
+export function setAuthToken(token: string | null) {
+  if (typeof window === "undefined") return;
+  if (token) window.localStorage.setItem(AUTH_TOKEN_KEY, token);
+  else window.localStorage.removeItem(AUTH_TOKEN_KEY);
+}
+
+client.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = window.localStorage.getItem(AUTH_TOKEN_KEY);
+    if (token) config.headers.set("Authorization", `Bearer ${token}`);
+  }
+  return config;
+});
+
 type ApiFetchInit = {
   method?: string;
   headers?: Record<string, string>;
