@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/store/site-header";
 import { SiteFooter } from "@/components/store/site-footer";
+import { FloatingContactButtons } from "@/components/store/floating-contact-buttons";
 
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
       <SiteHeader />
       <main className="relative z-10 flex-1">{children}</main>
       <SiteFooter />
+      <FloatingContactButtons />
     </>
   );
 }

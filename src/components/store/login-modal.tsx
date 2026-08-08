@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Icon } from "@/components/ui/icon";
 import { GoogleMark } from "@/components/ui/google-mark";
+import { ZENOS_FAVICON_SVG } from "@/lib/business-info";
 
 export function LoginModal() {
   const { isLoginModalOpen, closeLoginModal, isLoggingIn, loginWithGoogle } = useAuth();
@@ -50,13 +51,14 @@ export function LoginModal() {
         </button>
 
         <div className="flex flex-col items-center text-center gap-sm bg-black px-lg pt-xl pb-lg">
-          <span className="flex items-center justify-center w-20 h-20 rounded-2xl overflow-hidden ring-1 ring-white/15 mb-xs">
+          <span className="flex items-center justify-center w-20 h-20 rounded-full overflow-hidden ring-1 ring-white/15 mb-xs">
             <Image
-              src="/LogoZENOSTHOBBYSTORE.jpg"
+              src={ZENOS_FAVICON_SVG}
               alt="ZENOST"
               width={80}
               height={80}
-              className="w-full h-full object-cover"
+              unoptimized
+              className="w-full h-full object-contain"
               priority
             />
           </span>

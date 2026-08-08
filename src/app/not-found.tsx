@@ -16,7 +16,7 @@ export default function GlobalNotFound() {
         href="/"
         className="bg-primary text-on-primary px-lg py-base rounded-lg font-label-md text-label-md hover:brightness-110 transition-all"
       >
-        Về trang chủ ZENOS
+        Về trang chủ ZENOST
       </Link>
     </div>
   );

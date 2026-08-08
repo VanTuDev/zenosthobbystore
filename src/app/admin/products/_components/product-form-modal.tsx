@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ImageDropzone, type DraftImage } from "./image-dropzone";
+import { ImageDropzone, type DraftImage } from "@/components/ui/image-dropzone";
 import { HighlightsEditor } from "./highlights-editor";
 import { SpecsEditor, type Spec } from "./specs-editor";
+import { VideoInputEditor } from "./video-input-editor";
 import { CategoryPicker } from "@/components/admin/category-picker";
 import { PriceInput } from "./price-input";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { formatVnd } from "@/lib/format";
 import { createProduct, updateProduct } from "@/lib/api/products";
+import { deleteProductImage, uploadProductImage } from "@/lib/api/uploads";
 import { ApiRequestError } from "@/lib/api-client";
-import type { ApiCategory, ApiProduct } from "@/lib/api-types";
+import type { ApiCategory, ApiProduct, ApiProductVideo } from "@/lib/api-types";
 import type { StockStatus } from "@/lib/types";
 
 const STOCK_OPTIONS: { value: StockStatus; label: string }[] = [
@@ -81,6 +83,7 @@ export function ProductFormModal({
   const [highlights, setHighlights] = useState<string[]>(product?.highlights ?? []);
   const [specs, setSpecs] = useState<Spec[]>(product?.specs ?? []);
   const [images, setImages] = useState<DraftImage[]>(() => imagesFromProduct(product));
+  const [videos, setVideos] = useState<ApiProductVideo[]>(product?.videos ?? []);
   const [categoryId, setCategoryId] = useState<string | null>(product?.categoryId ?? null);
   const [originalPrice, setOriginalPrice] = useState(product?.originalPrice ? String(product.originalPrice) : "");
   const [sellingPrice, setSellingPrice] = useState(
@@ -176,6 +179,7 @@ export function ProductFormModal({
         specs: cleanSpecs,
         images: readyImages.length > 0 ? readyImages : ["/placeholder-product.svg"],
         heroImage: readyImages[0] ?? "/placeholder-product.svg",
+        videos,
         categoryId,
       };
 
@@ -351,10 +355,22 @@ export function ProductFormModal({
           {activeTab === "media" && (
             <div className="max-w-2xl mx-auto space-y-3">
               <p className={labelClass}>Bộ sưu tập hình ảnh</p>
-              <ImageDropzone images={images} onChange={setImages} tileClassName="w-28 h-28 sm:w-32 sm:h-32" />
+              <ImageDropzone
+                images={images}
+                onChange={setImages}
+                uploadFn={uploadProductImage}
+                deleteFn={deleteProductImage}
+                tileClassName="w-28 h-28 sm:w-32 sm:h-32"
+                helperLabel="ảnh sản phẩm"
+              />
               <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed">
                 💡 <b>Mẹo:</b> Ảnh đầu tiên (gắn nhãn &quot;Bìa&quot;) sẽ hiển thị làm ảnh đại diện sản phẩm ngoài cửa hàng. Di chuột/nhấp vào ảnh để thay đổi thứ tự.
               </p>
+
+              <div className="pt-3 border-t border-outline-variant/20">
+                <p className={labelClass}>Video quảng cáo (TikTok / YouTube)</p>
+                <VideoInputEditor videos={videos} onChange={setVideos} />
+              </div>
             </div>
           )}
 

@@ -9,6 +9,12 @@ export type ProductBadge =
   | "sold_out"
   | "recommended";
 
+export type ProductVideo = {
+  url: string;
+  thumbnail: string;
+  provider: "tiktok" | "youtube";
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -40,6 +46,7 @@ export type Product = {
   specs: { label: string; value: string }[];
   images: string[];
   heroImage: string;
+  videos: ProductVideo[];
 };
 
 export type Category = {

@@ -1,58 +1,50 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useCart } from "@/components/providers/cart-provider";
 import { Icon } from "@/components/ui/icon";
+import { BUSINESS_INFO, SOCIAL_LINKS } from "@/lib/business-info";
 
+/**
+ * No online checkout — orders are placed by contacting the shop directly
+ * (phone or Facebook), then entered into the system by an admin.
+ */
 export function ProductCtaButtons({
-  productId,
+  productName,
   isPreOrder,
   isSoldOut,
 }: {
-  productId: string;
+  productName: string;
   isPreOrder: boolean;
   isSoldOut: boolean;
 }) {
-  const router = useRouter();
-  const { addItem } = useCart();
-  const [justAdded, setJustAdded] = useState(false);
-
-  function handleAddToCart() {
-    addItem(productId);
-    setJustAdded(true);
-    window.setTimeout(() => setJustAdded(false), 1800);
-  }
-
-  function handleBuyNow() {
-    addItem(productId);
-    router.push("/checkout");
-  }
+  const phoneHref = `tel:${BUSINESS_INFO.phone.replace(/\s+/g, "")}`;
+  const messagePrefill = `Chào ZENOS, mình muốn hỏi về sản phẩm "${productName}"`;
 
   return (
     <div className="flex flex-col gap-4 mb-8">
-      <button
-        type="button"
-        disabled={isSoldOut}
-        onClick={handleBuyNow}
-        className="w-full py-4 bg-primary text-on-primary font-label-md text-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+      <a
+        href={phoneHref}
+        className="w-full py-4 bg-primary text-on-primary font-label-md text-label-md rounded-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
       >
-        <Icon name="bolt" />
-        {isPreOrder ? "ĐẶT HÀNG TRƯỚC NGAY" : isSoldOut ? "TẠM HẾT HÀNG" : "MUA NGAY"}
-      </button>
-      <button
-        type="button"
-        disabled={isSoldOut}
-        onClick={handleAddToCart}
-        className={`w-full py-4 border-2 font-label-md text-label-md rounded-xl active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-          justAdded
-            ? "border-primary text-primary bg-primary/5"
-            : "border-on-surface text-on-surface hover:bg-surface-container-low"
-        }`}
+        <Icon name="call" />
+        GỌI ĐẶT HÀNG: {BUSINESS_INFO.phone}
+      </a>
+      <a
+        href={SOCIAL_LINKS.facebook}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={messagePrefill}
+        className="w-full py-4 border-2 border-on-surface text-on-surface font-label-md text-label-md rounded-xl hover:bg-surface-container-low active:scale-[0.98] transition-all flex items-center justify-center gap-2"
       >
-        <Icon name={justAdded ? "check" : "add_shopping_cart"} className={justAdded ? "animate-pop" : ""} />
-        {justAdded ? "ĐÃ THÊM VÀO GIỎ HÀNG" : "THÊM VÀO GIỎ HÀNG"}
-      </button>
+        <Icon name="chat" />
+        NHẮN TIN QUA FACEBOOK
+      </a>
+      <p className="text-center text-label-sm text-on-surface-variant">
+        {isSoldOut
+          ? "Sản phẩm tạm hết hàng — liên hệ để được báo khi có hàng trở lại."
+          : isPreOrder
+            ? "Liên hệ để đặt trước và giữ suất mua sản phẩm này."
+            : "Liên hệ trực tiếp để được tư vấn giá và tình trạng hàng mới nhất."}
+      </p>
     </div>
   );
 }

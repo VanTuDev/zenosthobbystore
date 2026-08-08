@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
+import { BUSINESS_INFO } from "@/lib/business-info";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -18,41 +19,46 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zenoshobbystore.vn"),
+  metadataBase: new URL("https://zenosthobbystore.com"),
   title: {
-    default: "ZENOS Hobby Store | Phòng Trưng Bày Mô Hình Anime Tuyển Chọn",
-    template: "%s | ZENOS Hobby Store",
+    default: `${BUSINESS_INFO.tradeName} | Phòng Trưng Bày Mô Hình Anime Tuyển Chọn`,
+    template: `%s | ${BUSINESS_INFO.tradeName}`,
   },
   description:
-    "ZENOS Hobby Store - tuyển chọn mô hình anime, statue và mô hình lắp ráp cao cấp: Pokemon, Gundam, Naruto. Nhập khẩu chính hãng, cam kết chất lượng gallery.",
+    "ZENOST Hobby Store - tuyển chọn mô hình anime, statue và mô hình lắp ráp cao cấp: Pokemon, Gundam, Naruto. Nhập khẩu chính hãng, cam kết chất lượng gallery.",
   keywords: [
     "mô hình anime",
     "figure cao cấp",
     "gundam",
     "nendoroid",
-    "zenos hobby store",
+    "zenost hobby store",
   ],
   icons: {
-    icon: "/LogoZENOSTHOBBYSTORE.jpg",
-    shortcut: "/LogoZENOSTHOBBYSTORE.jpg",
-    apple: "/LogoZENOSTHOBBYSTORE.jpg",
+    icon: [
+      { url: "/Logo/zenost-favicon.svg", type: "image/svg+xml" },
+      { url: "/Logo/zenost-favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/Logo/zenost-favicon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/Logo/zenost-favicon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/Logo/zenost-favicon-180.png",
   },
   openGraph: {
     type: "website",
     locale: "vi_VN",
-    siteName: "ZENOS Hobby Store",
+    siteName: BUSINESS_INFO.tradeName,
     images: [
       {
         url: "https://lh3.googleusercontent.com/aida-public/AB6AXuCvwQ0f86ZUBeXffdd5itRCijimyP9QYcccuAser2hE3-IN12KM9eCRy1-c-i5PtpfAAU-knVEC7W0_-bojhggh3lhObxhuoUVuCAtOpcQDGoUF0CXkyz8a3yKVS-W0-BDvYn5znYCgKTqIsuomBAvef_onZzmmdpi3NMHF6mfWIKqtvJqB9cXInkeR43dysgF9Ib3Ez2mA-K-slydemNGaSxuHD0f0rMgL3f5QdSp3_frw2AkGRgVDx0A3gSjksovRy1_dcOuIdjY",
         width: 1600,
         height: 900,
-        alt: "Phòng trưng bày mô hình anime cao cấp ZENOS Hobby Store",
+        alt: `Phòng trưng bày mô hình anime cao cấp ${BUSINESS_INFO.tradeName}`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ZENOS Hobby Store | Phòng Trưng Bày Mô Hình Anime Tuyển Chọn",
+    title: `${BUSINESS_INFO.tradeName} | Phòng Trưng Bày Mô Hình Anime Tuyển Chọn`,
     description:
       "Tuyển chọn mô hình anime, statue và mô hình lắp ráp cao cấp: Pokemon, Gundam, Naruto.",
   },

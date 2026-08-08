@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
-import { uploadProductImage, deleteProductImage } from "@/lib/api/uploads";
 import { ApiRequestError } from "@/lib/api-client";
-
-const MAX_IMAGES = 8;
 
 export type DraftImage = {
   id: string;
@@ -21,12 +18,24 @@ export type DraftImage = {
 export function ImageDropzone({
   images,
   onChange,
+  uploadFn,
+  deleteFn,
+  maxImages,
   tileClassName = "w-20 h-20",
+  helperLabel = "ảnh",
 }: {
   images: DraftImage[];
   onChange: (images: DraftImage[]) => void;
-  /** Tailwind size classes for each thumbnail/dropzone tile — bigger on the add-product modal. */
+  /** Uploads one file, resolving to its stored URL + Cloudinary public ID. */
+  uploadFn: (file: File) => Promise<{ url: string; publicId: string }>;
+  /** Optional — when omitted, removing an image just drops it locally (no server-side cleanup). */
+  deleteFn?: (publicId: string) => Promise<void>;
+  /** Omit for unlimited images. */
+  maxImages?: number;
+  /** Tailwind size classes for each thumbnail/dropzone tile — bigger on the admin product form. */
   tileClassName?: string;
+  /** Noun shown in the helper text ("12 ảnh sản phẩm" vs "4/4 ảnh đánh giá"). */
+  helperLabel?: string;
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,38 +51,41 @@ export function ImageDropzone({
     imagesRef.current = images;
   }, [images]);
 
-  const uploadOne = useCallback((draftId: string, file: File) => {
-    uploadProductImage(file)
-      .then(({ url, publicId }) => {
-        onChange(
-          imagesRef.current.map((img) =>
-            img.id === draftId ? { ...img, url, publicId, status: "done" as const } : img,
-          ),
-        );
-      })
-      .catch((err) => {
-        const message = err instanceof ApiRequestError ? err.message : "Tải ảnh lên thất bại.";
-        onChange(
-          imagesRef.current.map((img) =>
-            img.id === draftId ? { ...img, status: "error" as const, error: message } : img,
-          ),
-        );
-      });
-  }, [onChange]);
+  const uploadOne = useCallback(
+    (draftId: string, file: File) => {
+      uploadFn(file)
+        .then(({ url, publicId }) => {
+          onChange(
+            imagesRef.current.map((img) =>
+              img.id === draftId ? { ...img, url, publicId, status: "done" as const } : img,
+            ),
+          );
+        })
+        .catch((err) => {
+          const message = err instanceof ApiRequestError ? err.message : "Tải ảnh lên thất bại.";
+          onChange(
+            imagesRef.current.map((img) =>
+              img.id === draftId ? { ...img, status: "error" as const, error: message } : img,
+            ),
+          );
+        });
+    },
+    [onChange, uploadFn],
+  );
 
   const addFiles = useCallback(
     (files: FileList | File[]) => {
       const incoming = Array.from(files).filter((f) => f.type.startsWith("image/"));
       if (incoming.length === 0) return;
 
-      const room = MAX_IMAGES - images.length;
+      const room = maxImages === undefined ? incoming.length : maxImages - images.length;
       if (room <= 0) {
-        setError(`Tối đa ${MAX_IMAGES} ảnh.`);
+        setError(`Tối đa ${maxImages} ${helperLabel}.`);
         return;
       }
 
       const accepted = incoming.slice(0, room);
-      setError(incoming.length > accepted.length ? `Chỉ thêm được ${accepted.length} ảnh (tối đa ${MAX_IMAGES}).` : null);
+      setError(incoming.length > accepted.length ? `Chỉ thêm được ${accepted.length} ${helperLabel} (tối đa ${maxImages}).` : null);
 
       const drafts: DraftImage[] = accepted.map((file, i) => ({
         id: `${Date.now()}-${i}-${file.name}`,
@@ -84,7 +96,7 @@ export function ImageDropzone({
       onChange([...images, ...drafts]);
       drafts.forEach((draft, i) => uploadOne(draft.id, accepted[i]));
     },
-    [images, onChange, uploadOne],
+    [images, maxImages, helperLabel, onChange, uploadOne],
   );
 
   // Paste-to-upload: copy an image anywhere and paste it while this dropzone is focused/hovered.
@@ -107,8 +119,8 @@ export function ImageDropzone({
     if (target?.status === "uploading" && target.url.startsWith("blob:")) {
       URL.revokeObjectURL(target.url);
     }
-    if (target?.publicId) {
-      deleteProductImage(target.publicId).catch((err) => {
+    if (target?.publicId && deleteFn) {
+      deleteFn(target.publicId).catch((err) => {
         console.error("Không thể xóa ảnh trên Cloudinary:", err);
       });
     }
@@ -144,13 +156,13 @@ export function ImageDropzone({
                 <Icon name="error" className="text-error" />
               </div>
             )}
-            {index === 0 && img.status === "done" && (
+            {index === 0 && img.status === "done" && deleteFn && (
               <span className="absolute bottom-0.5 left-0.5 bg-primary text-on-primary text-[9px] font-bold uppercase px-1 rounded">
                 Bìa
               </span>
             )}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
-              {index !== 0 && img.status === "done" && (
+              {index !== 0 && img.status === "done" && deleteFn && (
                 <button
                   type="button"
                   onClick={() => makeCover(img.id)}
@@ -172,12 +184,12 @@ export function ImageDropzone({
           </div>
         ))}
 
-        {images.length < MAX_IMAGES && (
+        {(maxImages === undefined || images.length < maxImages) && (
           <div
             ref={zoneRef}
             tabIndex={0}
             role="button"
-            aria-label="Vùng tải ảnh sản phẩm: kéo thả, dán (Ctrl+V) hoặc bấm để chọn ảnh"
+            aria-label={`Vùng tải ${helperLabel}: kéo thả, dán (Ctrl+V) hoặc bấm để chọn ảnh`}
             onClick={() => inputRef.current?.click()}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
@@ -200,11 +212,9 @@ export function ImageDropzone({
             }`}
           >
             <Icon name="add_photo_alternate" className="text-primary !text-[20px]" />
-            <span className="text-[10px] leading-tight text-on-surface-variant px-1">
-              Kéo/dán/chọn
-            </span>
+            <span className="text-[10px] leading-tight text-on-surface-variant px-1">Kéo/dán/chọn</span>
             <label htmlFor={inputId} className="sr-only">
-              Chọn tệp ảnh sản phẩm
+              Chọn tệp ảnh
             </label>
             <input
               ref={inputRef}
@@ -224,7 +234,8 @@ export function ImageDropzone({
       </div>
 
       <p className="text-[11px] text-on-surface-variant">
-        {images.length}/{MAX_IMAGES} ảnh · JPG, PNG, WebP
+        {images.length}
+        {maxImages !== undefined ? `/${maxImages}` : ""} {helperLabel} · JPG, PNG, WebP
       </p>
       {error && (
         <p className="flex items-center gap-1 text-error text-[11px]">

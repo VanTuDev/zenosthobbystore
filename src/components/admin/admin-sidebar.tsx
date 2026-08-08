@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/icon";
 const NAV_ITEMS = [
   { href: "/admin/products", label: "Quản lý Sản phẩm", icon: "inventory_2" },
   { href: "/admin/orders", label: "Đơn hàng", icon: "receipt_long" },
+  { href: "/admin/tickets", label: "Ticket liên hệ", icon: "support_agent" },
   { href: "/admin/promotions", label: "Tạo mã giảm giá", icon: "sell" },
   { href: "/admin/categories", label: "Danh mục", icon: "category" },
   { href: "/admin/finance", label: "Tài chính", icon: "payments" },

@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api-client";
-import type { ApiProduct, PaginatedResponse, ProductFacets } from "@/lib/api-types";
+import type { ApiProduct, ApiProductVideo, PaginatedResponse, ProductFacets } from "@/lib/api-types";
 
 export type ProductListParams = {
   page?: number;
@@ -68,6 +68,7 @@ export type ProductInput = {
   specs?: { label: string; value: string }[];
   images?: string[];
   heroImage?: string;
+  videos?: ApiProductVideo[];
   categoryId?: string | null;
 };
 
@@ -84,4 +85,12 @@ export function updateProduct(id: string, input: Partial<ProductInput>) {
 
 export function deleteProduct(id: string) {
   return apiFetch<void>(`/products/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+/** Admin pastes a TikTok/YouTube link — backend resolves the provider's oEmbed cover image. */
+export function resolveProductVideo(url: string) {
+  return apiFetch<{ provider: ApiProductVideo["provider"]; thumbnail: string }>("/products/resolve-video", {
+    method: "POST",
+    body: { url },
+  });
 }

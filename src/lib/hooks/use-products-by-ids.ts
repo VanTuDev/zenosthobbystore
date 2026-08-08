@@ -11,7 +11,7 @@ const EMPTY_CATEGORY_NAMES = new Map<string, string>();
 /**
  * Fetches products by id from the backend in parallel, dropping any that no
  * longer exist there (`/products/:idOrSlug` accepts a Mongo id or a slug).
- * Shared by the cart and wishlist, both of which only ever hold ids client-side.
+ * Used by the wishlist, which only ever holds ids client-side.
  */
 export function useProductsByIds(ids: string[]): { products: Product[]; isLoading: boolean } {
   const [products, setProducts] = useState<Product[]>([]);

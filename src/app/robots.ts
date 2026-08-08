@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://zenoshobbystore.vn";
+const BASE_URL = "https://zenosthobbystore.com";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin", "/admin/", "/checkout", "/cart", "/wishlist", "/order-confirmation"],
+      disallow: ["/admin", "/admin/", "/wishlist", "/order-confirmation"],
     },
     sitemap: `${BASE_URL}/sitemap.xml`,
   };

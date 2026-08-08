@@ -26,7 +26,7 @@ type ApiFetchInit = {
 };
 
 /**
- * Thin axios wrapper for the ZENOS backend: always sends the session cookie
+ * Thin axios wrapper for the ZENOST backend: always sends the session cookie
  * (withCredentials), always speaks JSON, and turns `{ error }` responses into
  * ApiRequestError instead of leaving callers to guess at the response shape.
  */

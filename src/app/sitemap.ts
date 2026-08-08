@@ -1,20 +1,25 @@
 import type { MetadataRoute } from "next";
 import { fetchProducts } from "@/lib/api/products";
 
-const BASE_URL = "https://zenoshobbystore.vn";
+const BASE_URL = "https://zenosthobbystore.com";
 const PAGE_SIZE = 100;
 
+/** Falls back to an empty list instead of failing the whole build/deploy if the backend is briefly unreachable. */
 async function fetchAllProductSlugs(): Promise<string[]> {
   const slugs: string[] = [];
   let page = 1;
   let totalPages = 1;
 
-  do {
-    const res = await fetchProducts({ page, pageSize: PAGE_SIZE });
-    slugs.push(...res.items.map((p) => p.slug));
-    totalPages = res.pagination.totalPages;
-    page += 1;
-  } while (page <= totalPages);
+  try {
+    do {
+      const res = await fetchProducts({ page, pageSize: PAGE_SIZE });
+      slugs.push(...res.items.map((p) => p.slug));
+      totalPages = res.pagination.totalPages;
+      page += 1;
+    } while (page <= totalPages);
+  } catch {
+    return [];
+  }
 
   return slugs;
 }
@@ -32,6 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/quyen-rieng-tu`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${BASE_URL}/dieu-khoan`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${BASE_URL}/lien-he`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE_URL}/lien-he-cong-tac`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
   const slugs = await fetchAllProductSlugs();

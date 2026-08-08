@@ -118,11 +118,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       url: `https://zenoshobbystore.vn/products/${product.slug}`,
     },
     aggregateRating:
-      product.reviewCount > 0
+      initialReviews.summary.count > 0
         ? {
             "@type": "AggregateRating",
-            ratingValue: product.rating,
-            reviewCount: product.reviewCount,
+            ratingValue: initialReviews.summary.averageRating,
+            reviewCount: initialReviews.summary.count,
           }
         : undefined,
   };
@@ -172,6 +172,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         <div className="flex flex-col lg:flex-row gap-xl items-start">
           <ProductGallery
             images={product.images}
+            videos={product.videos}
             name={product.name}
             badgeLabel={isPreOrder ? "Pre-order" : undefined}
           />
@@ -192,9 +193,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             </div>
 
             <div className="flex items-center gap-2 mb-6">
-              <StarRating value={product.rating} size="sm" />
+              <StarRating value={initialReviews.summary.averageRating} size="sm" />
               <span className="font-label-sm text-label-sm text-on-surface-variant">
-                ({product.reviewCount} đánh giá)
+                ({initialReviews.summary.count} đánh giá)
               </span>
             </div>
 
@@ -248,23 +249,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             </div>
 
             {/* CTAs */}
-            <ProductCtaButtons productId={product.id} isPreOrder={isPreOrder} isSoldOut={isSoldOut} />
+            <ProductCtaButtons productName={product.name} isPreOrder={isPreOrder} isSoldOut={isSoldOut} />
 
             {isSoldOut && <StockNotifyForm productName={product.name} />}
 
             {/* Trust badges */}
             <div className="space-y-4">
-              <div className="p-4 bg-surface-container-low rounded-xl border border-surface-container-highest/50 flex items-start gap-4">
-                <Icon name="verified" className="text-primary text-[28px]" />
-                <div>
-                  <p className="font-label-sm text-label-sm text-on-surface font-bold uppercase">
-                    Cam kết chính hãng 100%
-                  </p>
-                  <p className="font-body-md text-[13px] text-on-surface-variant">
-                    Sản phẩm được nhập khẩu trực tiếp từ {product.brand}. Full box, nguyên seal.
-                  </p>
-                </div>
-              </div>
               <div className="p-4 bg-surface-container-low rounded-xl border border-surface-container-highest/50 flex items-start gap-4">
                 <Icon name="local_shipping" className="text-primary text-[28px]" />
                 <div>
@@ -304,37 +294,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
         {/* Reviews section */}
         <section className="mt-24">
-          <Reveal>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
-              <div>
-                <h2 className="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">
-                  Đánh giá từ cộng đồng
-                </h2>
-                <p className="text-on-surface-variant mt-2">
-                  Chia sẻ trải nghiệm sưu tầm của bạn cùng Zenos
-                </p>
-              </div>
-              <div className="flex items-center gap-4 bg-white px-6 py-3 rounded-2xl premium-shadow border border-surface-container-highest">
-                <div className="text-center border-r border-surface-container-highest pr-4">
-                  <span className="block font-display-lg text-3xl text-on-surface">
-                    {product.rating.toFixed(1)}
-                  </span>
-                  <span className="text-label-sm text-on-surface-variant uppercase">Trung bình</span>
-                </div>
-                <div className="flex flex-col">
-                  <StarRating value={product.rating} />
-                  <span className="text-label-sm text-on-surface-variant">
-                    Dựa trên {product.reviewCount} đánh giá
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-
           <ReviewsSection
             productId={product.id}
             initialReviews={initialReviews.items}
             initialPagination={initialReviews.pagination}
+            initialSummary={initialReviews.summary}
           />
         </section>
 

@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { OrdersTable, type StatusTabKey } from "./orders-table";
+import { CreateOrderModal } from "./create-order-modal";
 import { StatCard } from "@/components/admin/stat-card";
+import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { formatVnd } from "@/lib/format";
 import { fetchOrders } from "@/lib/api/orders";
 import { fetchFinanceSummary } from "@/lib/api/finance";
 import { ApiRequestError } from "@/lib/api-client";
+import { useToast } from "@/components/ui/toast";
 import type { ApiOrder } from "@/lib/api-types";
 
 const PAGE_SIZE = 50;
@@ -17,6 +20,8 @@ function tabToStatuses(tab: StatusTabKey): ApiOrder["status"][] | undefined {
 }
 
 export function AdminOrdersSection() {
+  const { showToast } = useToast();
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [activeTab, setActiveTab] = useState<StatusTabKey>("all");
   const [orders, setOrders] = useState<ApiOrder[]>([]);
   const [page, setPage] = useState(1);
@@ -95,6 +100,13 @@ export function AdminOrdersSection() {
 
   return (
     <>
+      <div className="flex justify-end mb-md">
+        <Button size="sm" onClick={() => setShowCreateModal(true)}>
+          <Icon name="add" className="!text-[18px]" />
+          Tạo đơn hàng
+        </Button>
+      </div>
+
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-xl">
         {statTiles.map((stat) => (
           <StatCard key={stat.label} icon={stat.icon} label={stat.label} value={stat.value} />
@@ -119,6 +131,24 @@ export function AdminOrdersSection() {
           isLoadingMore={isLoadingMore}
           hasMore={page < totalPages}
           onLoadMore={loadMore}
+        />
+      )}
+
+      {showCreateModal && (
+        <CreateOrderModal
+          onClose={() => setShowCreateModal(false)}
+          onCreated={(order) => {
+            setOrders((prev) => [order, ...prev]);
+            setTotal((prev) => prev + 1);
+            setStats((prev) => ({
+              ...prev,
+              total: prev.total + 1,
+              pendingCount: order.status === "pending" || order.status === "processing" ? prev.pendingCount + 1 : prev.pendingCount,
+              revenue: order.paymentStatus === "paid" ? prev.revenue + order.total : prev.revenue,
+            }));
+            setShowCreateModal(false);
+            showToast(`Đã tạo đơn hàng cho ${order.customerName}.`, "success");
+          }}
         />
       )}
     </>

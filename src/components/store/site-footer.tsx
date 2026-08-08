@@ -1,9 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
-import { BUSINESS_INFO } from "@/lib/business-info";
-
-const ZENOS_LOGO = "/LogoZENOSTHOBBYSTORE.jpg";
+import { BUSINESS_INFO, ZENOS_MARK_SVG } from "@/lib/business-info";
 
 const FOOTER_COLUMNS = [
   {
@@ -29,6 +27,7 @@ const FOOTER_COLUMNS = [
     title: "Pháp lý",
     links: [
       { label: "Giới thiệu & thông tin doanh nghiệp", href: "/gioi-thieu" },
+      { label: "Liên hệ công tác", href: "/lien-he-cong-tac" },
       { label: "Quyền riêng tư", href: "/quyen-rieng-tu" },
       { label: "Điều khoản dịch vụ", href: "/dieu-khoan" },
     ],
@@ -41,9 +40,9 @@ export function SiteFooter() {
       <div className="flex flex-col md:flex-row justify-between items-start px-margin-mobile md:px-margin-desktop py-lg gap-lg w-full max-w-[1440px] mx-auto">
         <div className="flex flex-col gap-sm max-w-96">
           <Link href="/" className="flex items-center gap-xs">
-            <Image src={ZENOS_LOGO} alt="ZENOS Logo" width={24} height={24} className="w-6 h-6 rounded-md object-cover" />
+            <Image src={ZENOS_MARK_SVG} alt="ZENOST Logo" width={24} height={24} unoptimized className="w-6 h-6 object-contain" />
             <span className="font-headline-sm text-label-md font-bold text-on-surface uppercase">
-              ZENOS
+              ZENOST
             </span>
           </Link>
           <p className="text-secondary font-label-sm text-label-sm leading-snug">
@@ -82,7 +81,7 @@ export function SiteFooter() {
       </div>
       <div className="px-margin-mobile md:px-margin-desktop py-sm border-t border-outline-variant/30 text-center md:text-left">
         <p className="font-label-sm text-[11px] text-secondary">
-          © {new Date().getFullYear()} ZENOS Hobby Store · {BUSINESS_INFO.legalName} · MST/GCN ĐKHKD:{" "}
+          © {new Date().getFullYear()} {BUSINESS_INFO.tradeName} · {BUSINESS_INFO.legalName} · MST/GCN ĐKHKD:{" "}
           {BUSINESS_INFO.registrationNumber} · {BUSINESS_INFO.address}
         </p>
       </div>

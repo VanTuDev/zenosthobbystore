@@ -9,21 +9,29 @@ import { formatVnd } from "@/lib/format";
 import { fetchProducts } from "@/lib/api/products";
 import { fetchCategories } from "@/lib/api/categories";
 import { mapApiProduct } from "@/lib/api/map-product";
+import { BUSINESS_INFO } from "@/lib/business-info";
 
 export const metadata: Metadata = {
   title: "Phòng Trưng Bày Mô Hình Anime Tuyển Chọn",
   description:
-    "ZENOS - phòng trưng bày mô hình anime cao cấp: Pokemon, Gundam, Naruto. Tuyển chọn statue và figure hiếm cho nhà sưu tập sành sỏi, nhập khẩu chính hãng.",
+    "ZENOST - phòng trưng bày mô hình anime cao cấp: Pokemon, Gundam, Naruto. Tuyển chọn statue và figure hiếm cho nhà sưu tập sành sỏi, nhập khẩu chính hãng.",
   alternates: { canonical: "/" },
 };
+
+/**
+ * Rendered per-request instead of prerendered at build time: the catalog changes live via the
+ * admin CMS, so a static build would go stale, and `next build` would otherwise hard-fail
+ * whenever the backend isn't reachable at build time (e.g. deploying frontend/backend separately).
+ */
+export const dynamic = "force-dynamic";
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Store",
-  name: "ZENOS Hobby Store",
+  name: BUSINESS_INFO.tradeName,
   description:
     "Phòng trưng bày mô hình anime cao cấp: Pokemon, Gundam, Naruto, statue và figure sưu tầm.",
-  url: "https://zenoshobbystore.vn",
+  url: "https://zenosthobbystore.com",
 };
 
 export default async function HomePage() {
@@ -221,7 +229,7 @@ export default async function HomePage() {
             </h2>
             <p className="text-secondary font-body-lg mb-lg">
               Từ những bản sao tỉ lệ siêu thực đến các mô hình lắp ráp độ chi tiết cao, mỗi sản
-              phẩm tại ZENOS đều được tuyển chọn và kiểm định cho những nhà sưu tầm sành sỏi.
+              phẩm tại ZENOST đều được tuyển chọn và kiểm định cho những nhà sưu tầm sành sỏi.
             </p>
             <div className="grid grid-cols-2 gap-md">
               {[spotlightA, spotlightB].filter((p) => p !== undefined).map((p) => (

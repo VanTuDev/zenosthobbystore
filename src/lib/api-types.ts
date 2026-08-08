@@ -1,5 +1,12 @@
 import type { StockStatus } from "@/lib/types";
 
+/** Mirrors ProductVideo from Backend-zenosthobbystore/src/models/product.model.ts */
+export type ApiProductVideo = {
+  url: string;
+  thumbnail: string;
+  provider: "tiktok" | "youtube";
+};
+
 /** Mirrors ProductDoc#toJSON() from Backend-zenosthobbystore/src/models/product.model.ts */
 export type ApiProduct = {
   id: string;
@@ -24,6 +31,7 @@ export type ApiProduct = {
   specs: { label: string; value: string }[];
   images: string[];
   heroImage: string;
+  videos: ApiProductVideo[];
   categoryId: string | null;
   createdAt: string;
   updatedAt: string;
@@ -183,6 +191,26 @@ export type ApiReview = {
   customerName: string;
   rating: number;
   comment: string;
+  images: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** The real rating aggregate for a product, computed from Review documents — see GET /reviews. */
+export type ReviewsRatingSummary = { averageRating: number; count: number };
+
+export type ReviewsResponse = PaginatedResponse<ApiReview> & { summary: ReviewsRatingSummary };
+
+/** Mirrors ContactTicketDoc#toJSON() from Backend-zenosthobbystore/src/models/contact-ticket.model.ts */
+export type ApiContactTicket = {
+  id: string;
+  subject: "order" | "return_warranty" | "product" | "payment" | "other";
+  orderCode: string | null;
+  customerName: string;
+  customerEmail: string;
+  message: string;
+  images: string[];
+  status: "open" | "in_progress" | "resolved";
   createdAt: string;
   updatedAt: string;
 };
