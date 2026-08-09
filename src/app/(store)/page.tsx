@@ -361,35 +361,6 @@ export default async function HomePage() {
           </Reveal>
         </div>
       </section>
-
-      {/* Newsletter */}
-      <section className="py-lg bg-surface-container-highest/30">
-        <Reveal className="px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-lg">
-          <div className="text-center md:text-left">
-            <h2 className="font-headline-md text-headline-md font-bold mb-xs">
-              Gia nhập Cộng đồng Zenos
-            </h2>
-            <p className="text-secondary font-body-md">
-              Nhận thông tin sớm nhất về các sản phẩm độc quyền và video mở hộp mô hình.
-            </p>
-          </div>
-          <form className="flex w-full md:w-auto gap-base">
-            <label htmlFor="newsletter-email" className="sr-only">
-              Địa chỉ email
-            </label>
-            <input
-              id="newsletter-email"
-              className="flex-1 md:w-80 px-md py-base rounded-lg border-2 border-outline-variant focus:border-primary outline-none transition-all"
-              placeholder="collector@zenos.com"
-              type="email"
-              name="email"
-            />
-            <Button type="submit" variant="dark">
-              Đăng ký
-            </Button>
-          </form>
-        </Reveal>
-      </section>
     </>
   );
 }
