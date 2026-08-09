@@ -42,7 +42,7 @@ export function ProductPricePanel({
             Biến thể
           </p>
           <div
-            className="grid max-h-[248px] grid-cols-3 gap-x-3 gap-y-4 overflow-x-hidden overflow-y-auto overscroll-contain pr-2 scrollbar-thin sm:grid-cols-5"
+            className="grid max-h-[652px] grid-cols-3 gap-x-3 gap-y-4 overflow-x-hidden overflow-y-auto overscroll-contain py-1 pl-1 pr-2 scrollbar-thin sm:grid-cols-5"
             aria-label="Danh sách biến thể"
           >
             {product.variants.map((variant, index) => {
@@ -55,7 +55,7 @@ export function ProductPricePanel({
                   type="button"
                   onClick={() => onSelectVariant(index)}
                   aria-pressed={isActive}
-                  className="flex w-20 justify-self-center flex-col items-center gap-1.5"
+                  className="flex h-[116px] w-20 justify-self-center flex-col items-center gap-1.5"
                 >
                   <span
                     className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition-all ${
@@ -73,7 +73,7 @@ export function ProductPricePanel({
                     )}
                   </span>
                   <span
-                    className={`w-full text-center text-[12px] leading-tight line-clamp-2 ${
+                    className={`h-[30px] w-full text-center text-[12px] leading-[15px] line-clamp-2 ${
                       isActive ? "font-bold text-primary" : "text-on-surface-variant"
                     }`}
                   >

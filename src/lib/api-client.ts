@@ -34,11 +34,20 @@ export function setAuthToken(token: string | null) {
   else window.localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
+/**
+ * Auth headers for requests that cannot use the JSON Axios client (for example FormData uploads).
+ * The cookie remains the primary session mechanism; this Bearer token is the production fallback
+ * when frontend/backend live on different domains and the browser blocks cross-site cookies.
+ */
+export function getAuthHeaders(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  const token = window.localStorage.getItem(AUTH_TOKEN_KEY);
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 client.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = window.localStorage.getItem(AUTH_TOKEN_KEY);
-    if (token) config.headers.set("Authorization", `Bearer ${token}`);
-  }
+  const authorization = getAuthHeaders().Authorization;
+  if (authorization) config.headers.set("Authorization", authorization);
   return config;
 });
 

@@ -65,7 +65,7 @@ export function ProductGallery({ images, videos, name, badgeLabel, activeImage, 
             priority
             unoptimized={activeImage.startsWith("blob:")}
             sizes="(min-width: 1024px) 65vw, 100vw"
-            className="object-contain p-lg animate-fade-in"
+            className="object-contain p-0.5 sm:p-1 animate-fade-in"
           />
           {badgeLabel && (
             <span className="absolute top-6 right-6 bg-primary text-on-primary px-4 py-2 font-label-md text-label-md rounded-full uppercase tracking-wider shadow-lg">

@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@/lib/config";
-import { ApiRequestError } from "@/lib/api-client";
+import { ApiRequestError, getAuthHeaders } from "@/lib/api-client";
 
 type UploadImageResponse = { url: string; publicId: string };
 type BackendErrorBody = { error: string };
@@ -16,6 +16,7 @@ export async function uploadProductImage(file: File): Promise<UploadImageRespons
   const res = await fetch(`${API_BASE_URL}/uploads/image`, {
     method: "POST",
     credentials: "include",
+    headers: getAuthHeaders(),
     body: form,
   });
 
@@ -54,6 +55,7 @@ export async function deleteProductImage(publicId: string): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/uploads/image/${encodeURIComponent(publicId)}`, {
     method: "DELETE",
     credentials: "include",
+    headers: getAuthHeaders(),
   });
 
   if (!res.ok && res.status !== 404) {
