@@ -8,11 +8,11 @@ import { ApiRequestError } from "@/lib/api-client";
 import type { ApiContactTicket } from "@/lib/api-types";
 
 const SUBJECT_OPTIONS: { value: ApiContactTicket["subject"]; label: string }[] = [
-  { value: "order", label: "Đơn hàng" },
-  { value: "return_warranty", label: "Đổi trả / Bảo hành" },
-  { value: "product", label: "Sản phẩm" },
-  { value: "payment", label: "Thanh toán" },
-  { value: "other", label: "Khác" },
+  { value: "product", label: "Hỏi thông tin sản phẩm" },
+  { value: "order", label: "Hỏi về PRE-ORDER" },
+  { value: "return_warranty", label: "Bảo hành sản phẩm đã mua" },
+  { value: "payment", label: "Hợp tác quảng bá / Affiliate" },
+  { value: "other", label: "Báo link, video lỗi hoặc nội dung khác" },
 ];
 
 const MAX_IMAGES = 3;
@@ -164,14 +164,14 @@ export function ContactTicketForm() {
           </div>
           <div>
             <label htmlFor="ticket-order-code" className={fieldLabelClass}>
-              Mã đơn hàng — nếu có
+              Mã sản phẩm / hóa đơn — nếu có
             </label>
             <input
               id="ticket-order-code"
               type="text"
               value={orderCode}
               onChange={(e) => setOrderCode(e.target.value)}
-              placeholder="Ví dụ: ZEN-O-260731-002"
+              placeholder="Nhập tên, mã sản phẩm hoặc mã hóa đơn"
               className={fieldClass}
             />
           </div>

@@ -57,7 +57,7 @@ export function TicketDetailModal({
         <div className="flex flex-wrap items-center gap-sm">
           <StatusDot tone={statusMeta.tone} label={statusMeta.label} />
           {ticket.orderCode && (
-            <span className="font-label-sm text-label-sm text-on-surface-variant">Mã đơn: {ticket.orderCode}</span>
+            <span className="font-label-sm text-label-sm text-on-surface-variant">Mã tham chiếu: {ticket.orderCode}</span>
           )}
         </div>
 

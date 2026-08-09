@@ -4,7 +4,7 @@ import { BUSINESS_INFO, SOCIAL_LINKS } from "@/lib/business-info";
 const CHANNELS: { title: string; description: string; value: string; href: string }[] = [
   {
     title: "Email hỗ trợ",
-    description: "Phù hợp với đơn order, hoàn tiền và nội dung cần lưu lại.",
+    description: "Phù hợp với yêu cầu chi tiết, bảo hành và đề nghị hợp tác nội dung.",
     value: BUSINESS_INFO.email,
     href: `mailto:${BUSINESS_INFO.email}`,
   },
@@ -16,7 +16,7 @@ const CHANNELS: { title: string; description: string; value: string; href: strin
   },
   {
     title: "Điện thoại",
-    description: "Dành cho vấn đề giao hàng cần xử lý ngay.",
+    description: "Liên hệ nhanh để xác nhận giá, tình trạng sản phẩm hoặc lịch PRE-ORDER.",
     value: BUSINESS_INFO.phone,
     href: `tel:${BUSINESS_INFO.phone.replace(/\s+/g, "")}`,
   },

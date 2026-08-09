@@ -14,9 +14,7 @@ const CONTACT_ROWS: { icon: string; label: string; value: string; href?: string 
   { icon: "location_on", label: "Địa chỉ liên hệ", value: BUSINESS_INFO.address },
   { icon: "call", label: "Số điện thoại", value: BUSINESS_INFO.phone, href: `tel:${BUSINESS_INFO.phone.replace(/\s+/g, "")}` },
   { icon: "mail", label: "Email", value: BUSINESS_INFO.email, href: `mailto:${BUSINESS_INFO.email}` },
-  ...(SOCIAL_LINKS.facebook !== "#"
-    ? [{ icon: "public", label: "Facebook", value: SOCIAL_LINKS.facebook, href: SOCIAL_LINKS.facebook }]
-    : []),
+  { icon: "public", label: "Facebook", value: SOCIAL_LINKS.facebook, href: SOCIAL_LINKS.facebook },
 ];
 
 export default function BusinessContactPage() {

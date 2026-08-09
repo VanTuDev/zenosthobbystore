@@ -3,12 +3,15 @@ import Image from "next/image";
 import { UserMenu } from "@/components/store/user-menu";
 import { WishlistNavLink } from "@/components/store/wishlist-nav-link";
 import { SiteSearch } from "@/components/store/site-search";
-import { ZENOS_MARK_SVG } from "@/lib/business-info";
+
+const ZENOS_LOGO = "/LogoZENOSTHOBBYSTORE.png";
 
 const NAV_LINKS = [
-  { label: "Sản phẩm có sẵn", href: "/products?status=in_stock" },
-  { label: "Đặt hàng trước", href: "/products?status=pre_order" },
-  { label: "Liên hệ", href: "/lien-he" },
+  { label: "Trang chủ", href: "/" },
+  { label: "Sản phẩm", href: "/products" },
+  { label: "PRE-ORDER", href: "/products?status=pre_order" },
+  { label: "Liên Hệ", href: "/lien-he" },
+  { label: "FAQ", href: "/faq" },
 ];
 
 export function SiteHeader() {
@@ -20,7 +23,7 @@ export function SiteHeader() {
       >
         <Link href="/" className="flex items-center gap-base" aria-label="Về trang chủ ZENOST">
           <Image
-            src={ZENOS_MARK_SVG}
+            src={ZENOS_LOGO}
             alt="ZENOST Logo"
             width={40}
             height={40}
@@ -29,7 +32,7 @@ export function SiteHeader() {
             priority
           />
           <span className="font-headline-md text-headline-md font-bold tracking-tighter text-on-surface">
-            ZENOST
+            ZENOST HOBBY STORE
           </span>
         </Link>
         <ul className="hidden md:flex items-center gap-lg">

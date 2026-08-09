@@ -5,13 +5,11 @@ import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { fetchProducts } from "@/lib/api/products";
 import { fetchCategories } from "@/lib/api/categories";
-import { fetchOrders } from "@/lib/api/orders";
 import { fetchFinanceStats } from "@/lib/api/finance";
 import { formatVnd } from "@/lib/format";
 
 const BASE_SECTIONS = [
   { href: "/admin/products", label: "Quản lý Sản phẩm", icon: "inventory_2" },
-  { href: "/admin/orders", label: "Đơn hàng", icon: "receipt_long" },
   { href: "/admin/categories", label: "Danh mục", icon: "category" },
   { href: "/admin/promotions", label: "Tạo mã giảm giá", icon: "sell" },
   { href: "/admin/finance", label: "Tài chính", icon: "payments" },
@@ -21,7 +19,6 @@ export function AdminDashboardSection() {
   const [counts, setCounts] = useState<{
     products: number;
     categories: number;
-    orders: number;
     revenue30d: number;
   } | null>(null);
 
@@ -30,15 +27,13 @@ export function AdminDashboardSection() {
     Promise.all([
       fetchProducts({ pageSize: 1 }),
       fetchCategories(),
-      fetchOrders({ pageSize: 1 }),
       fetchFinanceStats({ days: 30 }),
     ])
-      .then(([products, categories, orders, stats]) => {
+      .then(([products, categories, stats]) => {
         if (cancelled) return;
         setCounts({
           products: products.pagination.total,
           categories: categories.length,
-          orders: orders.pagination.total,
           revenue30d: stats.totals.totalRevenue,
         });
       })
@@ -50,7 +45,6 @@ export function AdminDashboardSection() {
 
   const statFor: Record<(typeof BASE_SECTIONS)[number]["href"], string> = {
     "/admin/products": counts ? `${counts.products} sản phẩm` : "Đang tải…",
-    "/admin/orders": counts ? `${counts.orders} đơn hàng` : "Đang tải…",
     "/admin/categories": counts ? `${counts.categories} danh mục` : "Đang tải…",
     "/admin/promotions": "Phát hành coupon nhanh",
     "/admin/finance": counts ? `Doanh thu 30 ngày: ${formatVnd(counts.revenue30d)}` : "Đang tải…",

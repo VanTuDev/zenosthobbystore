@@ -1,89 +1,80 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
-import { BUSINESS_INFO, ZENOS_MARK_SVG } from "@/lib/business-info";
+import { BUSINESS_INFO, SOCIAL_LINKS } from "@/lib/business-info";
 
-const FOOTER_COLUMNS = [
-  {
-    title: "Cửa hàng",
-    links: [
-      { label: "Đặt trước", href: "/products?status=pre_order" },
-      { label: "Hàng mới về", href: "/products?badge=new_arrival" },
-      { label: "Kho hàng hiếm", href: "/products?badge=limited" },
-    ],
-  },
-  {
-    title: "Hỗ trợ",
-    links: [
-      { label: "Chính sách giao hàng", href: "/chinh-sach-giao-hang" },
-      { label: "Chính sách đổi trả & bảo hành", href: "/chinh-sach-doi-tra" },
-      { label: "Chính sách thanh toán", href: "/chinh-sach-thanh-toan" },
-      { label: "Cam kết chính hãng", href: "/cam-ket-chinh-hang" },
-      { label: "Hobby FAQ", href: "/faq" },
-      { label: "Liên hệ", href: "/lien-he" },
-    ],
-  },
-  {
-    title: "Pháp lý",
-    links: [
-      { label: "Giới thiệu & thông tin doanh nghiệp", href: "/gioi-thieu" },
-      { label: "Liên hệ công tác", href: "/lien-he-cong-tac" },
-      { label: "Quyền riêng tư", href: "/quyen-rieng-tu" },
-      { label: "Điều khoản dịch vụ", href: "/dieu-khoan" },
-    ],
-  },
+const ZENOS_LOGO = "/LogoZENOSTHOBBYSTORE.png";
+
+const STORE_LINKS = [
+  { label: "Tất cả sản phẩm", href: "/products" },
+  { label: "Sản phẩm có sẵn", href: "/products?status=in_stock" },
+  { label: "PRE-ORDER", href: "/products?status=pre_order" },
+  { label: "Câu hỏi thường gặp", href: "/faq" },
 ];
 
 export function SiteFooter() {
   return (
-    <footer className="bg-surface-container-low w-full">
-      <div className="flex flex-col md:flex-row justify-between items-start px-margin-mobile md:px-margin-desktop py-lg gap-lg w-full max-w-[1440px] mx-auto">
-        <div className="flex flex-col gap-sm max-w-96">
-          <Link href="/" className="flex items-center gap-xs">
-            <Image src={ZENOS_MARK_SVG} alt="ZENOST Logo" width={24} height={24} unoptimized className="w-6 h-6 object-contain" />
-            <span className="font-headline-sm text-label-md font-bold text-on-surface uppercase">
-              ZENOST
+    <footer className="w-full border-t border-outline-variant/30 bg-surface-container-low">
+      <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-margin-mobile py-10 md:grid-cols-[minmax(0,1.5fr)_minmax(170px,0.6fr)_minmax(240px,0.8fr)] md:px-margin-desktop md:py-12">
+        <div className="w-full max-w-[440px] min-w-0">
+          <Link href="/" className="group inline-flex items-center gap-3" aria-label="Về trang chủ ZENOST">
+            <span className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-black shadow-sm transition-transform group-hover:-translate-y-0.5">
+              <Image src={ZENOS_LOGO} alt="" width={48} height={48} unoptimized className="h-full w-full object-contain" />
+            </span>
+            <span className="font-headline-sm text-base font-bold tracking-tight text-on-surface uppercase">
+              ZENOST HOBBY STORE
             </span>
           </Link>
-          <p className="text-secondary font-label-sm text-label-sm leading-snug">
-            Điểm đến cho những người chơi hobby chuyên nghiệp.
+          <p className="mt-4 max-w-[380px] font-body-md text-sm leading-6 text-on-surface-variant">
+            Khám phá mô hình, giá tham khảo và video thực tế dành cho cộng đồng yêu thích hobby.
           </p>
-          <div className="flex gap-sm text-on-surface-variant">
-            <a className="hover:text-primary transition-colors" href="#" aria-label="Website">
-              <Icon name="public" className="!text-[18px]" />
+          <Link
+            href="/lien-he"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-on-surface px-4 py-2 font-label-md text-xs font-bold text-surface transition-transform hover:-translate-y-0.5 hover:shadow-md"
+          >
+            Liên hệ cửa hàng
+            <Icon name="arrow_forward" className="!text-[16px]" />
+          </Link>
+        </div>
+
+        <nav aria-label="Khám phá cửa hàng">
+          <h2 className="mb-4 font-label-md text-xs font-bold uppercase tracking-[0.16em] text-on-surface">
+            Khám phá
+          </h2>
+          <div className="flex flex-col items-start gap-3">
+            {STORE_LINKS.map((link) => (
+              <Link key={link.href} href={link.href} className="font-body-md text-sm text-on-surface-variant transition-colors hover:text-primary">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+
+        <div>
+          <h2 className="mb-4 font-label-md text-xs font-bold uppercase tracking-[0.16em] text-on-surface">
+            Kết nối
+          </h2>
+          <div className="space-y-3">
+            <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 text-sm text-on-surface-variant transition-colors hover:text-primary">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-container-highest text-on-surface transition-colors group-hover:bg-primary group-hover:text-on-primary">
+                <Icon name="public" className="!text-[18px]" />
+              </span>
+              <span>Facebook ZENOST</span>
             </a>
-            <a className="hover:text-primary transition-colors" href="#" aria-label="Mạng xã hội">
-              <Icon name="share" className="!text-[18px]" />
+            <a href={`mailto:${BUSINESS_INFO.email}`} className="group flex items-center gap-3 text-sm text-on-surface-variant transition-colors hover:text-primary">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-container-highest text-on-surface transition-colors group-hover:bg-primary group-hover:text-on-primary">
+                <Icon name="mail" className="!text-[18px]" />
+              </span>
+              <span className="break-all">{BUSINESS_INFO.email}</span>
             </a>
-            <a className="hover:text-primary transition-colors" href="#" aria-label="Email">
-              <Icon name="mail" className="!text-[18px]" />
+            <a href={`tel:${BUSINESS_INFO.phone}`} className="group flex items-center gap-3 text-sm text-on-surface-variant transition-colors hover:text-primary">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-container-highest text-on-surface transition-colors group-hover:bg-primary group-hover:text-on-primary">
+                <Icon name="call" className="!text-[18px]" />
+              </span>
+              <span>{BUSINESS_INFO.phone}</span>
             </a>
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-md">
-          {FOOTER_COLUMNS.map((col) => (
-            <nav key={col.title} className="flex flex-col gap-xs" aria-label={col.title}>
-              <h2 className="font-label-sm text-label-sm text-on-surface font-bold uppercase">
-                {col.title}
-              </h2>
-              {col.links.map((link) => (
-                <Link
-                  key={link.label}
-                  className="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors"
-                  href={link.href}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          ))}
-        </div>
-      </div>
-      <div className="px-margin-mobile md:px-margin-desktop py-sm border-t border-outline-variant/30 text-center md:text-left">
-        <p className="font-label-sm text-[11px] text-secondary">
-          © {new Date().getFullYear()} {BUSINESS_INFO.tradeName} · {BUSINESS_INFO.legalName} · MST/GCN ĐKHKD:{" "}
-          {BUSINESS_INFO.registrationNumber} · {BUSINESS_INFO.address}
-        </p>
       </div>
     </footer>
   );

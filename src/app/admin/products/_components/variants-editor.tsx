@@ -83,6 +83,8 @@ export function VariantsEditor({
   onChange: (variants: DraftVariant[]) => void;
 }) {
   const atLimit = variants.length >= MAX_VARIANTS;
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const update = (index: number, patch: Partial<DraftVariant>) => {
     onChange(variants.map((v, i) => (i === index ? { ...v, ...patch } : v)));
@@ -90,6 +92,19 @@ export function VariantsEditor({
 
   const remove = (index: number) => {
     onChange(variants.filter((_, i) => i !== index));
+  };
+
+  const move = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    const reordered = [...variants];
+    const [movedVariant] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, movedVariant);
+    onChange(reordered);
+  };
+
+  const finishDragging = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
   };
 
   const add = () => {
@@ -101,7 +116,8 @@ export function VariantsEditor({
     <div className="space-y-xs">
       {variants.length > 0 && (
         <div className="space-y-1.5">
-          <div className="hidden sm:grid grid-cols-[36px_1fr_140px_100px_28px] gap-1.5 px-0.5">
+          <div className="hidden sm:grid grid-cols-[28px_36px_1fr_140px_100px_28px] gap-1.5 px-0.5">
+            <span className="font-body-sm text-[11px] text-on-surface-variant text-center">Vị trí</span>
             <span />
             <span className="font-body-sm text-[11px] text-on-surface-variant">Tên biến thể</span>
             <span className="font-body-sm text-[11px] text-on-surface-variant">Giá</span>
@@ -111,8 +127,39 @@ export function VariantsEditor({
           {variants.map((variant, index) => (
             <div
               key={index}
-              className="grid grid-cols-[36px_1fr_28px] sm:grid-cols-[36px_1fr_140px_100px_28px] gap-1.5 items-center"
+              onDragOver={(event) => {
+                if (draggedIndex === null) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "move";
+                setDragOverIndex(index);
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                if (draggedIndex !== null) move(draggedIndex, index);
+                finishDragging();
+              }}
+              className={`grid grid-cols-[28px_36px_1fr_28px] sm:grid-cols-[28px_36px_1fr_140px_100px_28px] gap-1.5 items-center rounded-lg transition-all ${
+                dragOverIndex === index && draggedIndex !== index
+                  ? "ring-2 ring-primary/50 bg-primary/5"
+                  : ""
+              } ${draggedIndex === index ? "opacity-50" : ""}`}
             >
+              <button
+                type="button"
+                draggable
+                onDragStart={(event) => {
+                  setDraggedIndex(index);
+                  setDragOverIndex(index);
+                  event.dataTransfer.effectAllowed = "move";
+                  event.dataTransfer.setData("text/plain", String(index));
+                }}
+                onDragEnd={finishDragging}
+                aria-label={`Kéo để đổi vị trí biến thể ${variant.name || index + 1}`}
+                title="Giữ chuột và kéo để đổi vị trí"
+                className="flex h-9 w-7 cursor-grab active:cursor-grabbing items-center justify-center rounded-lg text-on-surface-variant hover:bg-primary/10 hover:text-primary"
+              >
+                <Icon name="drag_indicator" className="!text-[20px]" />
+              </button>
               <VariantImagePicker image={variant.image} onChange={(url) => update(index, { image: url })} />
               <input
                 type="text"
@@ -121,12 +168,14 @@ export function VariantsEditor({
                 placeholder="Vd: Đỏ - Size M"
                 className="col-span-2 sm:col-span-1 w-full bg-white border-none rounded-lg px-sm py-1.5 text-[13px] ring-1 ring-outline-variant focus:ring-2 focus:ring-primary transition-all"
               />
-              <PriceInput
-                id={`variant-price-${index}`}
-                value={variant.price}
-                onChange={(v) => update(index, { price: v })}
-                placeholder="Giá"
-              />
+              <div className="col-span-2 sm:col-span-1">
+                <PriceInput
+                  id={`variant-price-${index}`}
+                  value={variant.price}
+                  onChange={(v) => update(index, { price: v })}
+                  placeholder="Giá"
+                />
+              </div>
               <input
                 type="number"
                 min={0}

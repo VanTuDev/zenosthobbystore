@@ -19,8 +19,8 @@ export function ProductCtaButtons({ hasVideos, isSoldOut }: { hasVideos: boolean
       </a>
       <p className="text-center text-label-sm text-on-surface-variant">
         {isSoldOut
-          ? "Sản phẩm tạm hết hàng — xem video thực tế để tham khảo trước khi có hàng trở lại."
-          : "Video quay thực tế sản phẩm — xem chi tiết trước khi liên hệ."}
+          ? "Sản phẩm hiện chưa có tại cửa hàng — bạn vẫn có thể xem video để tham khảo chi tiết."
+          : "Xem video TikTok/YouTube để tham khảo hình ảnh thực tế và theo dõi các kênh của ZENOST."}
       </p>
     </div>
   );

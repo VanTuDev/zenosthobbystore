@@ -44,7 +44,6 @@ export function ProductPricePanel({
   const selectedVariant = hasVariants && selectedVariantIndex !== null ? product.variants[selectedVariantIndex] : null;
 
   const displayPrice = selectedVariant ? selectedVariant.price : product.price;
-  const displayStockCount = selectedVariant ? selectedVariant.stockCount : product.stockCount;
   const variantOutOfStock = selectedVariant ? selectedVariant.stockCount <= 0 : false;
 
   const indexedVariants = product.variants.map((variant, index) => ({ variant, index }));
@@ -115,6 +114,9 @@ export function ProductPricePanel({
       )}
 
       <div className="flex items-baseline gap-md mb-2 flex-wrap">
+        <span className="w-full font-label-sm text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
+          Giá tham khảo
+        </span>
         <span className="font-display-lg text-[36px] text-on-surface">{formatVnd(displayPrice)}</span>
         {!hasVariants && product.compareAtPrice && (
           <span className="font-body-md text-body-md text-on-surface-variant line-through">
@@ -139,7 +141,10 @@ export function ProductPricePanel({
             ? "BIẾN THỂ NÀY TẠM HẾT HÀNG"
             : isPreOrder
               ? "DỰ KIẾN PHÁT HÀNH: SẮP CẬP NHẬT"
-              : `CÒN ${displayStockCount} SẢN PHẨM`}
+              : "CÒN HÀNG"}
+      </p>
+      <p className="mt-2 font-body-sm text-xs leading-relaxed text-on-surface-variant">
+        Giá và tình trạng sản phẩm có thể thay đổi. Vui lòng liên hệ ZENOST để xác nhận thông tin mới nhất.
       </p>
     </div>
   );

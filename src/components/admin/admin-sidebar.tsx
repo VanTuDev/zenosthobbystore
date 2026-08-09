@@ -6,7 +6,6 @@ import { Icon } from "@/components/ui/icon";
 
 const NAV_ITEMS = [
   { href: "/admin/products", label: "Quản lý Sản phẩm", icon: "inventory_2" },
-  { href: "/admin/orders", label: "Đơn hàng", icon: "receipt_long" },
   { href: "/admin/tickets", label: "Ticket liên hệ", icon: "support_agent" },
   { href: "/admin/promotions", label: "Tạo mã giảm giá", icon: "sell" },
   { href: "/admin/categories", label: "Danh mục", icon: "category" },
@@ -20,7 +19,7 @@ export function AdminSidebar() {
   return (
     <aside className="h-screen w-64 fixed left-0 top-0 flex flex-col py-lg px-md bg-surface-container-low z-50">
       <div className="mb-lg px-sm">
-        <p className="font-headline-md text-headline-md font-bold text-on-surface">Zenos Hobby</p>
+        <p className="font-headline-md text-headline-md font-bold text-on-surface">Zenost Hobby Store</p>
         <p className="text-on-surface-variant font-label-md">Bảng điều khiển Admin</p>
       </div>
       <nav className="flex-1 space-y-base" aria-label="Điều hướng quản trị">

@@ -34,14 +34,9 @@ export const metadata: Metadata = {
     "zenost hobby store",
   ],
   icons: {
-    icon: [
-      { url: "/Logo/zenost-favicon.svg", type: "image/svg+xml" },
-      { url: "/Logo/zenost-favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/Logo/zenost-favicon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/Logo/zenost-favicon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: "/Logo/zenost-favicon-180.png",
+    icon: "/LogoZENOSTHOBBYSTORE.png",
+    shortcut: "/LogoZENOSTHOBBYSTORE.png",
+    apple: "/LogoZENOSTHOBBYSTORE.png",
   },
   openGraph: {
     type: "website",

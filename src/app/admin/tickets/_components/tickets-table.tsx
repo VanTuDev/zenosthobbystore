@@ -15,11 +15,11 @@ export const STATUS_TABS = [
 export type StatusTabKey = (typeof STATUS_TABS)[number]["key"];
 
 export const SUBJECT_LABEL: Record<ApiContactTicket["subject"], string> = {
-  order: "Đơn hàng",
-  return_warranty: "Đổi trả / Bảo hành",
-  product: "Sản phẩm",
-  payment: "Thanh toán",
-  other: "Khác",
+  product: "Hỏi thông tin sản phẩm",
+  order: "Hỏi về PRE-ORDER",
+  return_warranty: "Bảo hành sản phẩm",
+  payment: "Hợp tác quảng bá / Affiliate",
+  other: "Link, video lỗi / Nội dung khác",
 };
 
 export const TICKET_STATUS_META: Record<ApiContactTicket["status"], { label: string; tone: "primary" | "tertiary" | "muted" | "outline" }> = {
@@ -65,7 +65,7 @@ export function TicketsTable({
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Khách hàng</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Email</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Chủ đề</th>
-              <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Mã đơn</th>
+              <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Mã tham chiếu</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Trạng thái</th>
               <th className="px-sm py-xs border border-outline-variant/30 w-8" />
             </tr>

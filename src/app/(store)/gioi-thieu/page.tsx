@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { PolicyPage } from "@/components/store/policy-page";
-import { BusinessInfoCard } from "@/components/store/business-info-card";
 
 export const metadata: Metadata = {
   title: "Giới thiệu & thông tin doanh nghiệp",
   description:
-    "Thông tin hộ kinh doanh vận hành ZENOS Hobby Store — công khai theo quy định về thương mại điện tử.",
+    "Zenost Hobby Store",
   alternates: { canonical: "/gioi-thieu" },
 };
 
@@ -24,13 +23,12 @@ export default function AboutPage() {
         </p>
       </section>
       <section>
-        <h2>Thông tin thương nhân</h2>
+        <h2>Nội dung trên website</h2>
         <p>
-          Theo quy định tại Nghị định 52/2013/NĐ-CP (sửa đổi, bổ sung bởi Nghị định 85/2021/NĐ-CP)
-          về thương mại điện tử, ZENOS Hobby Store công khai thông tin chủ thể vận hành website
-          như sau:
+          Website là nơi ZENOST giới thiệu sản phẩm, giá tham khảo, hình ảnh và video thực tế từ TikTok hoặc YouTube.
+          Website không có giỏ hàng và không xử lý thanh toán trực tuyến; khách hàng có thể liên hệ trực tiếp để được
+          tư vấn về sản phẩm tại cửa hàng.
         </p>
-        <BusinessInfoCard />
       </section>
       <section>
         <h2>Giờ làm việc &amp; hỗ trợ khách hàng</h2>

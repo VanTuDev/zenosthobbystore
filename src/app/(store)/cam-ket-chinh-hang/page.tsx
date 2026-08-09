@@ -4,7 +4,7 @@ import { PolicyPage } from "@/components/store/policy-page";
 export const metadata: Metadata = {
   title: "Cam kết chính hãng",
   description:
-    "ZENOS Hobby Store cam kết 100% mô hình nhập khẩu chính hãng từ Good Smile Company, Bandai Spirits, Alter, Kotobukiya và các nhà sản xuất uy tín khác.",
+    "ZENOST Hobby Store cam kết 100% mô hình nhập khẩu chính hãng từ Good Smile Company, Bandai Spirits, Alter, Kotobukiya và các nhà sản xuất uy tín khác.",
   alternates: { canonical: "/cam-ket-chinh-hang" },
 };
 

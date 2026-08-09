@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Icon } from "@/components/ui/icon";
 import { GoogleMark } from "@/components/ui/google-mark";
-import { ZENOS_FAVICON_SVG } from "@/lib/business-info";
 
 export function LoginModal() {
   const { isLoginModalOpen, closeLoginModal, isLoggingIn, loginWithGoogle } = useAuth();
@@ -53,7 +52,7 @@ export function LoginModal() {
         <div className="flex flex-col items-center text-center gap-sm bg-black px-lg pt-xl pb-lg">
           <span className="flex items-center justify-center w-20 h-20 rounded-full overflow-hidden ring-1 ring-white/15 mb-xs">
             <Image
-              src={ZENOS_FAVICON_SVG}
+              src="/LogoZENOSTHOBBYSTORE.png"
               alt="ZENOST"
               width={80}
               height={80}
@@ -66,7 +65,7 @@ export function LoginModal() {
             Đăng nhập ZENOST
           </h2>
           <p className="font-body-md text-body-md text-white/60">
-            Lưu sản phẩm yêu thích, theo dõi đơn hàng và nhận ưu đãi dành riêng cho bạn.
+            Lưu sản phẩm yêu thích và nhận ưu đãi dành riêng cho bạn.
           </p>
         </div>
 

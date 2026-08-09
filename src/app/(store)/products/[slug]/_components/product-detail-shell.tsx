@@ -5,7 +5,6 @@ import { Icon } from "@/components/ui/icon";
 import { ProductGallery } from "./product-gallery";
 import { ProductPricePanel } from "./product-price-panel";
 import { ProductCtaButtons } from "./product-cta-buttons";
-import { StockNotifyForm } from "./stock-notify-form";
 import type { Product } from "@/lib/types";
 
 /**
@@ -92,22 +91,6 @@ export function ProductDetailShell({
         {/* CTAs */}
         <ProductCtaButtons hasVideos={product.videos.length > 0} isSoldOut={isSoldOut} />
 
-        {isSoldOut && <StockNotifyForm productName={product.name} />}
-
-        {/* Trust badges */}
-        <div className="space-y-4">
-          <div className="p-4 bg-surface-container-low rounded-xl border border-surface-container-highest/50 flex items-start gap-4">
-            <Icon name="local_shipping" className="text-primary text-[28px]" />
-            <div>
-              <p className="font-label-sm text-label-sm text-on-surface font-bold uppercase">
-                Giao hàng &amp; Bảo quản
-              </p>
-              <p className="font-body-md text-[13px] text-on-surface-variant">
-                Đóng gói 2 lớp hộp chống sốc chuyên dụng. Miễn phí vận chuyển cho đơn hàng đặt trước.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

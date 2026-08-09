@@ -28,9 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: BASE_URL, changeFrequency: "weekly", priority: 1 },
     { url: `${BASE_URL}/products`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${BASE_URL}/chinh-sach-giao-hang`, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE_URL}/chinh-sach-doi-tra`, changeFrequency: "monthly", priority: 0.3 },
-    { url: `${BASE_URL}/chinh-sach-thanh-toan`, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE_URL}/cam-ket-chinh-hang`, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE_URL}/gioi-thieu`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE_URL}/faq`, changeFrequency: "monthly", priority: 0.4 },

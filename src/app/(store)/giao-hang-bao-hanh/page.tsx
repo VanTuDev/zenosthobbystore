@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/store/breadcrumbs";
-import { MyOrdersSection } from "@/components/store/my-orders-section";
 import { Icon } from "@/components/ui/icon";
 
 export const metadata: Metadata = {
@@ -38,17 +37,12 @@ export default function ShippingWarrantyPage() {
         Tra cứu trạng thái đơn hàng đã đặt và tìm hiểu chính sách giao hàng, đổi trả, bảo hành của ZENOS.
       </p>
 
-      <section className="mb-xl">
-        <h2 className="font-headline-sm text-headline-sm text-on-surface mb-sm">Tra cứu đơn hàng</h2>
-        <MyOrdersSection />
-      </section>
-
       <section>
         <h2 className="font-headline-sm text-headline-sm text-on-surface mb-sm">Chính sách</h2>
         <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-md mb-md">
           <ul className="space-y-xs text-body-md text-on-surface-variant list-disc pl-lg">
             <li>
-              <span className="font-bold text-on-surface">Sản phẩm có sẵn</span> — trong kho, giao ngay theo
+              <span className="font-bold text-on-surface">Sản phẩm</span> — trong kho, giao ngay theo
               chính sách vận chuyển tiêu chuẩn.
             </li>
             <li>

@@ -5,18 +5,18 @@
  * project has no real business registration behind it.
  */
 export const BUSINESS_INFO = {
-  legalName: "Hộ kinh doanh ZENOST Hobby Store",
-  tradeName: "ZENOST Hobby Store",
-  representative: "Nguyễn Văn Zên",
-  businessType: "Hộ kinh doanh cá thể",
-  taxCode: "0123456789",
-  registrationNumber: "41A8012345",
-  registrationAuthority: "Phòng Tài chính – Kế hoạch UBND Quận 1, TP. Hồ Chí Minh",
-  registrationDate: "12/03/2021",
-  businessLines: "Bán lẻ mô hình đồ chơi, quà lưu niệm và phụ kiện hobby (Mã ngành 4764)",
-  address: "45 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh, Việt Nam",
-  email: "support@zenosthobbystore.com",
-  phone: "1900 6868",
+  legalName: "Zenost Hobby Store",
+  tradeName: "Zenost Hobby Store",
+  representative: "Phùng Huy Cường",
+  businessType: "Cá nhân kinh doanh",
+  taxCode: "************",
+  registrationNumber: "*********",
+  registrationAuthority: "Đà Nẵng",
+  registrationDate: "**/**/****",
+  businessLines: "Quảng cáo đồ chơi",
+  address: "Đà Nẵng",
+  email: "zenosthobbystore@gmail.com",
+  phone: "0868237043",
   workingHours: "8:00 – 21:00, Thứ 2 – Chủ Nhật",
 } as const;
 
@@ -25,7 +25,7 @@ export const BUSINESS_INFO = {
  * Placeholder "#" URLs — swap in the real profile links when available.
  */
 export const SOCIAL_LINKS = {
-  facebook: "#",
+  facebook: "https://www.facebook.com/zenosthobbystore",
   tiktok: "#",
   shopee: "#",
 } as const;

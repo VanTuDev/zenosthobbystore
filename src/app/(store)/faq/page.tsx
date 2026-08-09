@@ -3,35 +3,34 @@ import { PolicyPage } from "@/components/store/policy-page";
 
 export const metadata: Metadata = {
   title: "Câu hỏi thường gặp (FAQ)",
-  description:
-    "Giải đáp các câu hỏi thường gặp về đặt trước, thanh toán, đổi trả và bảo quản mô hình tại ZENOS Hobby Store.",
+  description: "Giải đáp cách xem sản phẩm, video thực tế, PRE-ORDER và liên hệ với ZENOST Hobby Store.",
   alternates: { canonical: "/faq" },
 };
 
 const FAQS = [
   {
-    q: "Đặt trước (pre-order) hoạt động như thế nào?",
-    a: "Bạn thanh toán trước một phần hoặc toàn bộ giá trị sản phẩm để giữ suất hàng. Khi hàng về kho, ZENOS sẽ thông báo qua email/SMS và giao hàng trong 5–7 ngày.",
+    q: "Website ZENOST có bán hàng và thanh toán trực tuyến không?",
+    a: "Không. Website được dùng để giới thiệu sản phẩm, giá tham khảo, hình ảnh và video. Để hỏi thêm hoặc mua tại cửa hàng, bạn vui lòng liên hệ ZENOST qua trang Liên hệ hoặc Facebook.",
   },
   {
-    q: "Tôi có thể đổi trả sản phẩm không?",
-    a: "Có. Sản phẩm còn nguyên seal, chưa qua sử dụng được đổi trả trong vòng 7 ngày kể từ khi nhận hàng. Với lỗi từ nhà sản xuất, ZENOS hỗ trợ đổi trả trong 30 ngày.",
+    q: "Giá và tình trạng sản phẩm trên website có chính xác tại mọi thời điểm không?",
+    a: "Giá và tình trạng hàng được cập nhật để tham khảo nhưng có thể thay đổi tại cửa hàng. Bạn nên liên hệ ZENOST để xác nhận thông tin mới nhất.",
   },
   {
-    q: "Làm sao để bảo quản mô hình không bị ố vàng hoặc phai màu?",
-    a: "Tránh ánh nắng trực tiếp và nơi có độ ẩm cao. Nên trưng bày trong tủ kính có kiểm soát nhiệt độ, tránh để gần nguồn nhiệt (bóng đèn, cửa sổ hướng Tây).",
+    q: "PRE-ORDER trên website có nghĩa là gì?",
+    a: "PRE-ORDER là nhóm sản phẩm dự kiến hoặc đang nhận đăng ký trước tại cửa hàng. Website không tự động tạo đơn; bạn cần liên hệ ZENOST để được tư vấn và xác nhận.",
   },
   {
-    q: "ZENOS có giao hàng quốc tế không?",
-    a: "Hiện tại ZENOS chỉ giao hàng nội địa Việt Nam. Chúng tôi đang nghiên cứu mở rộng sang các thị trường Đông Nam Á trong thời gian tới.",
+    q: "Tôi có thể xem video sản phẩm ở đâu?",
+    a: "Các video TikTok và YouTube được gắn trong trang chi tiết sản phẩm. Bạn có thể xem nội dung thực tế và mở kênh gốc để theo dõi ZENOST.",
   },
   {
-    q: "Tôi có thể hủy đơn đặt trước không?",
-    a: "Có, bạn có thể hủy đơn đặt trước miễn phí trước khi hàng về kho. Sau khi hàng đã về kho và chuẩn bị giao, phí hủy đơn là 10% giá trị đặt cọc.",
+    q: "Các liên kết dẫn sang nền tảng khác có phải link affiliate không?",
+    a: "Một số liên kết có thể là link giới thiệu hoặc affiliate. Nếu bạn mua qua các liên kết đó, ZENOST có thể nhận hoa hồng và bạn không phải trả thêm chi phí.",
   },
   {
-    q: "Sản phẩm có được bảo hành không?",
-    a: "Mô hình lắp ráp (Gunpla) được bảo hành lỗi khớp nối/linh kiện trong 30 ngày. Statue/scale figure được kiểm định trước khi giao nên không áp dụng bảo hành sau khi đã bóc seal.",
+    q: "Tôi muốn hỏi sản phẩm, bảo hành hoặc hợp tác thì làm thế nào?",
+    a: "Bạn có thể gửi phiếu tại trang Liên hệ hoặc liên hệ trực tiếp qua Facebook, email và số điện thoại được hiển thị trên website.",
   },
 ];
 
@@ -49,7 +48,7 @@ export default function FaqPage() {
   return (
     <PolicyPage
       title="Câu hỏi thường gặp"
-      intro="Chưa tìm thấy câu trả lời? Liên hệ đội ngũ ZENOS để được hỗ trợ trực tiếp."
+      intro="Thông tin cần biết khi khám phá sản phẩm và nội dung của ZENOST. Nếu chưa tìm thấy câu trả lời, bạn có thể gửi phiếu liên hệ cho chúng tôi."
     >
       <script
         type="application/ld+json"

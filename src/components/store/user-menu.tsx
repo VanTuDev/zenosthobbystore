@@ -66,14 +66,6 @@ export function UserMenu() {
           </div>
           <nav className="p-xs" aria-label="Tài khoản">
             <Link
-              href="/giao-hang-bao-hanh"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-sm px-sm py-base rounded-lg text-on-surface hover:bg-surface-container-low transition-colors"
-            >
-              <Icon name="receipt_long" className="text-on-surface-variant" />
-              <span className="font-label-md text-label-md">Đơn hàng của tôi</span>
-            </Link>
-            <Link
               href="/wishlist"
               onClick={() => setOpen(false)}
               className="flex items-center gap-sm px-sm py-base rounded-lg text-on-surface hover:bg-surface-container-low transition-colors"
