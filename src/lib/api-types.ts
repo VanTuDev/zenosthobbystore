@@ -132,13 +132,19 @@ export type ApiOrderItem = {
   productId: string | null;
   slug: string;
   name: string;
+  variantName: string;
   image: string;
   price: number;
   quantity: number;
+  itemStatus?: ApiOrder["status"];
 };
 
 export type ApiOrder = {
   id: string;
+  publicCode: string;
+  orderType: "in_stock" | "pre_order";
+  facebookName: string;
+  facebookUrl: string;
   customerName: string;
   customerEmail: string;
   phone: string;
@@ -154,9 +160,25 @@ export type ApiOrder = {
   tax: number | null;
   discount: number;
   total: number;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  depositAmount: number;
+  remainingAmount: number;
+  status:
+    | "packing"
+    | "deposit_received"
+    | "factory_ordered"
+    | "factory_shipped"
+    | "transit_warehouse"
+    | "vietnam_warehouse"
+    | "shop_warehouse"
+    | "shipped"
+    | "pending"
+    | "processing"
+    | "delivered"
+    | "cancelled";
+  statusMode: "auto" | "manual";
+  trackingCode: string;
   paymentMethod: "Chuyển khoản" | "COD" | "Thẻ tín dụng" | "Ví điện tử";
-  paymentStatus: "paid" | "unpaid" | "refunded";
+  paymentStatus: "not_deposited" | "deposited" | "paid" | "unpaid" | "refunded";
   placedAt: string;
   userId: string | null;
   promotionCode: string | null;
@@ -164,7 +186,29 @@ export type ApiOrder = {
   paymentProvider: "payos" | null;
   paymentRef: string | null;
   paidAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  sourceOrderCode: string;
+  splitOrderCodes: string[];
 };
+
+export type PublicOrder = Pick<
+  ApiOrder,
+  | "publicCode"
+  | "orderType"
+  | "facebookName"
+  | "items"
+  | "subtotal"
+  | "total"
+  | "depositAmount"
+  | "remainingAmount"
+  | "status"
+  | "trackingCode"
+  | "placedAt"
+  | "updatedAt"
+  | "sourceOrderCode"
+  | "splitOrderCodes"
+>;
 
 /** Mirrors FinanceTransactionDoc#toJSON() from src/models/finance-transaction.model.ts */
 export type ApiFinanceTransaction = {

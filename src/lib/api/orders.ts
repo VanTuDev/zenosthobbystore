@@ -1,21 +1,15 @@
 import { apiFetch } from "@/lib/api-client";
-import type { ApiOrder, PaginatedResponse } from "@/lib/api-types";
+import type { ApiOrder, PaginatedResponse, PublicOrder } from "@/lib/api-types";
 
 export type CreateOrderInput = {
-  customerName: string;
-  customerEmail: string;
-  phone: string;
-  provinceCode: string;
-  provinceName: string;
-  wardCode: string;
-  wardName: string;
+  orderType: ApiOrder["orderType"];
+  facebookName: string;
+  facebookUrl: string;
+  phone?: string;
   addressDetail: string;
-  items: { productId?: string; slug: string; name: string; image: string; price: number; quantity: number }[];
-  shippingFee: number;
-  tax?: number;
-  promotionCode?: string;
-  paymentMethod: ApiOrder["paymentMethod"];
-  paymentStatus: ApiOrder["paymentStatus"];
+  items: { productId?: string; slug: string; name: string; variantName?: string; image: string; price: number; quantity: number }[];
+  total?: number;
+  depositAmount: number;
 };
 
 /**
@@ -32,6 +26,10 @@ export function createOrder(input: CreateOrderInput) {
 
 export function fetchOrder(id: string) {
   return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}`);
+}
+
+export function fetchPublicOrder(code: string) {
+  return apiFetch<{ order: PublicOrder }>(`/orders/public/${encodeURIComponent(code.toLowerCase())}`);
 }
 
 export type OrderListParams = {
@@ -53,10 +51,10 @@ export function fetchOrders(params: OrderListParams = {}) {
   return apiFetch<PaginatedResponse<ApiOrder>>(`/orders${qs ? `?${qs}` : ""}`);
 }
 
-export function updateOrderStatus(id: string, status: ApiOrder["status"]) {
+export function updateOrderStatus(id: string, status: ApiOrder["status"], trackingCode?: string) {
   return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/status`, {
     method: "PATCH",
-    body: { status },
+    body: { status, trackingCode },
   });
 }
 
@@ -65,4 +63,51 @@ export function updateOrderPaymentStatus(id: string, paymentStatus: ApiOrder["pa
     method: "PATCH",
     body: { paymentStatus },
   });
+}
+
+export function enableAutomaticOrderStatus(id: string) {
+  return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/status/automatic`, { method: "PATCH" });
+}
+
+export function updateOrderItemStatus(id: string, itemIndex: number, status: ApiOrder["status"]) {
+  return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/items/${itemIndex}/status`, {
+    method: "PATCH",
+    body: { status },
+  });
+}
+
+export function updateOrderItems(id: string, items: ApiOrder["items"]) {
+  return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/items`, {
+    method: "PUT",
+    body: { items },
+  });
+}
+
+export type SplitOrderInput = {
+  selections: { itemIndex: number; quantity: number }[];
+  newTotal: number;
+  newDepositAmount: number;
+  originalTotal: number;
+  originalDepositAmount: number;
+};
+
+export function splitOrder(id: string, input: SplitOrderInput) {
+  return apiFetch<{ originalOrder: ApiOrder; newOrder: ApiOrder }>(`/orders/${encodeURIComponent(id)}/split`, {
+    method: "POST",
+    body: input,
+  });
+}
+
+export function updateOrderDetails(
+  id: string,
+  input: Partial<Pick<ApiOrder, "orderType" | "facebookName" | "facebookUrl" | "phone" | "addressDetail" | "total" | "depositAmount">>,
+) {
+  return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/details`, {
+    method: "PATCH",
+    body: input,
+  });
+}
+
+export function deleteOrder(id: string) {
+  return apiFetch<void>(`/orders/${encodeURIComponent(id)}`, { method: "DELETE" });
 }

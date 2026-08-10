@@ -13,10 +13,12 @@ import { ApiRequestError } from "@/lib/api-client";
 import { useToast } from "@/components/ui/toast";
 import type { ApiOrder } from "@/lib/api-types";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 10;
 
 function tabToStatuses(tab: StatusTabKey): ApiOrder["status"][] | undefined {
-  return tab === "all" ? undefined : [tab as ApiOrder["status"]];
+  if (tab === "all") return undefined;
+  if (tab === "shipped") return ["shipped"];
+  return ["packing", "deposit_received", "factory_ordered", "factory_shipped", "transit_warehouse", "vietnam_warehouse", "shop_warehouse"];
 }
 
 export function AdminOrdersSection() {
@@ -28,7 +30,6 @@ export function AdminOrdersSection() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [stats, setStats] = useState({ total: 0, pendingCount: 0, deliveredCount: 0, revenue: 0 });
@@ -37,11 +38,10 @@ export function AdminOrdersSection() {
     let cancelled = false;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- kicks off the loading state for the fetch this same effect issues
     setIsLoading(true);
-    fetchOrders({ status: tabToStatuses(activeTab), page: 1, pageSize: PAGE_SIZE })
+    fetchOrders({ status: tabToStatuses(activeTab), page, pageSize: PAGE_SIZE })
       .then((res) => {
         if (cancelled) return;
         setOrders(res.items);
-        setPage(1);
         setTotalPages(res.pagination.totalPages);
         setTotal(res.pagination.total);
         setLoadError(null);
@@ -56,13 +56,13 @@ export function AdminOrdersSection() {
     return () => {
       cancelled = true;
     };
-  }, [activeTab]);
+  }, [activeTab, page]);
 
   useEffect(() => {
     Promise.all([
       fetchOrders({ pageSize: 1 }),
-      fetchOrders({ status: ["pending", "processing"], pageSize: 1 }),
-      fetchOrders({ status: ["delivered"], pageSize: 1 }),
+      fetchOrders({ status: tabToStatuses("active"), pageSize: 1 }),
+      fetchOrders({ status: ["shipped"], pageSize: 1 }),
       fetchFinanceSummary(),
     ])
       .then(([all, pending, delivered, summary]) => {
@@ -76,25 +76,10 @@ export function AdminOrdersSection() {
       .catch(() => undefined);
   }, []);
 
-  async function loadMore() {
-    if (isLoadingMore || page >= totalPages) return;
-    setIsLoadingMore(true);
-    try {
-      const nextPage = page + 1;
-      const res = await fetchOrders({ status: tabToStatuses(activeTab), page: nextPage, pageSize: PAGE_SIZE });
-      setOrders((prev) => [...prev, ...res.items]);
-      setPage(nextPage);
-    } catch (err) {
-      setLoadError(err instanceof ApiRequestError ? err.message : "Không thể tải thêm đơn hàng.");
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }
-
   const statTiles = [
     { label: "Tổng đơn hàng", value: stats.total.toLocaleString("vi-VN"), icon: "receipt_long" },
     { label: "Cần xử lý", value: stats.pendingCount.toLocaleString("vi-VN"), icon: "pending_actions" },
-    { label: "Đã giao thành công", value: stats.deliveredCount.toLocaleString("vi-VN"), icon: "local_shipping" },
+    { label: "Đã vận chuyển", value: stats.deliveredCount.toLocaleString("vi-VN"), icon: "local_shipping" },
     { label: "Doanh thu đã thu", value: formatVnd(stats.revenue), icon: "payments" },
   ];
 
@@ -126,11 +111,11 @@ export function AdminOrdersSection() {
         <OrdersTable
           orders={orders}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={(tab) => { setActiveTab(tab); setPage(1); }}
           total={total}
-          isLoadingMore={isLoadingMore}
-          hasMore={page < totalPages}
-          onLoadMore={loadMore}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
         />
       )}
 
@@ -138,15 +123,18 @@ export function AdminOrdersSection() {
         <CreateOrderModal
           onClose={() => setShowCreateModal(false)}
           onCreated={(order) => {
-            setOrders((prev) => [order, ...prev]);
-            setTotal((prev) => prev + 1);
+            setOrders((prev) => page === totalPages && prev.length < PAGE_SIZE ? [...prev, order] : prev);
+            setTotal((prev) => {
+              const nextTotal = prev + 1;
+              setTotalPages(Math.max(1, Math.ceil(nextTotal / PAGE_SIZE)));
+              return nextTotal;
+            });
             setStats((prev) => ({
               ...prev,
               total: prev.total + 1,
-              pendingCount: order.status === "pending" || order.status === "processing" ? prev.pendingCount + 1 : prev.pendingCount,
+              pendingCount: order.status !== "shipped" ? prev.pendingCount + 1 : prev.pendingCount,
               revenue: order.paymentStatus === "paid" ? prev.revenue + order.total : prev.revenue,
             }));
-            setShowCreateModal(false);
             showToast(`Đã tạo đơn hàng cho ${order.customerName}.`, "success");
           }}
         />
