@@ -10,128 +10,123 @@ import { SelectField } from "@/components/ui/select-field";
 import { formatVnd } from "@/lib/format";
 import { createOrder } from "@/lib/api/orders";
 import { fetchProducts } from "@/lib/api/products";
-import { fetchProvinces, fetchWards } from "@/lib/api/locations";
 import { ApiRequestError } from "@/lib/api-client";
-import type { ApiOrder, ApiProduct, ApiProvince, ApiWard } from "@/lib/api-types";
+import type { ApiOrder, ApiProduct } from "@/lib/api-types";
 
 type DraftItem = {
   key: string;
-  productId?: string;
+  productId: string;
   slug: string;
   name: string;
+  variantName: string;
   image: string;
   price: number;
   quantity: number;
-};
-
-const PAYMENT_METHODS: ApiOrder["paymentMethod"][] = ["Chuyển khoản", "COD", "Thẻ tín dụng", "Ví điện tử"];
-const PAYMENT_STATUSES: ApiOrder["paymentStatus"][] = ["unpaid", "paid", "refunded"];
-const PAYMENT_STATUS_LABEL: Record<ApiOrder["paymentStatus"], string> = {
-  unpaid: "Chưa thanh toán",
-  paid: "Đã thanh toán",
-  refunded: "Đã hoàn tiền",
+  variants: ApiProduct["variants"];
 };
 
 function newKey() {
   return Math.random().toString(36).slice(2);
 }
 
-/**
- * Manual order entry for orders taken by phone/Facebook/in person — replaces the Excel sheet the
- * admin used before there was no client-side checkout. Reuses the same `POST /orders` endpoint
- * the (now-removed) storefront checkout used; the signed-in admin becomes the order's `userId`.
- */
 export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreated: (order: ApiOrder) => void }) {
-  const [customerName, setCustomerName] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
+  const [orderType, setOrderType] = useState<ApiOrder["orderType"]>("pre_order");
+  const [facebookName, setFacebookName] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
   const [phone, setPhone] = useState("");
-  const [selectedProvince, setSelectedProvince] = useState<ApiProvince | null>(null);
-  const [selectedWard, setSelectedWard] = useState<ApiWard | null>(null);
   const [addressDetail, setAddressDetail] = useState("");
   const [items, setItems] = useState<DraftItem[]>([]);
-  const [shippingFee, setShippingFee] = useState("0");
-  const [tax, setTax] = useState("");
-  const [promotionCode, setPromotionCode] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<ApiOrder["paymentMethod"]>("Chuyển khoản");
-  const [paymentStatus, setPaymentStatus] = useState<ApiOrder["paymentStatus"]>("unpaid");
+  const [totalOverride, setTotalOverride] = useState("");
+  const [depositAmount, setDepositAmount] = useState("0");
   const [productPick, setProductPick] = useState<ApiProduct | null>(null);
   const [productSearchKey, setProductSearchKey] = useState(0);
+  const [createdOrder, setCreatedOrder] = useState<ApiOrder | null>(null);
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);
-  const shippingFeeNum = Number(shippingFee) || 0;
-  const taxNum = tax.trim() ? Number(tax) || 0 : 0;
-  const total = subtotal + shippingFeeNum + taxNum;
+  const total = totalOverride === "" ? subtotal : Math.max(0, Number(totalOverride) || 0);
+  const deposit = Math.max(0, Number(depositAmount) || 0);
+  const remaining = Math.max(0, total - deposit);
 
-  function addProductLine(product: ApiProduct) {
-    setItems((prev) => [
-      ...prev,
+  function addProduct(product: ApiProduct) {
+    const firstVariant = product.variants[0];
+    setItems((previous) => [
+      ...previous,
       {
         key: newKey(),
         productId: product.id,
         slug: product.slug,
         name: product.name,
-        image: product.heroImage,
-        price: product.price,
+        variantName: firstVariant?.name ?? "",
+        image: firstVariant?.image || product.heroImage,
+        price: firstVariant?.price ?? product.price,
         quantity: 1,
+        variants: product.variants,
       },
     ]);
     setProductPick(null);
-    setProductSearchKey((k) => k + 1);
-  }
-
-  function addManualLine() {
-    setItems((prev) => [...prev, { key: newKey(), slug: "", name: "", image: "", price: 0, quantity: 1 }]);
+    setProductSearchKey((key) => key + 1);
   }
 
   function updateItem(key: string, patch: Partial<DraftItem>) {
-    setItems((prev) => prev.map((item) => (item.key === key ? { ...item, ...patch } : item)));
+    setItems((previous) => previous.map((item) => (item.key === key ? { ...item, ...patch } : item)));
+    setTotalOverride("");
   }
 
-  function removeItem(key: string) {
-    setItems((prev) => prev.filter((item) => item.key !== key));
+  function selectVariant(item: DraftItem, variantName: string) {
+    const variant = item.variants.find((candidate) => candidate.name === variantName);
+    updateItem(item.key, {
+      variantName,
+      price: variant?.price ?? item.price,
+      image: variant?.image || item.image,
+    });
+  }
+
+  function shareUrl(order: ApiOrder) {
+    return `${window.location.origin}/theo-doi-don-hang/${order.publicCode}`;
+  }
+
+  async function handleShare() {
+    if (!createdOrder) return;
+    const url = shareUrl(createdOrder);
+    const text = `Theo dõi đơn hàng #${createdOrder.publicCode.toUpperCase()} của ZENOST: ${url}`;
+    if (navigator.share) {
+      await navigator.share({ title: `Đơn hàng #${createdOrder.publicCode.toUpperCase()}`, text, url });
+      return;
+    }
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
   }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-
-    if (!selectedProvince || !selectedWard) {
-      return setError("Vui lòng chọn Tỉnh/Thành phố và Phường/Xã.");
-    }
-    if (items.length === 0) {
-      return setError("Vui lòng thêm ít nhất 1 sản phẩm vào đơn hàng.");
-    }
-    if (items.some((item) => !item.name.trim() || item.price <= 0 || item.quantity <= 0)) {
-      return setError("Mỗi sản phẩm cần có tên, giá và số lượng hợp lệ.");
-    }
+    if (items.length === 0) return setError("Vui lòng chọn ít nhất một sản phẩm.");
+    if (deposit > total) return setError("Số tiền đặt cọc không được lớn hơn tổng tiền.");
 
     setSaving(true);
     try {
       const { order } = await createOrder({
-        customerName: customerName.trim(),
-        customerEmail: customerEmail.trim(),
-        phone: phone.trim(),
-        provinceCode: selectedProvince.code,
-        provinceName: selectedProvince.fullName,
-        wardCode: selectedWard.code,
-        wardName: selectedWard.fullName,
+        orderType,
+        facebookName: facebookName.trim(),
+        facebookUrl: facebookUrl.trim(),
+        phone: phone.trim() || undefined,
         addressDetail: addressDetail.trim(),
-        items: items.map((item) => ({
-          productId: item.productId,
-          slug: item.slug,
-          name: item.name.trim(),
-          image: item.image,
-          price: item.price,
-          quantity: item.quantity,
+        items: items.map(({ productId, slug, name, variantName, image, price, quantity }) => ({
+          productId,
+          slug,
+          name,
+          variantName,
+          image,
+          price,
+          quantity,
         })),
-        shippingFee: shippingFeeNum,
-        tax: tax.trim() ? taxNum : undefined,
-        promotionCode: promotionCode.trim() || undefined,
-        paymentMethod,
-        paymentStatus,
+        total,
+        depositAmount: deposit,
       });
+      setCreatedOrder(order);
       onCreated(order);
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : "Tạo đơn hàng thất bại, vui lòng thử lại.");
@@ -140,273 +135,120 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
     }
   }
 
-  return (
-    <Modal
-      onClose={onClose}
-      closeDisabled={saving}
-      labelledBy="create-order-modal-title"
-      icon="add_shopping_cart"
-      title="Tạo đơn hàng thủ công"
-      subtitle="Nhập tay đơn hàng đặt qua điện thoại, Facebook, hoặc ngoài đời — không liên quan đến website."
-      maxWidthClassName="max-w-3xl"
-    >
-      <form id="create-order-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-5">
-        <section className="space-y-3">
-          <h3 className="font-label-md text-[13px] font-semibold text-on-surface">Thông tin khách hàng</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <FieldLabel htmlFor="co-name" required>
-                Họ và tên
-              </FieldLabel>
-              <input
-                id="co-name"
-                required
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Nguyễn Văn A"
-                className={textFieldClass}
-              />
-            </div>
-            <div>
-              <FieldLabel htmlFor="co-phone" required>
-                Số điện thoại
-              </FieldLabel>
-              <input
-                id="co-phone"
-                required
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="09xx xxx xxx"
-                className={textFieldClass}
-              />
-            </div>
-            <div>
-              <FieldLabel htmlFor="co-email" required>
-                Email
-              </FieldLabel>
-              <input
-                id="co-email"
-                required
-                type="email"
-                value={customerEmail}
-                onChange={(e) => setCustomerEmail(e.target.value)}
-                placeholder="Nếu khách không có, nhập email tạm"
-                className={textFieldClass}
-              />
-            </div>
+  if (createdOrder) {
+    return (
+      <Modal onClose={onClose} labelledBy="created-order-title" icon="check_circle" title="Đã tạo đơn hàng" subtitle={`Mã đơn #${createdOrder.publicCode.toUpperCase()}`} maxWidthClassName="sm:max-w-[512px]">
+        <div className="space-y-5 px-4 py-6 sm:px-6">
+          <div className="rounded-2xl bg-primary/5 p-5 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-on-surface-variant">Mã theo dõi</p>
+            <p className="mt-2 font-display-lg text-4xl uppercase tracking-[0.18em] text-primary">{createdOrder.publicCode}</p>
+            <p className="mt-3 text-sm text-on-surface-variant">Khách có thể xem trạng thái mà không cần đăng nhập.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button type="button" onClick={() => void handleShare()} className="flex-1">
+              <Icon name="share" />
+              {copied ? "Đã sao chép" : "Chia sẻ đơn hàng"}
+            </Button>
+            <button type="button" onClick={onClose} className="rounded-xl border border-outline-variant px-5 py-3 text-sm font-bold text-on-surface-variant hover:bg-surface-container-low">
+              Đóng
+            </button>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
+
+  return (
+    <Modal onClose={onClose} closeDisabled={saving} labelledBy="create-order-modal-title" icon="add_shopping_cart" title="Tạo đơn Facebook" subtitle="Tạo thủ công từ cuộc trò chuyện với khách" maxWidthClassName="sm:max-w-[768px]">
+      <form id="create-order-form" onSubmit={handleSubmit} className="flex-1 space-y-5 overflow-y-auto px-4 py-4 sm:px-6">
+        <section className="space-y-3">
+          <h3 className="text-[13px] font-semibold text-on-surface">Thông tin đơn và khách Facebook</h3>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <FieldLabel htmlFor="co-province" required>
-                Tỉnh / Thành phố
-              </FieldLabel>
-              <SearchCombobox<ApiProvince>
-                id="co-province"
-                required
-                placeholder="Tìm Tỉnh/Thành phố..."
-                selected={selectedProvince}
-                getKey={(p) => p.code}
-                getLabel={(p) => p.fullName}
-                onSearch={fetchProvinces}
-                onSelect={(province) => {
-                  setSelectedProvince(province);
-                  setSelectedWard(null);
-                }}
-              />
+              <FieldLabel htmlFor="co-type" required>Loại đơn</FieldLabel>
+              <SelectField id="co-type" value={orderType} onChange={(event) => setOrderType(event.target.value as ApiOrder["orderType"])}>
+                <option value="in_stock">Hàng có sẵn</option>
+                <option value="pre_order">Hàng order</option>
+              </SelectField>
             </div>
             <div>
-              <FieldLabel htmlFor="co-ward" required>
-                Phường / Xã
-              </FieldLabel>
-              <SearchCombobox<ApiWard>
-                id="co-ward"
-                required
-                disabled={!selectedProvince}
-                disabledPlaceholder="Chọn Tỉnh/Thành phố trước"
-                placeholder="Tìm Phường/Xã..."
-                selected={selectedWard}
-                getKey={(w) => w.code}
-                getLabel={(w) => w.fullName}
-                onSearch={(query) => fetchWards(selectedProvince!.code, query)}
-                onSelect={setSelectedWard}
-              />
+              <FieldLabel htmlFor="co-facebook-name" required>Tên Facebook khách</FieldLabel>
+              <input id="co-facebook-name" required value={facebookName} onChange={(event) => setFacebookName(event.target.value)} placeholder="Tên hiển thị trên Facebook" className={textFieldClass} />
+            </div>
+            <div className="sm:col-span-2">
+              <FieldLabel htmlFor="co-facebook-url" required>Link Facebook khách</FieldLabel>
+              <input id="co-facebook-url" required type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} placeholder="https://www.facebook.com/..." className={textFieldClass} />
             </div>
             <div>
-              <FieldLabel htmlFor="co-address">Địa chỉ cụ thể</FieldLabel>
-              <input
-                id="co-address"
-                value={addressDetail}
-                onChange={(e) => setAddressDetail(e.target.value)}
-                placeholder="Số nhà, tên đường..."
-                className={textFieldClass}
-              />
+              <FieldLabel htmlFor="co-phone">Số điện thoại — có thể thêm sau</FieldLabel>
+              <input id="co-phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} className={textFieldClass} />
+            </div>
+            <div>
+              <FieldLabel htmlFor="co-address">Địa chỉ — có thể thêm sau</FieldLabel>
+              <input id="co-address" value={addressDetail} onChange={(event) => setAddressDetail(event.target.value)} className={textFieldClass} />
             </div>
           </div>
         </section>
 
-        <section className="space-y-3 pt-3 border-t border-outline-variant/20">
-          <h3 className="font-label-md text-[13px] font-semibold text-on-surface">Sản phẩm</h3>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <SearchCombobox<ApiProduct>
-              key={productSearchKey}
-              id="co-product-search"
-              placeholder="Tìm sản phẩm trong kho để thêm vào đơn..."
-              selected={productPick}
-              getKey={(p) => p.id}
-              getLabel={(p) => p.name}
-              onSearch={(query) => fetchProducts({ q: query, pageSize: 8 }).then((res) => res.items)}
-              onSelect={(product) => {
-                if (product) addProductLine(product);
-              }}
-              className="flex-1"
-            />
-            <button
-              type="button"
-              onClick={addManualLine}
-              className="shrink-0 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg border border-outline-variant/60 text-on-surface-variant hover:text-primary hover:border-primary/40 transition-colors font-label-md text-xs"
-            >
-              <Icon name="add" className="!text-[16px]" />
-              Dòng thủ công
-            </button>
-          </div>
-
+        <section className="space-y-3 border-t border-outline-variant/20 pt-4">
+          <h3 className="text-[13px] font-semibold text-on-surface">Sản phẩm</h3>
+          <SearchCombobox<ApiProduct>
+            key={productSearchKey}
+            id="co-product-search"
+            placeholder="Tìm và chọn sản phẩm trên website..."
+            selected={productPick}
+            getKey={(product) => product.id}
+            getLabel={(product) => `${product.name} · ${formatVnd(product.price)}`}
+            onSearch={(query) => fetchProducts({ q: query, pageSize: 8 }).then((response) => response.items)}
+            onSelect={(product) => product && addProduct(product)}
+          />
           {items.length === 0 ? (
-            <p className="text-label-sm text-on-surface-variant">Chưa có sản phẩm nào trong đơn.</p>
+            <p className="text-sm text-on-surface-variant">Chưa chọn sản phẩm.</p>
           ) : (
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               {items.map((item) => (
-                <div key={item.key} className="flex items-center gap-2 bg-surface-container-low rounded-lg p-2">
-                  <input
-                    type="text"
-                    value={item.name}
-                    onChange={(e) => updateItem(item.key, { name: e.target.value })}
-                    placeholder="Tên sản phẩm"
-                    className="flex-1 min-w-0 bg-white border-none rounded-lg px-2.5 py-2 text-[13px] ring-1 ring-outline-variant focus:ring-2 focus:ring-primary transition-all"
-                  />
-                  <input
-                    type="number"
-                    min={0}
-                    value={item.price || ""}
-                    onChange={(e) => updateItem(item.key, { price: Number(e.target.value) || 0 })}
-                    placeholder="Giá"
-                    className="w-28 shrink-0 bg-white border-none rounded-lg px-2.5 py-2 text-[13px] text-right ring-1 ring-outline-variant focus:ring-2 focus:ring-primary transition-all"
-                  />
-                  <input
-                    type="number"
-                    min={1}
-                    value={item.quantity}
-                    onChange={(e) => updateItem(item.key, { quantity: Math.max(1, Number(e.target.value) || 1) })}
-                    className="w-16 shrink-0 bg-white border-none rounded-lg px-2.5 py-2 text-[13px] text-right ring-1 ring-outline-variant focus:ring-2 focus:ring-primary transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeItem(item.key)}
-                    aria-label="Xóa dòng"
-                    className="shrink-0 p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors"
-                  >
-                    <Icon name="close" className="!text-[16px]" />
-                  </button>
+                <div key={item.key} className="grid grid-cols-1 items-center gap-2 rounded-xl bg-surface-container-low p-2 sm:grid-cols-[minmax(0,1fr)_minmax(130px,180px)_110px_70px_32px]">
+                  <span className="truncate text-sm font-medium">{item.name}</span>
+                  {item.variants.length > 0 ? (
+                    <select value={item.variantName} onChange={(event) => selectVariant(item, event.target.value)} aria-label={`Biến thể ${item.name}`} className="min-w-0 rounded-lg bg-white px-2 py-2 text-xs ring-1 ring-outline-variant">
+                      {item.variants.map((variant, index) => <option key={`${variant.name}-${index}`} value={variant.name}>{variant.name}</option>)}
+                    </select>
+                  ) : (
+                    <span className="text-xs text-on-surface-variant">Không có biến thể</span>
+                  )}
+                  <input type="number" min={0} value={item.price} onChange={(event) => updateItem(item.key, { price: Number(event.target.value) || 0 })} aria-label={`Giá ${item.name}`} className="rounded-lg bg-white px-2 py-2 text-right text-xs ring-1 ring-outline-variant" />
+                  <input type="number" min={1} value={item.quantity} onChange={(event) => updateItem(item.key, { quantity: Math.max(1, Number(event.target.value) || 1) })} aria-label={`Số lượng ${item.name}`} className="rounded-lg bg-white px-2 py-2 text-right text-xs ring-1 ring-outline-variant" />
+                  <button type="button" onClick={() => { setItems((previous) => previous.filter((candidate) => candidate.key !== item.key)); setTotalOverride(""); }} aria-label={`Xóa ${item.name}`} className="text-on-surface-variant hover:text-error"><Icon name="close" /></button>
                 </div>
               ))}
             </div>
           )}
         </section>
 
-        <section className="space-y-3 pt-3 border-t border-outline-variant/20">
-          <h3 className="font-label-md text-[13px] font-semibold text-on-surface">Thanh toán & vận chuyển</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <section className="space-y-3 border-t border-outline-variant/20 pt-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div>
-              <FieldLabel htmlFor="co-shipping">Phí vận chuyển</FieldLabel>
-              <input
-                id="co-shipping"
-                type="number"
-                min={0}
-                value={shippingFee}
-                onChange={(e) => setShippingFee(e.target.value)}
-                className={textFieldClass}
-              />
+              <FieldLabel htmlFor="co-total">Tổng tiền — có thể sửa</FieldLabel>
+              <input id="co-total" type="number" min={0} value={totalOverride} onChange={(event) => setTotalOverride(event.target.value)} placeholder={String(subtotal)} className={textFieldClass} />
+              <p className="mt-1 text-xs text-on-surface-variant">Tự cộng: {formatVnd(subtotal)}</p>
             </div>
             <div>
-              <FieldLabel htmlFor="co-tax">Thuế (nếu có)</FieldLabel>
-              <input
-                id="co-tax"
-                type="number"
-                min={0}
-                value={tax}
-                onChange={(e) => setTax(e.target.value)}
-                placeholder="0"
-                className={textFieldClass}
-              />
+              <FieldLabel htmlFor="co-deposit">Số tiền đặt cọc</FieldLabel>
+              <input id="co-deposit" type="number" min={0} max={total} value={depositAmount} onChange={(event) => setDepositAmount(event.target.value)} className={textFieldClass} />
             </div>
             <div>
-              <FieldLabel htmlFor="co-promo">Mã khuyến mãi</FieldLabel>
-              <input
-                id="co-promo"
-                value={promotionCode}
-                onChange={(e) => setPromotionCode(e.target.value)}
-                placeholder="Không bắt buộc"
-                className={textFieldClass}
-              />
+              <FieldLabel>Số tiền còn lại</FieldLabel>
+              <div className="rounded-xl bg-surface-container-low px-3.5 py-2.5 font-bold text-primary">{formatVnd(remaining)}</div>
             </div>
-            <div>
-              <FieldLabel htmlFor="co-payment-method">Phương thức</FieldLabel>
-              <SelectField
-                id="co-payment-method"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value as ApiOrder["paymentMethod"])}
-              >
-                {PAYMENT_METHODS.map((method) => (
-                  <option key={method} value={method}>
-                    {method}
-                  </option>
-                ))}
-              </SelectField>
-            </div>
-          </div>
-          <div className="max-w-64">
-            <FieldLabel htmlFor="co-payment-status">Trạng thái thanh toán</FieldLabel>
-            <SelectField
-              id="co-payment-status"
-              value={paymentStatus}
-              onChange={(e) => setPaymentStatus(e.target.value as ApiOrder["paymentStatus"])}
-            >
-              {PAYMENT_STATUSES.map((status) => (
-                <option key={status} value={status}>
-                  {PAYMENT_STATUS_LABEL[status]}
-                </option>
-              ))}
-            </SelectField>
           </div>
         </section>
-
-        <div className="flex items-center justify-between pt-3 border-t border-outline-variant/20 font-headline-sm text-headline-sm">
-          <span>Tổng cộng</span>
-          <span className="text-primary">{formatVnd(total)}</span>
-        </div>
       </form>
 
-      <div className="shrink-0 border-t border-outline-variant/30 px-4 sm:px-6 py-3 bg-surface-container-lowest flex items-center justify-between gap-3">
-        {error ? (
-          <p className="flex items-center gap-1.5 text-error font-label-md text-xs min-w-0">
-            <Icon name="error" className="shrink-0 !text-[16px]" />
-            <span className="truncate">{error}</span>
-          </p>
-        ) : (
-          <span />
-        )}
-        <div className="flex items-center gap-2 shrink-0 ml-auto">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={saving}
-            className="px-4 py-2 font-label-md text-xs sm:text-sm text-on-surface-variant hover:bg-surface-container border border-outline-variant/60 rounded-xl transition-colors disabled:opacity-50"
-          >
-            Hủy
-          </button>
-          <Button type="submit" form="create-order-form" disabled={saving} className="px-5 py-2 text-xs sm:text-sm font-medium rounded-xl shadow-xs">
-            {saving ? "Đang lưu..." : "Tạo đơn hàng"}
-          </Button>
+      <div className="flex shrink-0 items-center justify-between gap-3 border-t border-outline-variant/30 bg-surface-container-lowest px-4 py-3 sm:px-6">
+        {error ? <p className="text-xs text-error">{error}</p> : <span />}
+        <div className="ml-auto flex gap-2">
+          <button type="button" onClick={onClose} disabled={saving} className="rounded-xl border border-outline-variant/60 px-4 py-2 text-sm text-on-surface-variant">Hủy</button>
+          <Button type="submit" form="create-order-form" disabled={saving}>{saving ? "Đang lưu..." : "Tạo đơn hàng"}</Button>
         </div>
       </div>
     </Modal>
