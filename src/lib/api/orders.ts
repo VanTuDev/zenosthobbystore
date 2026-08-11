@@ -34,6 +34,7 @@ export function fetchPublicOrder(code: string) {
 
 export type OrderListParams = {
   status?: ApiOrder["status"][];
+  q?: string;
   page?: number;
   pageSize?: number;
 };
@@ -42,6 +43,7 @@ function buildQuery(params: OrderListParams): string {
   const search = new URLSearchParams();
   if (params.page) search.set("page", String(params.page));
   if (params.pageSize) search.set("pageSize", String(params.pageSize));
+  if (params.q?.trim()) search.set("q", params.q.trim());
   for (const status of params.status ?? []) search.append("status", status);
   return search.toString();
 }

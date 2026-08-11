@@ -7,33 +7,22 @@ import { SpecsEditor, type Spec } from "./specs-editor";
 import { VideoInputEditor } from "./video-input-editor";
 import { VariantsEditor, draftFromVariant, type DraftVariant } from "./variants-editor";
 import { CategoryPicker } from "@/components/admin/category-picker";
-import { PriceInput } from "./price-input";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
-import { formatVnd } from "@/lib/format";
 import { createProduct, updateProduct } from "@/lib/api/products";
 import { deleteProductImage, uploadProductImage } from "@/lib/api/uploads";
 import { ApiRequestError } from "@/lib/api-client";
 import type { ApiCategory, ApiProduct, ApiProductVideo } from "@/lib/api-types";
-import type { StockStatus } from "@/lib/types";
-
-const STOCK_OPTIONS: { value: StockStatus; label: string }[] = [
-  { value: "in_stock", label: "Còn hàng" },
-  { value: "pre_order", label: "Đặt trước" },
-  { value: "coming_soon", label: "Sắp mở bán" },
-  { value: "sold_out", label: "Hết hàng" },
-];
 
 const inputClass =
   "w-full bg-surface-container-lowest border border-outline-variant/60 rounded-xl px-3.5 py-2.5 font-body-md text-body-md text-on-surface placeholder:text-outline/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all";
 const labelClass = "block font-label-md text-[12px] uppercase tracking-wider font-semibold text-on-surface-variant mb-1.5";
 
-type TabId = "basic" | "media" | "pricing" | "variants" | "details";
+type TabId = "basic" | "media" | "variants" | "details";
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: "basic", label: "Cơ bản", icon: "info" },
   { id: "media", label: "Hình ảnh", icon: "image" },
-  { id: "pricing", label: "Giá & Kho", icon: "sell" },
   { id: "variants", label: "Biến thể", icon: "style" },
   { id: "details", label: "Chi tiết & Danh mục", icon: "category" },
 ];
@@ -88,14 +77,6 @@ export function ProductFormModal({
   const [videos, setVideos] = useState<ApiProductVideo[]>(product?.videos ?? []);
   const [variants, setVariants] = useState<DraftVariant[]>(() => (product?.variants ?? []).map(draftFromVariant));
   const [categoryId, setCategoryId] = useState<string | null>(product?.categoryId ?? null);
-  const [originalPrice, setOriginalPrice] = useState(product?.originalPrice ? String(product.originalPrice) : "");
-  const [sellingPrice, setSellingPrice] = useState(
-    product?.sellingPrice ? String(product.sellingPrice) : product?.price ? String(product.price) : "",
-  );
-  const [promoPrice, setPromoPrice] = useState(product?.promoPrice ? String(product.promoPrice) : "");
-  const [costPrice, setCostPrice] = useState(product?.costPrice ? String(product.costPrice) : "");
-  const [stockStatus, setStockStatus] = useState<StockStatus>(product?.stockStatus ?? "in_stock");
-  const [stockCount, setStockCount] = useState(product?.stockCount ? String(product.stockCount) : "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -111,22 +92,6 @@ export function ProductFormModal({
     };
   }, [onClose]);
 
-  const sellingPriceNum = parseNumber(sellingPrice);
-  const originalPriceNum = parseNumber(originalPrice);
-  const promoPriceNum = parseNumber(promoPrice);
-  const costPriceNum = parseNumber(costPrice);
-
-  const displayPrice = promoPriceNum ?? sellingPriceNum;
-  const displayCompareAt =
-    promoPriceNum && sellingPriceNum && sellingPriceNum > promoPriceNum
-      ? sellingPriceNum
-      : originalPriceNum && sellingPriceNum && originalPriceNum > sellingPriceNum
-        ? originalPriceNum
-        : undefined;
-
-  const margin =
-    displayPrice && costPriceNum ? Math.round(((displayPrice - costPriceNum) / displayPrice) * 100) : undefined;
-
   const isUploadingImages = images.some((img) => img.status === "uploading");
   const hasNoCatalogData = categories.length === 0;
   const slugPreview = useMemo(() => slugify(name) || "san-pham-moi", [name]);
@@ -135,11 +100,10 @@ export function ProductFormModal({
     () => ({
       basic: name.trim() ? "ok" : "warn",
       media: images.length > 0 ? "ok" : "idle",
-      pricing: sellingPriceNum ? "ok" : "warn",
-      variants: variants.length > 0 ? "ok" : "idle",
+      variants: variants.length > 0 ? "ok" : "warn",
       details: categoryId ? "ok" : "idle",
     }),
-    [name, images.length, sellingPriceNum, variants.length, categoryId],
+    [name, images.length, variants.length, categoryId],
   );
 
   async function handleSubmit(event: React.FormEvent) {
@@ -149,10 +113,6 @@ export function ProductFormModal({
     if (!name.trim()) {
       setActiveTab("basic");
       return setError("Vui lòng nhập tên sản phẩm.");
-    }
-    if (!sellingPriceNum) {
-      setActiveTab("pricing");
-      return setError("Vui lòng nhập giá bán hợp lệ.");
     }
     if (isUploadingImages) {
       setActiveTab("media");
@@ -170,6 +130,21 @@ export function ProductFormModal({
         image: v.image,
       }));
 
+    if (cleanVariants.length === 0) {
+      setActiveTab("variants");
+      return setError("Vui lòng thêm ít nhất 1 biến thể cho sản phẩm.");
+    }
+    if (cleanVariants.some((variant) => variant.price <= 0)) {
+      setActiveTab("variants");
+      return setError("Vui lòng nhập giá hợp lệ cho tất cả biến thể.");
+    }
+
+    const lowestVariantPrice = Math.min(...cleanVariants.map((variant) => variant.price));
+    const totalVariantStock = cleanVariants.reduce((total, variant) => total + variant.stockCount, 0);
+    const derivedStockStatus: ApiProduct["stockStatus"] = cleanVariants.some((variant) => variant.stockCount > 0)
+      ? "in_stock"
+      : "sold_out";
+
     setSaving(true);
     try {
       const payload = {
@@ -177,15 +152,15 @@ export function ProductFormModal({
         brand: brand.trim() || "ZENOS Exclusive",
         universe: universe.trim() || undefined,
         scale: scale.trim() || "Không tỷ lệ",
-        price: displayPrice ?? sellingPriceNum,
-        compareAtPrice: displayCompareAt ?? null,
-        sellingPrice: sellingPriceNum,
-        originalPrice: originalPriceNum ?? null,
-        promoPrice: promoPriceNum ?? null,
-        costPrice: costPriceNum ?? null,
-        stockStatus,
-        stockCount: parseNumber(stockCount) ?? 0,
-        badges: promoPriceNum ? ["limited"] : stockStatus === "pre_order" ? ["pre_order"] : [],
+        price: lowestVariantPrice,
+        compareAtPrice: null,
+        sellingPrice: lowestVariantPrice,
+        originalPrice: null,
+        promoPrice: null,
+        costPrice: null,
+        stockStatus: derivedStockStatus,
+        stockCount: totalVariantStock,
+        badges: [],
         description: description.trim(),
         highlights,
         specs: cleanSpecs,
@@ -387,101 +362,13 @@ export function ProductFormModal({
             </div>
           )}
 
-          {/* TAB 3: PRICING & STOCK */}
-          {activeTab === "pricing" && (
-            <div className="max-w-2xl mx-auto space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="p-original" className={labelClass}>Giá gốc</label>
-                  <PriceInput id="p-original" value={originalPrice} onChange={setOriginalPrice} placeholder="5.200.000" />
-                </div>
-                <div>
-                  <label htmlFor="p-selling" className={labelClass}>
-                    Giá bán chính thức <span className="text-error">*</span>
-                  </label>
-                  <PriceInput id="p-selling" value={sellingPrice} onChange={setSellingPrice} placeholder="4.650.000" />
-                </div>
-                <div>
-                  <label htmlFor="p-promo" className={labelClass}>Giá khuyến mãi (Nếu có)</label>
-                  <PriceInput id="p-promo" value={promoPrice} onChange={setPromoPrice} placeholder="Khuyến mãi đặc biệt" />
-                </div>
-                <div>
-                  <label htmlFor="p-cost" className={labelClass}>
-                    <span className="inline-flex items-center gap-1 text-tertiary">
-                      <Icon name="visibility_off" className="!text-[13px]" />
-                      Giá vốn (Nội bộ)
-                    </span>
-                  </label>
-                  <PriceInput id="p-cost" value={costPrice} onChange={setCostPrice} placeholder="Chỉ Admin thấy" tone="muted" />
-                </div>
-              </div>
-
-              {/* Preview Giá & Margin */}
-              {displayPrice && (
-                <div className="p-3 bg-surface-container-low border border-outline-variant/30 rounded-xl flex items-center justify-between gap-2 flex-wrap">
-                  <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="font-label-md text-xs text-on-surface-variant">Hiển thị cho khách:</span>
-                    {displayCompareAt && (
-                      <span className="font-body-md text-xs text-on-surface-variant line-through">
-                        {formatVnd(displayCompareAt)}
-                      </span>
-                    )}
-                    <span className="font-headline-sm text-sm sm:text-base text-primary font-bold">
-                      {formatVnd(displayPrice)}
-                    </span>
-                  </div>
-                  {margin !== undefined && (
-                    <span
-                      className={`font-label-md text-xs font-semibold px-2 py-0.5 rounded-md ${
-                        margin >= 0 ? "bg-primary/10 text-primary" : "bg-error/10 text-error"
-                      }`}
-                    >
-                      Lợi nhuận {margin}%
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Tình trạng kho */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-outline-variant/20">
-                <div>
-                  <label htmlFor="p-stock-status" className={labelClass}>Tình trạng kho hàng</label>
-                  <select
-                    id="p-stock-status"
-                    value={stockStatus}
-                    onChange={(e) => setStockStatus(e.target.value as StockStatus)}
-                    className={inputClass}
-                  >
-                    {STOCK_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="p-stock-count" className={labelClass}>Số lượng tồn kho</label>
-                  <input
-                    id="p-stock-count"
-                    type="number"
-                    min={0}
-                    value={stockCount}
-                    onChange={(e) => setStockCount(e.target.value)}
-                    placeholder="0"
-                    className={inputClass}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* TAB: VARIANTS */}
           {activeTab === "variants" && (
             <div className="max-w-2xl mx-auto space-y-3">
               <p className={labelClass}>Biến thể sản phẩm (Tối đa 100)</p>
               <p className="font-body-sm text-xs text-on-surface-variant leading-relaxed -mt-2">
-                Mỗi biến thể (màu sắc, kích thước...) có giá và tồn kho riêng, độc lập với giá/tồn kho ở tab
-                &quot;Giá &amp; Kho&quot;. Để trống nếu sản phẩm không có biến thể.
+                Mỗi sản phẩm cần ít nhất 1 biến thể. Giá hiển thị lấy theo biến thể có giá thấp nhất; sản phẩm còn hàng
+                khi có ít nhất 1 biến thể còn tồn kho.
               </p>
               <VariantsEditor variants={variants} onChange={setVariants} />
             </div>

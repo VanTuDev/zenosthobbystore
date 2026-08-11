@@ -97,19 +97,26 @@ export default async function PublicOrderPage({ params }: { params: Promise<{ co
                         )}
                       </div>
                       {current && <p className="mt-1 text-xs text-on-surface-variant">Trạng thái hiện tại</p>}
+                      {status === "shipped" && current && order.trackingCode && (
+                        <div className="mt-4 flex items-start gap-3 rounded-2xl bg-primary/5 p-4 sm:p-5">
+                          <Icon name="local_shipping" className="mt-0.5 shrink-0 text-primary !text-[24px]" />
+                          <div className="min-w-0">
+                            <p className="text-xs text-on-surface-variant">Mã vận đơn</p>
+                            <p className="font-bold text-on-surface">{order.trackingCode}</p>
+                            <p>Theo dõi ngay tại:</p>
+                            <a href={`https://spx.vn/track?${encodeURIComponent(order.trackingCode.trim())}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex max-w-full items-center gap-1 break-all text-sm font-medium text-primary underline underline-offset-2 hover:brightness-75">
+                              https://spx.vn/track?{order.trackingCode.trim()}
+                              <Icon name="open_in_new" className="shrink-0 !text-[15px]" />
+                            </a>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </li>
                 );
               })}
             </ol>
           </section>
-
-          {order.trackingCode && (
-            <div className="flex items-center gap-3 rounded-2xl bg-primary/5 p-4">
-              <Icon name="local_shipping" className="text-primary" />
-              <div><p className="text-xs text-on-surface-variant">Mã vận đơn</p><p className="font-bold text-on-surface">{order.trackingCode}</p></div>
-            </div>
-          )}
 
           <section>
             <h2 className="mb-3 text-sm font-bold uppercase tracking-wider">Sản phẩm</h2>
