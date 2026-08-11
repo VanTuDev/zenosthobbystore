@@ -7,7 +7,7 @@ import { StatCard } from "@/components/admin/stat-card";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { formatVnd } from "@/lib/format";
-import { fetchOrders } from "@/lib/api/orders";
+import { fetchOrders, fetchOrderSummary } from "@/lib/api/orders";
 import { fetchFinanceSummary } from "@/lib/api/finance";
 import { ApiRequestError } from "@/lib/api-client";
 import { useToast } from "@/components/ui/toast";
@@ -33,6 +33,7 @@ export function AdminOrdersSection() {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [stats, setStats] = useState({ total: 0, pendingCount: 0, deliveredCount: 0, revenue: 0 });
+  const [moneyTotals, setMoneyTotals] = useState({ totalAmount: 0, depositAmount: 0, remainingAmount: 0 });
 
   useEffect(() => {
     let cancelled = false;
@@ -64,14 +65,16 @@ export function AdminOrdersSection() {
       fetchOrders({ status: tabToStatuses("active"), pageSize: 1 }),
       fetchOrders({ status: ["shipped"], pageSize: 1 }),
       fetchFinanceSummary(),
+      fetchOrderSummary(),
     ])
-      .then(([all, pending, delivered, summary]) => {
+      .then(([all, pending, delivered, summary, orderSummary]) => {
         setStats({
           total: all.pagination.total,
           pendingCount: pending.pagination.total,
           deliveredCount: delivered.pagination.total,
           revenue: summary.revenue,
         });
+        setMoneyTotals(orderSummary);
       })
       .catch(() => undefined);
   }, []);
@@ -96,6 +99,12 @@ export function AdminOrdersSection() {
         {statTiles.map((stat) => (
           <StatCard key={stat.label} icon={stat.icon} label={stat.label} value={stat.value} />
         ))}
+      </section>
+
+      <section className="mb-xl grid grid-cols-1 gap-gutter sm:grid-cols-3">
+        <StatCard icon="inventory_2" label="Tổng tiền hàng" value={formatVnd(moneyTotals.totalAmount)} />
+        <StatCard icon="account_balance_wallet" label="Tổng tiền cọc" value={formatVnd(moneyTotals.depositAmount)} />
+        <StatCard icon="payments" label="Tổng tiền còn lại" value={formatVnd(moneyTotals.remainingAmount)} />
       </section>
 
       {loadError && (
@@ -134,6 +143,11 @@ export function AdminOrdersSection() {
               total: prev.total + 1,
               pendingCount: order.status !== "shipped" ? prev.pendingCount + 1 : prev.pendingCount,
               revenue: order.paymentStatus === "paid" ? prev.revenue + order.total : prev.revenue,
+            }));
+            setMoneyTotals((prev) => ({
+              totalAmount: prev.totalAmount + order.total,
+              depositAmount: prev.depositAmount + order.depositAmount,
+              remainingAmount: prev.remainingAmount + Math.max(0, order.total - order.depositAmount),
             }));
             showToast(`Đã tạo đơn hàng cho ${order.customerName}.`, "success");
           }}

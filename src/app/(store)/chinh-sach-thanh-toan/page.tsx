@@ -4,7 +4,7 @@ import { PolicyPage } from "@/components/store/policy-page";
 export const metadata: Metadata = {
   title: "Chính sách thanh toán",
   description:
-    "Các phương thức thanh toán được hỗ trợ và quy trình xử lý giao dịch tại ZENOS Hobby Store.",
+    "Các phương thức thanh toán được hỗ trợ và quy trình xử lý giao dịch tại ZENOST Hobby Store.",
   alternates: { canonical: "/chinh-sach-thanh-toan" },
 };
 
