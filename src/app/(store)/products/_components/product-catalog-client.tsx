@@ -81,8 +81,8 @@ export function ProductCatalogClient({ categories, facets }: Props) {
   const selectedScale = searchParams.get("scale") ?? undefined;
   const min = searchParams.get("min") ?? "";
   const max = searchParams.get("max") ?? "";
-  const sort = searchParams.get("sort") ?? "moi-nhap";
   const status = searchParams.get("status") ?? undefined;
+  const sort = searchParams.get("sort") ?? (status === "pre_order" ? "moi-nhap" : "pho-bien");
   const badge = searchParams.get("badge") ?? undefined;
 
   const categoryNameById = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories]);

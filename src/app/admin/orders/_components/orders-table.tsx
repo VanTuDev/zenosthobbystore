@@ -21,18 +21,24 @@ export function OrdersTable({
   orders,
   activeTab,
   onTabChange,
+  searchQuery,
+  onSearchChange,
   total,
   page,
   totalPages,
   onPageChange,
+  isRefreshing,
 }: {
   orders: ApiOrder[];
   activeTab: StatusTabKey;
   onTabChange: (tab: StatusTabKey) => void;
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
   total: number;
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  isRefreshing: boolean;
 }) {
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
 
@@ -47,7 +53,11 @@ export function OrdersTable({
     <section className="bg-surface-container-lowest rounded-lg border border-outline-variant/40 overflow-hidden">
       <div className="px-md py-sm border-b border-outline-variant/40 flex flex-wrap gap-sm justify-between items-center bg-surface-container-low">
         <h3 className="font-label-md text-label-md text-on-surface font-bold">Danh sách đơn hàng</h3>
-        <TabGroup tabs={STATUS_TABS} active={activeTab} onChange={onTabChange} size="sm" />
+        <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
+          {isRefreshing && <span className="inline-flex items-center gap-1 text-xs text-primary"><Icon name="progress_activity" className="animate-spin !text-[16px]" />Đang tìm…</span>}
+          <label className="relative min-w-[220px] sm:max-w-xs sm:flex-1"><Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant !text-[17px]" /><input value={searchQuery} onChange={(event) => onSearchChange(event.target.value)} placeholder="Tìm theo tên Facebook..." className="w-full rounded-lg bg-white py-2 pl-9 pr-9 text-sm outline-none ring-1 ring-outline-variant/40 focus:ring-2 focus:ring-primary" />{searchQuery && <button type="button" onClick={() => onSearchChange("")} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-on-surface-variant hover:text-primary" aria-label="Xóa từ khóa tìm kiếm"><Icon name="close" className="!text-[16px]" /></button>}</label>
+          <TabGroup tabs={STATUS_TABS} active={activeTab} onChange={onTabChange} size="sm" />
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-[13px]">

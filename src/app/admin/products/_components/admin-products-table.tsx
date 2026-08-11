@@ -15,17 +15,6 @@ const STOCK_META: Record<StockStatus, { label: string; tone: "primary" | "tertia
   sold_out: { label: "Hết hàng", tone: "tertiary" },
 };
 
-function ProfitCell({ product }: { product: ApiProduct }) {
-  if (!product.costPrice) return <span className="text-on-surface-variant">—</span>;
-  const profit = product.price - product.costPrice;
-  const margin = Math.round((profit / product.price) * 100);
-  return (
-    <span className={profit >= 0 ? "text-primary font-bold" : "text-error font-bold"}>
-      {formatVnd(profit)} <span className="text-label-sm font-normal">({margin}%)</span>
-    </span>
-  );
-}
-
 export function AdminProductsTable({
   products,
   categoryNameById,
@@ -53,9 +42,6 @@ export function AdminProductsTable({
               </th>
               <th className="px-md py-md font-label-md text-on-surface-variant uppercase tracking-wider">
                 Giá bán
-              </th>
-              <th className="px-md py-md font-label-md text-on-surface-variant uppercase tracking-wider">
-                Lợi nhuận (vốn)
               </th>
               <th className="px-md py-md font-label-md text-on-surface-variant uppercase tracking-wider">
                 Kho
@@ -90,9 +76,6 @@ export function AdminProductsTable({
                   </td>
                   <td className="px-md py-md text-on-surface font-label-md">{categoryName}</td>
                   <td className="px-md py-md font-bold text-on-surface">{formatVnd(product.price)}</td>
-                  <td className="px-md py-md">
-                    <ProfitCell product={product} />
-                  </td>
                   <td className="px-md py-md">
                     <Badge tone={stock.tone}>{stock.label}</Badge>
                   </td>

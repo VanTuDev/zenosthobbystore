@@ -53,6 +53,7 @@ export function OrderStatusEditor({
   const [paymentDraft, setPaymentDraft] = useState<ApiOrder["paymentStatus"]>(order.paymentStatus);
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingPayment, setSavingPayment] = useState(false);
+  const trackingChanged = statusDraft === "shipped" && trackingCode.trim() !== (order.trackingCode ?? "").trim();
 
   async function handleSaveStatus() {
     setSavingStatus(true);
@@ -110,7 +111,7 @@ export function OrderStatusEditor({
         </SelectField>
         <button
           type="button"
-          disabled={statusDraft === order.status || savingStatus}
+          disabled={(statusDraft === order.status && !trackingChanged) || savingStatus}
           onClick={handleSaveStatus}
           className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-on-primary transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
         >

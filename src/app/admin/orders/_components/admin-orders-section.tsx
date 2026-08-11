@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { OrdersTable, type StatusTabKey } from "./orders-table";
 import { CreateOrderModal } from "./create-order-modal";
 import { StatCard } from "@/components/admin/stat-card";
@@ -25,11 +25,15 @@ export function AdminOrdersSection() {
   const { showToast } = useToast();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [activeTab, setActiveTab] = useState<StatusTabKey>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const [orders, setOrders] = useState<ApiOrder[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const hasLoadedOrders = useRef(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [stats, setStats] = useState({ total: 0, pendingCount: 0, deliveredCount: 0, revenue: 0 });
@@ -37,9 +41,8 @@ export function AdminOrdersSection() {
 
   useEffect(() => {
     let cancelled = false;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- kicks off the loading state for the fetch this same effect issues
-    setIsLoading(true);
-    fetchOrders({ status: tabToStatuses(activeTab), page, pageSize: PAGE_SIZE })
+    if (hasLoadedOrders.current) setIsRefreshing(true);
+    fetchOrders({ status: tabToStatuses(activeTab), q: deferredSearchQuery, page, pageSize: PAGE_SIZE })
       .then((res) => {
         if (cancelled) return;
         setOrders(res.items);
@@ -52,12 +55,16 @@ export function AdminOrdersSection() {
         setLoadError(err instanceof ApiRequestError ? err.message : "Không thể tải danh sách đơn hàng.");
       })
       .finally(() => {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) {
+          hasLoadedOrders.current = true;
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
       });
     return () => {
       cancelled = true;
     };
-  }, [activeTab, page]);
+  }, [activeTab, deferredSearchQuery, page]);
 
   useEffect(() => {
     Promise.all([
@@ -121,10 +128,13 @@ export function AdminOrdersSection() {
           orders={orders}
           activeTab={activeTab}
           onTabChange={(tab) => { setActiveTab(tab); setPage(1); }}
+          searchQuery={searchQuery}
+          onSearchChange={(value) => { setSearchQuery(value); setPage(1); }}
           total={total}
           page={page}
           totalPages={totalPages}
           onPageChange={setPage}
+          isRefreshing={isRefreshing}
         />
       )}
 

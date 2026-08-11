@@ -9,8 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-
-const STORAGE_KEY = "zenos.favorites";
+import { useAuth } from "@/components/providers/auth-provider";
+import { apiFetch } from "@/lib/api-client";
 
 type FavoritesContextValue = {
   favoriteIds: string[];
@@ -21,35 +21,41 @@ type FavoritesContextValue = {
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
+  const { user, isAuthLoading } = useAuth();
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    // One-time hydration from localStorage: state must start at the SSR default
-    // (window is unavailable on the server) and only pick up the stored value
-    // once mounted on the client, so this can't be a lazy useState initializer.
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (stored) setFavoriteIds(JSON.parse(stored));
-    } catch {
-      // ignore malformed storage
+    if (isAuthLoading) return;
+    if (!user) {
+      setFavoriteIds([]);
+      return;
     }
-    setHydrated(true);
-  }, []);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(favoriteIds));
-  }, [favoriteIds, hydrated]);
+    let cancelled = false;
+    apiFetch<{ favoriteIds: string[] }>("/favorites")
+      .then((body) => {
+        if (!cancelled) setFavoriteIds(body.favoriteIds);
+      })
+      .catch((error) => console.error("Không thể tải danh sách yêu thích:", error));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, isAuthLoading]);
 
   const toggleFavorite = useCallback((productId: string) => {
-    setFavoriteIds((current) =>
-      current.includes(productId)
-        ? current.filter((id) => id !== productId)
-        : [...current, productId],
+    const previous = favoriteIds;
+    setFavoriteIds(
+      previous.includes(productId) ? previous.filter((id) => id !== productId) : [...previous, productId],
     );
-  }, []);
+
+    apiFetch<{ favoriteIds: string[] }>(`/favorites/${encodeURIComponent(productId)}`, { method: "PUT" })
+      .then((body) => setFavoriteIds(body.favoriteIds))
+      .catch((error) => {
+        setFavoriteIds(previous);
+        console.error("Không thể cập nhật sản phẩm yêu thích:", error);
+      });
+  }, [favoriteIds]);
 
   const isFavorite = useCallback(
     (productId: string) => favoriteIds.includes(productId),

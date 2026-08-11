@@ -34,6 +34,7 @@ export type ApiProduct = {
   badges: string[];
   rating: number;
   reviewCount: number;
+  favoriteCount?: number;
   description: string;
   highlights: string[];
   specs: { label: string; value: string }[];
