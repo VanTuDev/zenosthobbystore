@@ -85,13 +85,16 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
             <button
               type="button"
               onClick={async () => {
-                await navigator.clipboard.writeText(`${window.location.origin}/theo-doi-don-hang/${order.publicCode}`);
+                const trackingUrl = `https://zenosthobbystore.com/theo-doi-don-hang/${order.publicCode}`;
+                const message = `Shop đang đồng bộ đơn hàng lên web để dễ quản lý và khách dễ theo dõi trạng thái. Ae hãy kéo xuống dưới kiểm tra tên, chi tiết đơn hàng, số lượng, tổng tiền và tiền đặt cọc giúp mình nhé, nếu có sai sót báo lại để mình kiểm tra.\n\n(copy link mở bằng trình duyệt để theo dõi dễ hơn)\n${trackingUrl}`;
+                await navigator.clipboard.writeText(message);
                 setCopied(true);
+                window.setTimeout(() => setCopied(false), 2000);
               }}
               className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-on-primary transition hover:brightness-110"
             >
               <Icon name="share" className="!text-[16px]" />
-              {copied ? "Đã sao chép link" : "Chia sẻ trạng thái đơn"}
+              {copied ? "Đã sao chép nội dung" : "Copy link đơn hàng"}
             </button>
           )}
             <button type="button" disabled={deleting} onClick={() => void handleDelete()} className="inline-flex items-center gap-1.5 rounded-xl border border-error/40 px-4 py-2.5 text-sm font-bold text-error transition hover:bg-error/5 disabled:opacity-50">
