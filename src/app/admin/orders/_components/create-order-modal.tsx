@@ -191,7 +191,7 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
         </section>
 
         <section className="space-y-3 border-t border-outline-variant/20 pt-4">
-          <h3 className="text-[13px] font-semibold text-on-surface">Sản phẩm</h3>
+          <div><h3 className="text-[13px] font-semibold text-on-surface">Sản phẩm</h3><p className="mt-1 text-xs text-on-surface-variant">Mỗi sản phẩm hoặc biến thể có thể nhập số lượng từ 1 trở lên.</p></div>
           <SearchCombobox<ApiProduct>
             key={productSearchKey}
             id="co-product-search"
@@ -207,17 +207,17 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
           ) : (
             <div className="flex flex-col gap-2">
               {items.map((item) => (
-                <div key={item.key} className="grid grid-cols-1 items-center gap-2 rounded-xl bg-surface-container-low p-2 sm:grid-cols-[minmax(0,1fr)_minmax(130px,180px)_110px_70px_32px]">
+                <div key={item.key} className="grid grid-cols-1 items-end gap-2 rounded-xl bg-surface-container-low p-3 sm:grid-cols-[minmax(0,1fr)_minmax(130px,180px)_110px_128px_32px]">
                   <span className="truncate text-sm font-medium">{item.name}</span>
                   {item.variants.length > 0 ? (
-                    <select value={item.variantName} onChange={(event) => selectVariant(item, event.target.value)} aria-label={`Biến thể ${item.name}`} className="min-w-0 rounded-lg bg-white px-2 py-2 text-xs ring-1 ring-outline-variant">
+                    <label className="min-w-0 text-[10px] font-bold uppercase tracking-wide text-on-surface-variant">Biến thể<select value={item.variantName} onChange={(event) => selectVariant(item, event.target.value)} aria-label={`Biến thể ${item.name}`} className="mt-1 w-full min-w-0 rounded-lg bg-white px-2 py-2 text-xs font-normal normal-case tracking-normal text-on-surface ring-1 ring-outline-variant">
                       {item.variants.map((variant, index) => <option key={`${variant.name}-${index}`} value={variant.name}>{variant.name}</option>)}
-                    </select>
+                    </select></label>
                   ) : (
                     <span className="text-xs text-on-surface-variant">Không có biến thể</span>
                   )}
-                  <input type="number" min={0} value={item.price} onChange={(event) => updateItem(item.key, { price: Number(event.target.value) || 0 })} aria-label={`Giá ${item.name}`} className="rounded-lg bg-white px-2 py-2 text-right text-xs ring-1 ring-outline-variant" />
-                  <input type="number" min={1} value={item.quantity} onChange={(event) => updateItem(item.key, { quantity: Math.max(1, Number(event.target.value) || 1) })} aria-label={`Số lượng ${item.name}`} className="rounded-lg bg-white px-2 py-2 text-right text-xs ring-1 ring-outline-variant" />
+                  <label className="text-[10px] font-bold uppercase tracking-wide text-on-surface-variant">Giá<input type="number" min={0} value={item.price} onChange={(event) => updateItem(item.key, { price: Number(event.target.value) || 0 })} aria-label={`Giá ${item.name}`} className="mt-1 w-full rounded-lg bg-white px-2 py-2 text-right text-xs ring-1 ring-outline-variant" /></label>
+                  <div><span className="text-[10px] font-bold uppercase tracking-wide text-on-surface-variant">Số lượng</span><div className="mt-1 grid grid-cols-[32px_1fr_32px] overflow-hidden rounded-lg bg-white ring-1 ring-outline-variant"><button type="button" onClick={() => updateItem(item.key, { quantity: Math.max(1, item.quantity - 1) })} className="text-lg text-on-surface-variant hover:bg-primary/10" aria-label={`Giảm số lượng ${item.name}`}>−</button><input type="number" min={1} value={item.quantity} onChange={(event) => updateItem(item.key, { quantity: Math.max(1, Number(event.target.value) || 1) })} aria-label={`Số lượng ${item.name}`} className="min-w-0 border-x border-outline-variant/40 bg-white px-1 py-2 text-center text-xs outline-none" /><button type="button" onClick={() => updateItem(item.key, { quantity: item.quantity + 1 })} className="text-lg text-primary hover:bg-primary/10" aria-label={`Tăng số lượng ${item.name}`}>+</button></div></div>
                   <button type="button" onClick={() => { setItems((previous) => previous.filter((candidate) => candidate.key !== item.key)); setTotalOverride(""); }} aria-label={`Xóa ${item.name}`} className="text-on-surface-variant hover:text-error"><Icon name="close" /></button>
                 </div>
               ))}

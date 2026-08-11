@@ -51,6 +51,33 @@ export function fetchOrders(params: OrderListParams = {}) {
   return apiFetch<PaginatedResponse<ApiOrder>>(`/orders${qs ? `?${qs}` : ""}`);
 }
 
+export function fetchOrderSummary() {
+  return apiFetch<{ totalAmount: number; depositAmount: number; remainingAmount: number }>("/orders/summary");
+}
+
+export type OrderedProductSummary = {
+  productId: string | null;
+  slug: string;
+  name: string;
+  variantName: string;
+  image: string;
+  quantity: number;
+  orderCount: number;
+  factoryOrderedQuantity: number;
+  surplusQuantity: number;
+};
+
+export function fetchOrderedProductsSummary() {
+  return apiFetch<{ items: OrderedProductSummary[]; totalQuantity: number; totalFactoryOrderedQuantity: number }>("/orders/ordered-products-summary");
+}
+
+export function updateFactoryOrderedQuantity(productKey: string, variantName: string, orderedQuantity: number) {
+  return apiFetch<{ quantity: { orderedQuantity: number } }>("/orders/ordered-products-summary/factory-quantity", {
+    method: "PUT",
+    body: { productKey, variantName, orderedQuantity },
+  });
+}
+
 export function updateOrderStatus(id: string, status: ApiOrder["status"], trackingCode?: string) {
   return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/status`, {
     method: "PATCH",
