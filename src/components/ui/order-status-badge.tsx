@@ -15,6 +15,7 @@ export const ORDER_STATUS_META: Record<
   pending: { label: "Chờ xử lý", tone: "outline" },
   processing: { label: "Đang xử lý", tone: "outline" },
   shipped: { label: "Đã vận chuyển", tone: "primary" },
+  picked_up: { label: "Khách đã nhận tại shop", tone: "primary" },
   delivered: { label: "Đã giao", tone: "primary" },
   cancelled: { label: "Đã hủy", tone: "tertiary" },
 };
