@@ -172,6 +172,7 @@ export type ApiOrder = {
     | "vietnam_warehouse"
     | "shop_warehouse"
     | "shipped"
+    | "picked_up"
     | "pending"
     | "processing"
     | "delivered"

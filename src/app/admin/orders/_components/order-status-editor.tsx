@@ -15,8 +15,8 @@ import { ApiRequestError } from "@/lib/api-client";
 import type { ApiOrder } from "@/lib/api-types";
 
 const STATUS_OPTIONS: Record<ApiOrder["orderType"], ApiOrder["status"][]> = {
-  in_stock: ["packing", "shipped"],
-  pre_order: ["deposit_received", "factory_ordered", "factory_shipped", "transit_warehouse", "vietnam_warehouse", "shop_warehouse", "shipped"],
+  in_stock: ["packing", "shipped", "picked_up"],
+  pre_order: ["deposit_received", "factory_ordered", "factory_shipped", "transit_warehouse", "vietnam_warehouse", "shop_warehouse", "shipped", "picked_up"],
 };
 const PAYMENT_STATUS_OPTIONS: ApiOrder["paymentStatus"][] = ["not_deposited", "deposited", "paid"];
 

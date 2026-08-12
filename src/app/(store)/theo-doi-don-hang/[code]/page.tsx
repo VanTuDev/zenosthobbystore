@@ -24,6 +24,7 @@ const STATUS_LABEL: Record<ApiOrder["status"], string> = {
   vietnam_warehouse: "Hàng về kho Việt Nam",
   shop_warehouse: "Hàng về kho shop",
   shipped: "Đã vận chuyển",
+  picked_up: "Khách đã nhận tại shop",
   pending: "Chờ xử lý",
   processing: "Đang xử lý",
   delivered: "Đã giao",
@@ -43,6 +44,7 @@ const STATUS_NOTE: Partial<Record<ApiOrder["status"], string>> = {
   vietnam_warehouse: "Dự kiến về shop trong 3 ngày",
   shop_warehouse: "Dự kiến được vận chuyển trong 1 ngày",
   shipped: "Dự kiến nhận hàng trong 2 ngày",
+  picked_up: "Khách đã nhận sản phẩm trực tiếp tại cửa hàng",
 };
 
 export default async function PublicOrderPage({ params }: { params: Promise<{ code: string }> }) {
@@ -50,7 +52,9 @@ export default async function PublicOrderPage({ params }: { params: Promise<{ co
   const response = await fetchPublicOrder(code).catch(() => null);
   if (!response) notFound();
   const order = response.order;
-  const steps = STATUS_STEPS[order.orderType];
+  const steps = order.status === "picked_up"
+    ? STATUS_STEPS[order.orderType].map((status) => (status === "shipped" ? "picked_up" : status))
+    : STATUS_STEPS[order.orderType];
   const currentIndex = Math.max(0, steps.indexOf(order.status));
 
   return (

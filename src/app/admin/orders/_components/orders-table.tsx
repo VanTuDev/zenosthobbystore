@@ -12,7 +12,7 @@ import type { ApiOrder } from "@/lib/api-types";
 export const STATUS_TABS = [
   { key: "all", label: "Tất cả" },
   { key: "active", label: "Đang xử lý" },
-  { key: "shipped", label: "Đã vận chuyển" },
+  { key: "shipped", label: "Đã hoàn thành" },
 ] as const satisfies readonly Tab<string>[];
 
 export type StatusTabKey = (typeof STATUS_TABS)[number]["key"];

@@ -17,7 +17,7 @@ const PAGE_SIZE = 10;
 
 function tabToStatuses(tab: StatusTabKey): ApiOrder["status"][] | undefined {
   if (tab === "all") return undefined;
-  if (tab === "shipped") return ["shipped"];
+  if (tab === "shipped") return ["shipped", "picked_up"];
   return ["packing", "deposit_received", "factory_ordered", "factory_shipped", "transit_warehouse", "vietnam_warehouse", "shop_warehouse"];
 }
 
@@ -70,7 +70,7 @@ export function AdminOrdersSection() {
     Promise.all([
       fetchOrders({ pageSize: 1 }),
       fetchOrders({ status: tabToStatuses("active"), pageSize: 1 }),
-      fetchOrders({ status: ["shipped"], pageSize: 1 }),
+      fetchOrders({ status: ["shipped", "picked_up"], pageSize: 1 }),
       fetchFinanceSummary(),
       fetchOrderSummary(),
     ])
@@ -89,7 +89,7 @@ export function AdminOrdersSection() {
   const statTiles = [
     { label: "Tổng đơn hàng", value: stats.total.toLocaleString("vi-VN"), icon: "receipt_long" },
     { label: "Cần xử lý", value: stats.pendingCount.toLocaleString("vi-VN"), icon: "pending_actions" },
-    { label: "Đã vận chuyển", value: stats.deliveredCount.toLocaleString("vi-VN"), icon: "local_shipping" },
+    { label: "Đã hoàn thành", value: stats.deliveredCount.toLocaleString("vi-VN"), icon: "task_alt" },
     { label: "Doanh thu đã thu", value: formatVnd(stats.revenue), icon: "payments" },
   ];
 
@@ -151,7 +151,7 @@ export function AdminOrdersSection() {
             setStats((prev) => ({
               ...prev,
               total: prev.total + 1,
-              pendingCount: order.status !== "shipped" ? prev.pendingCount + 1 : prev.pendingCount,
+              pendingCount: !["shipped", "picked_up"].includes(order.status) ? prev.pendingCount + 1 : prev.pendingCount,
               revenue: order.paymentStatus === "paid" ? prev.revenue + order.total : prev.revenue,
             }));
             setMoneyTotals((prev) => ({
