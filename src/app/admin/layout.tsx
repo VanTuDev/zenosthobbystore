@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="min-h-screen bg-surface">
         <AdminSidebar />
         <AdminTopbar />
-        <main className="ml-64 p-margin-mobile md:p-margin-desktop max-w-[1920px]">{children}</main>
+        <main className="min-w-0 p-margin-mobile md:p-margin-desktop lg:ml-64 max-w-[1920px]">{children}</main>
       </div>
     </AdminAuthGuard>
   );

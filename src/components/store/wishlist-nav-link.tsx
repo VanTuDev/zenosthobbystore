@@ -57,7 +57,7 @@ export function WishlistNavLink() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-sm w-80 rounded-xl bg-white shadow-2xl border border-outline-variant/30 overflow-hidden z-50"
+          className="fixed left-4 right-4 top-16 mt-sm overflow-hidden rounded-xl border border-outline-variant/30 bg-white shadow-2xl z-50 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:w-80"
         >
           <div className="px-md py-sm border-b border-outline-variant/20">
             <p className="font-label-md text-label-md text-on-surface font-bold">Sản phẩm yêu thích</p>

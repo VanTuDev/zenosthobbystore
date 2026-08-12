@@ -27,8 +27,8 @@ export function AdminTopbar({ searchPlaceholder = "Tìm kiếm trong Zenos Admin
   }, [open]);
 
   return (
-    <header className="flex justify-between items-center h-16 ml-64 px-margin-mobile md:px-margin-desktop w-[calc(100%-16rem)] sticky top-0 bg-surface z-40 border-b border-outline-variant/20">
-      <div className="flex items-center flex-1 max-w-144">
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-outline-variant/20 bg-surface pl-16 pr-4 lg:ml-64 lg:w-[calc(100%-16rem)] lg:px-margin-desktop">
+      <div className="flex min-w-0 flex-1 items-center max-w-144">
         <div className="relative w-full">
           <span className="absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">
             <Icon name="search" />
@@ -44,7 +44,7 @@ export function AdminTopbar({ searchPlaceholder = "Tìm kiếm trong Zenos Admin
           />
         </div>
       </div>
-      <div className="flex items-center gap-md">
+      <div className="ml-2 flex shrink-0 items-center gap-2 sm:gap-md">
         <button
           type="button"
           aria-label="Thông báo"

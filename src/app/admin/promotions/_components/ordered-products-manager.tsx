@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
+import { ORDER_STATUS_META } from "@/components/ui/order-status-badge";
 import { ApiRequestError } from "@/lib/api-client";
-import { fetchOrderedProductsSummary, updateFactoryOrderedQuantity, type OrderedProductSummary } from "@/lib/api/orders";
+import { fetchOrderedProductsSummary, fetchOrdersForOrderedProduct, updateFactoryOrderedQuantity, type OrderedProductOrder, type OrderedProductSummary } from "@/lib/api/orders";
 
 export function OrderedProductsManager() {
   const [items, setItems] = useState<OrderedProductSummary[]>([]);
@@ -13,6 +14,10 @@ export function OrderedProductsManager() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<OrderedProductSummary | null>(null);
+  const [relatedOrders, setRelatedOrders] = useState<OrderedProductOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -38,6 +43,21 @@ export function OrderedProductsManager() {
         : value));
   }
 
+  async function showRelatedOrders(item: OrderedProductSummary) {
+    setSelectedItem(item);
+    setRelatedOrders([]);
+    setOrdersError(null);
+    setOrdersLoading(true);
+    try {
+      const response = await fetchOrdersForOrderedProduct(item.productId ?? item.slug, item.variantName);
+      setRelatedOrders(response.orders);
+    } catch (err) {
+      setOrdersError(err instanceof ApiRequestError ? err.message : "Không thể tải danh sách đơn hàng.");
+    } finally {
+      setOrdersLoading(false);
+    }
+  }
+
   return (
     <section className="overflow-hidden rounded-2xl border border-outline-variant/30 bg-surface-container-lowest shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-outline-variant/30 bg-surface-container-low px-5 py-4">
@@ -56,10 +76,25 @@ export function OrderedProductsManager() {
           <table className="w-full min-w-[900px] border-collapse text-left text-sm">
             <thead className="bg-white text-[10px] uppercase tracking-wide text-on-surface-variant"><tr><th className="border-b border-outline-variant/30 px-5 py-3">Sản phẩm</th><th className="border-b border-outline-variant/30 px-4 py-3">Biến thể</th><th className="border-b border-outline-variant/30 px-4 py-3 text-right">Số đơn</th><th className="border-b border-outline-variant/30 px-4 py-3 text-right">Khách order</th><th className="border-b border-outline-variant/30 px-4 py-3 text-center">Đặt với xưởng</th><th className="border-b border-outline-variant/30 px-5 py-3 text-right">Dư / thiếu</th></tr></thead>
             <tbody className="divide-y divide-outline-variant/20">
-              {filteredItems.map((item) => <tr key={`${item.productId ?? item.slug}-${item.variantName}`} className="hover:bg-primary/5"><td className="px-5 py-3"><div className="flex items-center gap-3"><div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-outline-variant/30 bg-white"><Image src={item.image || "/placeholder-product.svg"} alt={item.name} fill sizes="48px" className="object-contain p-1" /></div>{item.slug ? <Link href={`/products/${item.slug}`} target="_blank" className="font-medium hover:text-primary">{item.name}</Link> : <span className="font-medium">{item.name}</span>}</div></td><td className="px-4 py-3 text-on-surface-variant">{item.variantName || "Không có biến thể"}</td><td className="px-4 py-3 text-right">{item.orderCount}</td><td className="px-4 py-3 text-right text-xl font-bold text-primary">{item.quantity}</td><td className="px-4 py-3"><FactoryQuantityCell item={item} onSaved={updateSavedQuantity} /></td><td className={`px-5 py-3 text-right text-xl font-bold ${item.surplusQuantity >= 0 ? "text-[#15803d]" : "text-error"}`}>{item.surplusQuantity > 0 ? "+" : ""}{item.surplusQuantity}</td></tr>)}
+              {filteredItems.map((item) => <tr key={`${item.productId ?? item.slug}-${item.variantName}`} className="hover:bg-primary/5"><td className="px-5 py-3"><div className="flex items-center gap-3"><div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-outline-variant/30 bg-white"><Image src={item.image || "/placeholder-product.svg"} alt={item.name} fill sizes="48px" className="object-contain p-1" /></div>{item.slug ? <Link href={`/products/${item.slug}`} target="_blank" className="font-medium hover:text-primary">{item.name}</Link> : <span className="font-medium">{item.name}</span>}</div></td><td className="px-4 py-3 text-on-surface-variant">{item.variantName || "Không có biến thể"}</td><td className="px-4 py-3 text-right"><button type="button" onClick={() => void showRelatedOrders(item)} className="rounded-lg px-2 py-1 font-bold text-primary underline decoration-primary/40 underline-offset-4 hover:bg-primary/10" title="Xem các đơn hàng có sản phẩm này">{item.orderCount}</button></td><td className="px-4 py-3 text-right text-xl font-bold text-primary">{item.quantity}</td><td className="px-4 py-3"><FactoryQuantityCell item={item} onSaved={updateSavedQuantity} /></td><td className={`px-5 py-3 text-right text-xl font-bold ${item.surplusQuantity >= 0 ? "text-[#15803d]" : "text-error"}`}>{item.surplusQuantity > 0 ? "+" : ""}{item.surplusQuantity}</td></tr>)}
               {filteredItems.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-on-surface-variant">{query ? "Không tìm thấy sản phẩm phù hợp." : "Chưa có sản phẩm nào đang order."}</td></tr>}
             </tbody>
           </table>
+        </div>
+      )}
+      {selectedItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedItem(null); }}>
+          <section role="dialog" aria-modal="true" aria-label="Danh sách đơn hàng" className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <header className="flex items-start justify-between gap-4 border-b border-outline-variant/30 px-5 py-4">
+              <div><p className="text-xs font-bold uppercase tracking-wide text-on-surface-variant">Các đơn hàng có sản phẩm</p><h3 className="mt-1 text-lg font-bold text-on-surface">{selectedItem.name}</h3><p className="text-sm text-on-surface-variant">Biến thể: {selectedItem.variantName || "Không có biến thể"}</p></div>
+              <button type="button" onClick={() => setSelectedItem(null)} className="rounded-full p-2 hover:bg-surface-container-low" aria-label="Đóng"><Icon name="close" /></button>
+            </header>
+            <div className="max-h-[65vh] overflow-y-auto p-5">
+              {ordersLoading && <p className="py-8 text-center text-on-surface-variant">Đang tải danh sách đơn hàng…</p>}
+              {ordersError && <p className="rounded-xl bg-error/10 p-3 text-sm text-error">{ordersError}</p>}
+              {!ordersLoading && !ordersError && <div className="space-y-2">{relatedOrders.map((order) => <Link key={order.id} href={`/admin/orders/${order.id}`} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border border-outline-variant/30 p-3 hover:border-primary hover:bg-primary/5"><span className="font-bold text-primary">#{order.publicCode.toUpperCase()}</span><div className="min-w-0"><p className="truncate font-medium text-on-surface">{order.facebookName}</p><p className="text-xs text-on-surface-variant">{ORDER_STATUS_META[order.status].label}</p></div><div className="flex items-center gap-2"><span className="rounded-lg bg-surface-container-low px-2.5 py-1 text-sm font-bold">SL {order.quantity}</span><Icon name="chevron_right" className="text-on-surface-variant" /></div></Link>)}{relatedOrders.length === 0 && <p className="py-8 text-center text-on-surface-variant">Không còn đơn hàng phù hợp.</p>}</div>}
+            </div>
+          </section>
         </div>
       )}
     </section>

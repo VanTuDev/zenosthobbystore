@@ -56,7 +56,7 @@ export function SiteSearch() {
             e.preventDefault();
             submit();
           }}
-          className="absolute right-0 top-full mt-sm w-72 sm:w-80 rounded-xl bg-white shadow-2xl border border-outline-variant/30 p-sm flex items-center gap-xs z-50"
+          className="fixed left-4 right-4 top-16 mt-sm flex items-center gap-xs rounded-xl border border-outline-variant/30 bg-white p-sm shadow-2xl z-50 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:w-80"
           role="search"
         >
           <Icon name="search" className="text-on-surface-variant shrink-0" />
