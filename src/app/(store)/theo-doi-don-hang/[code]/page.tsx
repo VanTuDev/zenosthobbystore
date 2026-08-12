@@ -148,9 +148,6 @@ export default async function PublicOrderPage({ params }: { params: Promise<{ co
             <div className="flex justify-between border-t border-outline-variant/30 pt-2 text-lg"><span>Còn lại</span><strong>{formatVnd(order.remainingAmount)}</strong></div>
           </section>
 
-          <p className="text-center text-xs leading-5 text-on-surface-variant">
-            Cập nhật gần nhất: {new Date(order.updatedAt || order.placedAt).toLocaleString("vi-VN")}. Nếu cần hỗ trợ, vui lòng liên hệ ZENOST.
-          </p>
         </div>
       </section>
     </main>

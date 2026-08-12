@@ -69,8 +69,21 @@ export type OrderedProductSummary = {
   surplusQuantity: number;
 };
 
+export type OrderedProductOrder = {
+  id: string;
+  publicCode: string;
+  facebookName: string;
+  status: ApiOrder["status"];
+  quantity: number;
+};
+
 export function fetchOrderedProductsSummary() {
   return apiFetch<{ items: OrderedProductSummary[]; totalQuantity: number; totalFactoryOrderedQuantity: number }>("/orders/ordered-products-summary");
+}
+
+export function fetchOrdersForOrderedProduct(productKey: string, variantName: string) {
+  const search = new URLSearchParams({ productKey, variantName });
+  return apiFetch<{ orders: OrderedProductOrder[] }>(`/orders/ordered-products-summary/orders?${search.toString()}`);
 }
 
 export function updateFactoryOrderedQuantity(productKey: string, variantName: string, orderedQuantity: number) {

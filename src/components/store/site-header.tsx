@@ -19,19 +19,19 @@ export function SiteHeader() {
     <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-sm">
       <nav
         aria-label="Điều hướng chính"
-        className="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-base max-w-[1440px] mx-auto"
+        className="flex min-w-0 items-center justify-between gap-3 px-margin-mobile py-3 md:px-margin-desktop md:py-base max-w-[1440px] mx-auto"
       >
-        <Link href="/" className="flex items-center gap-base" aria-label="Về trang chủ ZENOST">
+        <Link href="/" className="flex min-w-0 shrink items-center gap-2 sm:gap-base" aria-label="Về trang chủ ZENOST">
           <Image
             src={ZENOS_LOGO}
             alt="ZENOST Logo"
             width={40}
             height={40}
             unoptimized
-            className="w-10 h-10 object-contain"
+            className="h-9 w-9 shrink-0 object-contain sm:h-10 sm:w-10"
             priority
           />
-          <span className="font-headline-md text-headline-md font-bold tracking-tighter text-on-surface">
+          <span className="hidden font-headline-md text-headline-md font-bold tracking-tighter text-on-surface sm:block">
             ZENOST HOBBY STORE
           </span>
         </Link>
@@ -47,7 +47,7 @@ export function SiteHeader() {
             </li>
           ))}
         </ul>
-        <div className="flex items-center gap-md">
+        <div className="flex shrink-0 items-center gap-3 sm:gap-md">
           <SiteSearch />
           <WishlistNavLink />
           <UserMenu />

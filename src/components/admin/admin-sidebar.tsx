@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 
 const NAV_ITEMS = [
@@ -16,9 +17,23 @@ const NAV_ITEMS = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <aside className="h-screen w-64 fixed left-0 top-0 flex flex-col py-lg px-md bg-surface-container-low z-50">
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="fixed left-3 top-3 z-50 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white text-on-surface shadow-sm ring-1 ring-outline-variant/30 lg:hidden"
+        aria-label="Mở menu quản trị"
+      >
+        <Icon name="menu" />
+      </button>
+      {open && <button type="button" className="fixed inset-0 z-50 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-label="Đóng menu quản trị" />}
+      <aside className={`fixed left-0 top-0 z-[60] flex h-dvh w-[min(18rem,85vw)] flex-col overflow-y-auto bg-surface-container-low px-md py-lg shadow-xl transition-transform lg:z-50 lg:h-screen lg:w-64 lg:translate-x-0 lg:shadow-none ${open ? "translate-x-0" : "-translate-x-full"}`}>
+      <button type="button" onClick={() => setOpen(false)} className="absolute right-3 top-3 rounded-lg p-2 text-on-surface-variant hover:bg-surface-container-high lg:hidden" aria-label="Đóng menu"><Icon name="close" /></button>
       <div className="mb-lg px-sm">
         <p className="font-headline-md text-headline-md font-bold text-on-surface">Zenost Hobby Store</p>
         <p className="text-on-surface-variant font-label-md">Bảng điều khiển Admin</p>
@@ -59,6 +74,7 @@ export function AdminSidebar() {
           <span className="font-label-md">Hỗ trợ</span>
         </Link>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
