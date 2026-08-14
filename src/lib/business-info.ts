@@ -15,8 +15,8 @@ export const BUSINESS_INFO = {
   registrationDate: "**/**/****",
   businessLines: "Quảng cáo đồ chơi",
   address: "Đà Nẵng",
-  email: "zenosthobbystore@gmail.com",
-  phone: "0868237043",
+  email: "Đang cập nhật",
+  phone: "Đang cập nhật",
   workingHours: "8:00 – 21:00, Thứ 2 – Chủ Nhật",
 } as const;
 

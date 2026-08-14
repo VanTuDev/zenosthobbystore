@@ -8,6 +8,7 @@ export type ProductListParams = {
   categoryIds?: string[];
   brands?: string[];
   scale?: string;
+  productType?: ApiProduct["productType"];
   minPrice?: number;
   maxPrice?: number;
   badge?: string;
@@ -22,6 +23,7 @@ function buildQuery(params: ProductListParams): string {
   if (params.pageSize) search.set("pageSize", String(params.pageSize));
   if (params.q) search.set("q", params.q);
   if (params.scale) search.set("scale", params.scale);
+  if (params.productType) search.set("productType", params.productType);
   if (params.minPrice !== undefined) search.set("minPrice", String(params.minPrice));
   if (params.maxPrice !== undefined) search.set("maxPrice", String(params.maxPrice));
   if (params.badge) search.set("badge", params.badge);

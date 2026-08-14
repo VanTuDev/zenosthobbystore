@@ -105,7 +105,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter h-auto md:h-[600px]">
           <Reveal className="md:col-span-2 h-full" delay={0}>
             <Link
-              href="/products?status=pre_order"
+              href="/products?type=pre_order"
               className="group relative block h-full min-h-[280px] overflow-hidden rounded-xl bg-surface-container-low"
             >
               <Image

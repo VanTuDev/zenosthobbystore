@@ -24,6 +24,9 @@ function isKnownBadge(value: string): value is ProductBadge {
  * via the categories already fetched alongside — never guessed.
  */
 export function mapApiProduct(apiProduct: ApiProduct, categoryNameById: ReadonlyMap<string, string>): Product {
+  const effectiveStockStatus = apiProduct.productType === "pre_order" || apiProduct.stockStatus === "pre_order"
+    ? "pre_order"
+    : apiProduct.stockStatus;
   return {
     id: apiProduct.id,
     slug: apiProduct.slug,
@@ -40,7 +43,7 @@ export function mapApiProduct(apiProduct: ApiProduct, categoryNameById: Readonly
     originalPrice: apiProduct.originalPrice ?? undefined,
     promoPrice: apiProduct.promoPrice ?? undefined,
     costPrice: apiProduct.costPrice ?? undefined,
-    stockStatus: apiProduct.stockStatus,
+    stockStatus: effectiveStockStatus,
     stockCount: apiProduct.stockCount,
     badges: apiProduct.badges.filter(isKnownBadge),
     rating: apiProduct.rating,

@@ -51,7 +51,7 @@ export function AdminProductsTable({
           </thead>
           <tbody className="divide-y divide-outline-variant/20">
             {products.map((product) => {
-              const stock = STOCK_META[product.stockStatus];
+              const stock = STOCK_META[product.productType === "pre_order" || product.stockStatus === "pre_order" ? "pre_order" : product.stockStatus];
               const categoryName = product.categoryId ? (categoryNameById.get(product.categoryId) ?? "—") : "—";
               return (
                 <tr key={product.id} className="hover:bg-surface-container-low/50 transition-colors group">

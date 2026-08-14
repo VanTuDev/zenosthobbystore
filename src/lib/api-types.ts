@@ -23,6 +23,7 @@ export type ApiProduct = {
   brand: string;
   universe: string;
   scale: string;
+  productType?: "in_stock" | "pre_order";
   price: number;
   compareAtPrice: number | null;
   sellingPrice: number | null;
