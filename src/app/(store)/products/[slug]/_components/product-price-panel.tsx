@@ -33,6 +33,7 @@ export function ProductPricePanel({
 
   const displayPrice = selectedVariant ? selectedVariant.price : product.price;
   const variantOutOfStock = selectedVariant ? selectedVariant.stockCount <= 0 : false;
+  const selectedCanOrder = variantOutOfStock && !isPreOrder;
 
   return (
     <div className="mb-8 py-6 border-y border-surface-container-highest">
@@ -48,6 +49,7 @@ export function ProductPricePanel({
             {product.variants.map((variant, index) => {
               const isActive = index === selectedVariantIndex;
               const outOfStock = variant.stockCount <= 0;
+              const canOrder = outOfStock && !isPreOrder;
 
               return (
                 <button
@@ -55,14 +57,14 @@ export function ProductPricePanel({
                   type="button"
                   onClick={() => onSelectVariant(index)}
                   aria-pressed={isActive}
-                  className="flex h-[116px] w-20 justify-self-center flex-col items-center gap-1.5"
+                  className="flex min-h-[116px] w-20 justify-self-center flex-col items-center gap-1.5"
                 >
                   <span
                     className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition-all ${
                       isActive
                         ? "border-primary shadow-sm"
                         : "border-surface-container-highest hover:border-primary/40"
-                    } ${outOfStock ? "opacity-50" : ""}`}
+                    } ${outOfStock ? "opacity-70" : ""}`}
                   >
                     {variant.image ? (
                       <Image src={variant.image} alt={variant.name} fill unoptimized sizes="80px" className="object-cover" />
@@ -72,13 +74,19 @@ export function ProductPricePanel({
                       </span>
                     )}
                   </span>
-                  <span
-                    className={`h-[30px] w-full text-center text-[12px] leading-[15px] line-clamp-2 ${
-                      isActive ? "font-bold text-primary" : "text-on-surface-variant"
-                    }`}
-                  >
-                    {variant.name}
-                    {outOfStock && " (Hết)"}
+                  <span className="flex w-full flex-col items-center gap-[3px]">
+                    <span
+                      className={`min-h-[30px] w-full text-center text-[12px] leading-[15px] line-clamp-2 ${
+                        isActive ? "font-bold text-primary" : "text-on-surface-variant"
+                      }`}
+                    >
+                      {variant.name}
+                    </span>
+                    {canOrder && (
+                      <span className="rounded-full bg-tertiary/10 px-2 py-0.5 text-[10px] font-semibold leading-4 text-tertiary">
+                        Có thể order
+                      </span>
+                    )}
                   </span>
                 </button>
               );
@@ -105,20 +113,20 @@ export function ProductPricePanel({
       </div>
       <p
         className={`font-label-md text-label-md flex items-center gap-1 ${
-          isSoldOut || variantOutOfStock ? "text-outline" : isPreOrder ? "text-tertiary" : "text-primary"
+          selectedCanOrder || isPreOrder ? "text-tertiary" : isSoldOut ? "text-outline" : "text-primary"
         }`}
       >
-        <Icon name={isPreOrder ? "calendar_today" : "inventory_2"} className="text-[18px]" />
-        {isSoldOut
-          ? STOCK_LABEL.sold_out.toUpperCase()
-          : variantOutOfStock
-            ? "BIẾN THỂ NÀY TẠM HẾT HÀNG"
+        <Icon name={isPreOrder || selectedCanOrder ? "calendar_today" : "inventory_2"} className="text-[18px]" />
+        {selectedCanOrder
+          ? "CÓ THỂ ORDER"
+          : isSoldOut
+            ? STOCK_LABEL.sold_out.toUpperCase()
             : isPreOrder
-              ? "DỰ KIẾN PHÁT HÀNH: SẮP CẬP NHẬT"
+              ? "DỰ KIẾN VỀ HÀNG: KHOẢNG 1-2 TUẦN"
               : "CÒN HÀNG"}
       </p>
       <p className="mt-2 font-body-sm text-xs leading-relaxed text-on-surface-variant">
-        Giá và tình trạng sản phẩm có thể thay đổi. Vui lòng liên hệ ZENOST để xác nhận thông tin mới nhất.
+        Giá sản phẩm có thể thay đổi tùy thời điểm. Vui lòng liên hệ ZENOST để xác nhận thông tin mới nhất.
       </p>
     </div>
   );

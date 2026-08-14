@@ -8,7 +8,7 @@ const ZENOS_LOGO = "/LogoZENOSTHOBBYSTORE.png";
 const STORE_LINKS = [
   { label: "Tất cả sản phẩm", href: "/products" },
   { label: "Sản phẩm có sẵn", href: "/products?status=in_stock" },
-  { label: "PRE-ORDER", href: "/products?status=pre_order" },
+  { label: "PRE-ORDER", href: "/products?type=pre_order" },
   { label: "Câu hỏi thường gặp", href: "/faq" },
 ];
 

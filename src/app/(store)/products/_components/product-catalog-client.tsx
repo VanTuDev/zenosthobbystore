@@ -1,22 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ProductCard } from "@/components/store/product-card";
 import { EmptyState } from "@/components/store/empty-state";
 import { Icon } from "@/components/ui/icon";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
-import { Reveal } from "@/components/ui/reveal";
 import { fetchProducts, type ProductListParams } from "@/lib/api/products";
 import { mapApiProduct } from "@/lib/api/map-product";
 import type { ApiCategory, ProductFacets } from "@/lib/api-types";
 import type { Product } from "@/lib/types";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 15;
 
 const SORT_OPTIONS = [
-  { value: "moi-nhap", label: "Mới nhập về" },
+  { value: "moi-nhap", label: "Hàng mới" },
   { value: "gia-thap-cao", label: "Giá: Thấp đến Cao" },
   { value: "gia-cao-thap", label: "Giá: Cao đến Thấp" },
   { value: "pho-bien", label: "Phổ biến nhất" },
@@ -81,12 +80,36 @@ export function ProductCatalogClient({ categories, facets }: Props) {
   const selectedScale = searchParams.get("scale") ?? undefined;
   const min = searchParams.get("min") ?? "";
   const max = searchParams.get("max") ?? "";
-  const status = searchParams.get("status") ?? undefined;
-  const sort = searchParams.get("sort") ?? (status === "pre_order" ? "moi-nhap" : "pho-bien");
+  const rawStatus = searchParams.get("status") ?? undefined;
+  const productType = searchParams.get("type") === "pre_order" || rawStatus === "pre_order" ? "pre_order" : "in_stock";
+  const status = rawStatus === "pre_order" ? undefined : rawStatus;
+  const sort = searchParams.get("sort") ?? (productType === "pre_order" ? "moi-nhap" : "pho-bien");
   const badge = searchParams.get("badge") ?? undefined;
 
   const categoryNameById = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories]);
   const categoryIdBySlug = useMemo(() => new Map(categories.map((c) => [c.slug, c.id])), [categories]);
+  const topLevelCategories = useMemo(() => {
+    const categoryIds = new Set(categories.map((category) => category.id));
+    return categories.filter((category) => !category.parentId || !categoryIds.has(category.parentId));
+  }, [categories]);
+  const childrenByParentId = useMemo(() => {
+    const result = new Map<string, ApiCategory[]>();
+    for (const category of categories) {
+      if (!category.parentId) continue;
+      const children = result.get(category.parentId) ?? [];
+      children.push(category);
+      result.set(category.parentId, children);
+    }
+    return result;
+  }, [categories]);
+  const [expandedCategoryIds, setExpandedCategoryIds] = useState<Set<string>>(() => {
+    const selectedSlugs = new Set(selectedCategorySlugs);
+    return new Set(
+      categories
+        .filter((category) => selectedSlugs.has(category.slug) && category.parentId)
+        .map((category) => category.parentId as string),
+    );
+  });
   const selectedCategoryIds = selectedCategorySlugs
     .map((slug) => categoryIdBySlug.get(slug))
     .filter((id): id is string => Boolean(id));
@@ -105,6 +128,7 @@ export function ProductCatalogClient({ categories, facets }: Props) {
     categoryIds: selectedCategoryIds,
     brands: selectedBrands,
     scale: selectedScale,
+    productType,
     minPrice: min !== "" ? Number(min) : undefined,
     maxPrice: max !== "" ? Number(max) : undefined,
     badge,
@@ -120,7 +144,6 @@ export function ProductCatalogClient({ categories, facets }: Props) {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Guards against a slow "load more" fetch (started under the old filters)
   // landing after the user has already changed filters and reset the list.
@@ -145,53 +168,22 @@ export function ProductCatalogClient({ categories, facets }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [requestKey, categoryNameById]);
 
-  // A plain ref guard (checked synchronously, before any state update is even queued) instead of
-  // relying on the isLoadingMore state round-trip — the IntersectionObserver below gets torn down
-  // and recreated on every page change, and re-observing an element already in view fires its
-  // callback again right away, so loadMore() can be re-entered before a state update has committed.
-  const isFetchingMoreRef = useRef(false);
-
-  const loadMore = useCallback(() => {
-    if (isFetchingMoreRef.current || page >= totalPages) return;
-    isFetchingMoreRef.current = true;
-    setIsLoadingMore(true);
-
+  async function goToPage(nextPage: number) {
+    if (nextPage < 1 || nextPage > totalPages || nextPage === page || isLoading) return;
     const requestKeyAtCallTime = activeRequestKey.current;
-    const nextPage = page + 1;
-    fetchProducts({ ...requestParams, page: nextPage, pageSize: PAGE_SIZE }).then((res) => {
-      isFetchingMoreRef.current = false;
-      // Filters changed (and the page-1 reset already ran) while this was in flight — drop it.
-      if (activeRequestKey.current !== requestKeyAtCallTime) return;
-      setProducts((prev) => {
-        const seenIds = new Set(prev.map((p) => p.id));
-        const fresh = res.items
-          .map((p) => mapApiProduct(p, categoryNameById))
-          .filter((p) => !seenIds.has(p.id));
-        return [...prev, ...fresh];
-      });
-      setPage(nextPage);
-      setIsLoadingMore(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, totalPages, requestKey, categoryNameById]);
-
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) loadMore();
-      },
-      { rootMargin: "800px 0px" },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [loadMore]);
+    setIsLoading(true);
+    const res = await fetchProducts({ ...requestParams, page: nextPage, pageSize: PAGE_SIZE });
+    if (activeRequestKey.current !== requestKeyAtCallTime) return;
+    setProducts(dedupeById(res.items.map((product) => mapApiProduct(product, categoryNameById))));
+    setPage(nextPage);
+    setTotalPages(res.pagination.totalPages);
+    setTotal(res.pagination.total);
+    setIsLoading(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   const brands = facets.brands;
   const scales = facets.scales;
-  const hasMore = page < totalPages;
   const categoriesDefaultOpen = selectedCategorySlugs.length > 0 || categories.length <= 8;
   const brandsDefaultOpen = selectedBrands.length > 0 || brands.length <= 8;
 
@@ -210,15 +202,31 @@ export function ProductCatalogClient({ categories, facets }: Props) {
     router.push(`/products${qs ? `?${qs}` : ""}`, { scroll: false });
   }
 
+  function toggleCategoryChildren(categoryId: string) {
+    setExpandedCategoryIds((current) => {
+      const next = new Set(current);
+      if (next.has(categoryId)) next.delete(categoryId);
+      else next.add(categoryId);
+      return next;
+    });
+  }
+
+  function selectParentCategory(categoryId: string) {
+    const checkbox = document.getElementById(`category-${categoryId}`) as HTMLInputElement | null;
+    checkbox?.click();
+    setExpandedCategoryIds((current) => new Set(current).add(categoryId));
+  }
+
   return (
     <div className="pt-28 pb-xl max-w-[1800px] mx-auto px-margin-mobile md:px-margin-desktop">
       <form onSubmit={handleFilterSubmit}>
         {q && <input type="hidden" name="q" value={q} />}
+        {productType === "pre_order" && <input type="hidden" name="type" value="pre_order" />}
 
         <div className="flex items-center justify-between mb-md">
           <h2 className="font-label-md text-label-md uppercase tracking-widest text-outline">Bộ lọc</h2>
           {(hasActiveFilters || q) && (
-            <Link href="/products" className="text-label-sm text-primary hover:underline">
+            <Link href={productType === "pre_order" ? "/products?type=pre_order" : "/products"} className="text-label-sm text-primary hover:underline">
               Xóa tất cả
             </Link>
           )}
@@ -243,21 +251,41 @@ export function ProductCatalogClient({ categories, facets }: Props) {
                 <Icon name="expand_more" className="transition-transform group-open:rotate-180" />
               </summary>
               <div className="space-y-sm max-h-112 overflow-y-auto pr-2 scrollbar-thin">
-                {categories.map((category) => (
-                  <label key={category.id} className="flex items-center gap-sm cursor-pointer group/item">
-                    <input
-                      type="checkbox"
-                      name="category"
-                      value={category.slug}
-                      defaultChecked={selectedCategorySlugs.includes(category.slug)}
-                      onChange={submitOnChange}
-                      className="rounded border-outline-variant text-primary focus:ring-primary"
-                    />
-                    <span className="text-body-md group-hover/item:text-primary transition-colors">
-                      {category.name} ({category.productCount})
-                    </span>
-                  </label>
-                ))}
+                {topLevelCategories.map((category) => {
+                  const children = childrenByParentId.get(category.id) ?? [];
+                  const expanded = expandedCategoryIds.has(category.id);
+                  return (
+                    <div key={category.id} className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <label className="flex shrink-0 cursor-pointer items-center" aria-label={`Lọc theo ${category.name}`}>
+                          <input id={`category-${category.id}`} type="checkbox" name="category" value={category.slug} defaultChecked={selectedCategorySlugs.includes(category.slug)} onChange={submitOnChange} className="rounded border-outline-variant text-primary focus:ring-primary" />
+                        </label>
+                        {children.length > 0 ? (
+                          <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
+                            <button type="button" onClick={() => selectParentCategory(category.id)} className="group/item min-w-0 text-left text-body-md transition-colors hover:text-primary">{category.name} ({category.productCount})</button>
+                            <button type="button" onClick={() => toggleCategoryChildren(category.id)} aria-expanded={expanded} className="shrink-0 rounded p-0.5 hover:bg-surface-container-high" aria-label={`${expanded ? "Ẩn" : "Hiện"} danh mục con của ${category.name}`}>
+                              <Icon name="expand_more" className={`!text-[18px] transition-transform ${expanded ? "rotate-180" : ""}`} />
+                            </button>
+                          </span>
+                        ) : (
+                          <label htmlFor={`category-${category.id}`} className="group/item min-w-0 flex-1 cursor-pointer">
+                            <span className="text-body-md transition-colors group-hover/item:text-primary">{category.name} ({category.productCount})</span>
+                          </label>
+                        )}
+                      </div>
+                      {children.length > 0 && expanded && (
+                        <div className="space-y-2 border-l border-outline-variant/40 pl-5">
+                          {children.map((child) => (
+                            <label key={child.id} className="group/item flex cursor-pointer items-center gap-2">
+                              <input type="checkbox" name="category" value={child.slug} defaultChecked={selectedCategorySlugs.includes(child.slug)} onChange={submitOnChange} className="rounded border-outline-variant text-primary focus:ring-primary" />
+                              <span className="text-body-md text-on-surface-variant transition-colors group-hover/item:text-primary">{child.name} ({child.productCount})</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </details>
 
@@ -343,25 +371,23 @@ export function ProductCatalogClient({ categories, facets }: Props) {
                   className={`transition-opacity duration-200 ${isLoading ? "opacity-40 pointer-events-none" : "opacity-100"}`}
                 >
                   <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-gutter">
-                    {products.map((product, i) => (
+                    {products.map((product) => (
                       <li key={product.id}>
-                        <Reveal delay={(i % PAGE_SIZE) * 40} from="up">
-                          <ProductCard product={product} />
-                        </Reveal>
+                        <ProductCard product={product} />
                       </li>
                     ))}
                   </ul>
 
-                  {/* Infinite-scroll sentinel: fetches the next backend page once it enters the viewport. */}
-                  {hasMore && (
-                    <div ref={sentinelRef} className="flex items-center justify-center gap-sm py-lg text-on-surface-variant">
-                      {isLoadingMore && (
-                        <>
-                          <Icon name="progress_activity" className="animate-spin" />
-                          <span className="font-label-md text-label-md">Đang tải thêm sản phẩm…</span>
-                        </>
-                      )}
-                    </div>
+                  {totalPages > 1 && (
+                    <nav aria-label="Phân trang sản phẩm" className="mt-lg flex items-center justify-center gap-3">
+                      <button type="button" onClick={() => void goToPage(page - 1)} disabled={page <= 1 || isLoading} className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-outline-variant/40 bg-white text-on-surface transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-35" aria-label="Trang trước">
+                        <Icon name="chevron_left" />
+                      </button>
+                      <span className="min-w-24 text-center text-sm font-semibold text-on-surface-variant">Trang {page}/{totalPages}</span>
+                      <button type="button" onClick={() => void goToPage(page + 1)} disabled={page >= totalPages || isLoading} className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-outline-variant/40 bg-white text-on-surface transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-35" aria-label="Trang sau">
+                        <Icon name="chevron_right" />
+                      </button>
+                    </nav>
                   )}
                 </div>
               )}

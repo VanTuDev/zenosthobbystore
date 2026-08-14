@@ -70,6 +70,9 @@ export function ProductFormModal({
   const [brand, setBrand] = useState(product?.brand ?? "");
   const [universe, setUniverse] = useState(product?.universe ?? "");
   const [scale, setScale] = useState(product?.scale ?? "");
+  const [productType, setProductType] = useState<"in_stock" | "pre_order">(
+    product?.productType === "pre_order" || product?.stockStatus === "pre_order" ? "pre_order" : "in_stock",
+  );
   const [description, setDescription] = useState(product?.description ?? "");
   const [highlights, setHighlights] = useState<string[]>(product?.highlights ?? []);
   const [specs, setSpecs] = useState<Spec[]>(product?.specs ?? []);
@@ -152,6 +155,7 @@ export function ProductFormModal({
         brand: brand.trim() || "ZENOS Exclusive",
         universe: universe.trim() || undefined,
         scale: scale.trim() || "Không tỷ lệ",
+        productType,
         price: lowestVariantPrice,
         compareAtPrice: null,
         sellingPrice: lowestVariantPrice,
@@ -160,7 +164,7 @@ export function ProductFormModal({
         costPrice: null,
         stockStatus: derivedStockStatus,
         stockCount: totalVariantStock,
-        badges: [],
+        badges: productType === "pre_order" ? ["pre_order"] : [],
         description: description.trim(),
         highlights,
         specs: cleanSpecs,
@@ -283,6 +287,22 @@ export function ProductFormModal({
                   className={`${inputClass} font-semibold`}
                 />
               </div>
+
+              <fieldset>
+                <legend className={labelClass}>Loại sản phẩm</legend>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className={`cursor-pointer rounded-xl border p-3 transition-colors ${productType === "in_stock" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-outline-variant/50 bg-white hover:border-primary/50"}`}>
+                    <input type="radio" name="product-type" value="in_stock" checked={productType === "in_stock"} onChange={() => setProductType("in_stock")} className="sr-only" />
+                    <span className="flex items-center gap-2 font-semibold text-on-surface"><Icon name="inventory_2" className="text-primary !text-[19px]" />Có sẵn</span>
+                    <span className="mt-1 block text-xs text-on-surface-variant">Sản phẩm đang bán tại cửa hàng</span>
+                  </label>
+                  <label className={`cursor-pointer rounded-xl border p-3 transition-colors ${productType === "pre_order" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-outline-variant/50 bg-white hover:border-primary/50"}`}>
+                    <input type="radio" name="product-type" value="pre_order" checked={productType === "pre_order"} onChange={() => setProductType("pre_order")} className="sr-only" />
+                    <span className="flex items-center gap-2 font-semibold text-on-surface"><Icon name="schedule" className="text-primary !text-[19px]" />PRE-ORDER</span>
+                    <span className="mt-1 block text-xs text-on-surface-variant">Sản phẩm nhận đặt trước</span>
+                  </label>
+                </div>
+              </fieldset>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
