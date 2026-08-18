@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { formatVnd } from "@/lib/format";
 import type { Product, StockStatus } from "@/lib/types";
@@ -39,6 +40,13 @@ export function ProductPricePanel({
     <div className="mb-8 py-6 border-y border-surface-container-highest">
       {hasVariants && (
         <div className="mb-5">
+          <p className="mb-3 rounded-lg bg-surface-container-low px-3 py-2 text-xs leading-5 text-on-surface-variant">
+            Vui lòng đọc kỹ các chính sách trong mục{" "}
+            <Link href="/faq" className="font-semibold text-primary underline underline-offset-2 hover:brightness-75">
+              FAQ/Bảo hành
+            </Link>
+            .
+          </p>
           <p className="font-label-md text-label-md text-on-surface mb-2 uppercase tracking-wider">
             Biến thể
           </p>

@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { label: "Sản phẩm", href: "/products" },
   { label: "PRE-ORDER", href: "/products?type=pre_order" },
   { label: "Liên Hệ", href: "/lien-he" },
-  { label: "FAQ", href: "/faq" },
+  { label: "FAQ/Bảo Hành", href: "/faq" },
 ];
 
 export function SiteHeader() {
