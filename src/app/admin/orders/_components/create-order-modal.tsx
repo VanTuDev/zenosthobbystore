@@ -12,6 +12,7 @@ import { createOrder } from "@/lib/api/orders";
 import { fetchProducts } from "@/lib/api/products";
 import { ApiRequestError } from "@/lib/api-client";
 import type { ApiOrder, ApiProduct } from "@/lib/api-types";
+import { DEPOSIT_PREVIEW_STORAGE_PREFIX, type DepositPreviewDraft } from "@/lib/bank-payment";
 
 type DraftItem = {
   key: string;
@@ -82,6 +83,29 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
       price: variant?.price ?? item.price,
       image: variant?.image || item.image,
     });
+  }
+
+  function handleDepositPreview() {
+    setError(null);
+    if (!facebookName.trim()) return setError("Vui lòng nhập tên Facebook khách trước khi tạo QR cọc.");
+    if (!facebookUrl.trim()) return setError("Vui lòng nhập link Facebook khách trước khi tạo QR cọc.");
+    if (items.length === 0) return setError("Vui lòng chọn ít nhất một sản phẩm trước khi tạo QR cọc.");
+    if (deposit <= 0) return setError("Số tiền đặt cọc phải lớn hơn 0.");
+    if (deposit > total) return setError("Số tiền đặt cọc không được lớn hơn tổng tiền.");
+
+    const draftId = crypto.randomUUID();
+    const draft: DepositPreviewDraft = {
+      createdAt: Date.now(),
+      facebookName: facebookName.trim(),
+      facebookUrl: facebookUrl.trim(),
+      items: items.map(({ name, variantName, image, price, quantity }) => ({ name, variantName, image, price, quantity })),
+      total,
+      depositAmount: deposit,
+      remainingAmount: remaining,
+    };
+    localStorage.setItem(`${DEPOSIT_PREVIEW_STORAGE_PREFIX}${draftId}`, JSON.stringify(draft));
+    const previewWindow = window.open(`/xac-nhan-dat-coc/${draftId}`, "_blank");
+    if (previewWindow) previewWindow.opener = null;
   }
 
   function shareUrl(order: ApiOrder) {
@@ -195,11 +219,11 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
           <SearchCombobox<ApiProduct>
             key={productSearchKey}
             id="co-product-search"
-            placeholder="Tìm và chọn sản phẩm trên website..."
+            placeholder="Nhập tên sản phẩm để lọc..."
             selected={productPick}
             getKey={(product) => product.id}
-            getLabel={(product) => `${product.name} · ${formatVnd(product.price)}`}
-            onSearch={(query) => fetchProducts({ q: query, pageSize: 8 }).then((response) => response.items)}
+            getLabel={(product) => `${product.name} · ${product.productType === "pre_order" || product.stockStatus === "pre_order" ? "PRE-ORDER" : "Có sẵn"} · ${formatVnd(product.price)}`}
+            onSearch={(query) => fetchProducts({ q: query.trim(), pageSize: 20, sort: "moi-nhap" }).then((response) => response.items)}
             onSelect={(product) => product && addProduct(product)}
           />
           {items.length === 0 ? (
@@ -248,6 +272,9 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
         {error ? <p className="text-xs text-error">{error}</p> : <span />}
         <div className="ml-auto flex gap-2">
           <button type="button" onClick={onClose} disabled={saving} className="rounded-xl border border-outline-variant/60 px-4 py-2 text-sm text-on-surface-variant">Hủy</button>
+          <button type="button" onClick={handleDepositPreview} disabled={saving} className="inline-flex items-center gap-1.5 rounded-xl border border-primary px-4 py-2 text-sm font-bold text-primary hover:bg-primary/5">
+            <Icon name="qr_code_2" className="!text-[18px]" /> Tạo QR cọc
+          </button>
           <Button type="submit" form="create-order-form" disabled={saving}>{saving ? "Đang lưu..." : "Tạo đơn hàng"}</Button>
         </div>
       </div>
