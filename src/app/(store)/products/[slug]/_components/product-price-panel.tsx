@@ -51,7 +51,7 @@ export function ProductPricePanel({
             Biến thể
           </p>
           <div
-            className="grid max-h-[652px] grid-cols-3 gap-x-3 gap-y-4 overflow-x-hidden overflow-y-auto overscroll-contain py-1 pl-1 pr-2 scrollbar-thin sm:grid-cols-5"
+            className="flex w-full gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain py-1 pl-1 pr-2 pb-2 scrollbar-thin sm:grid sm:max-h-[652px] sm:grid-cols-5 sm:gap-x-3 sm:gap-y-4 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain"
             aria-label="Danh sách biến thể"
           >
             {product.variants.map((variant, index) => {
@@ -65,7 +65,7 @@ export function ProductPricePanel({
                   type="button"
                   onClick={() => onSelectVariant(index)}
                   aria-pressed={isActive}
-                  className="flex min-h-[116px] w-20 justify-self-center flex-col items-center gap-1.5"
+                  className="flex min-h-[116px] w-20 shrink-0 justify-self-center flex-col items-center gap-1.5"
                 >
                   <span
                     className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition-all ${
