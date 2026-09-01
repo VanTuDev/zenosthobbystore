@@ -12,6 +12,7 @@ export function OrderDetailsEditor({ order, onUpdated }: { order: ApiOrder; onUp
   const [orderType, setOrderType] = useState(order.orderType);
   const [facebookName, setFacebookName] = useState(order.facebookName || order.customerName);
   const [facebookUrl, setFacebookUrl] = useState(order.facebookUrl || "");
+  const [recipientName, setRecipientName] = useState(order.recipientName || "");
   const [phone, setPhone] = useState(order.phone || "");
   const [addressDetail, setAddressDetail] = useState(order.addressDetail || "");
   const [total, setTotal] = useState(String(order.total));
@@ -31,6 +32,7 @@ export function OrderDetailsEditor({ order, onUpdated }: { order: ApiOrder; onUp
         orderType,
         facebookName: facebookName.trim(),
         facebookUrl: facebookUrl.trim(),
+        recipientName: recipientName.trim(),
         phone: phone.trim(),
         addressDetail: addressDetail.trim(),
         total: totalNumber,
@@ -60,6 +62,7 @@ export function OrderDetailsEditor({ order, onUpdated }: { order: ApiOrder; onUp
           <input required type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} aria-label="Link Facebook" placeholder="Link Facebook" className="min-w-0 flex-1 rounded-lg bg-surface-container-low px-3 py-2 text-sm" />
           <a href={facebookUrl.startsWith("http") ? facebookUrl : undefined} target="_blank" rel="noopener noreferrer" aria-disabled={!facebookUrl.startsWith("http")} className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-primary/30 text-primary transition ${facebookUrl.startsWith("http") ? "hover:bg-primary/10" : "pointer-events-none opacity-35"}`} title="Mở Facebook khách hàng trong tab mới" aria-label="Mở Facebook khách hàng trong tab mới"><Icon name="open_in_new" className="!text-[18px]" /></a>
         </div>
+        <input value={recipientName} onChange={(event) => setRecipientName(event.target.value)} aria-label="Tên người nhận" placeholder="Tên người nhận" className="rounded-lg bg-surface-container-low px-3 py-2 text-sm" />
         <input value={phone} onChange={(event) => setPhone(event.target.value)} aria-label="Số điện thoại" placeholder="Số điện thoại" className="rounded-lg bg-surface-container-low px-3 py-2 text-sm" />
         <input value={addressDetail} onChange={(event) => setAddressDetail(event.target.value)} aria-label="Địa chỉ" placeholder="Địa chỉ" className="rounded-lg bg-surface-container-low px-3 py-2 text-sm" />
         <input type="number" min={0} value={total} onChange={(event) => setTotal(event.target.value)} aria-label="Tổng tiền" placeholder="Tổng tiền" className="rounded-lg bg-surface-container-low px-3 py-2 text-sm" />

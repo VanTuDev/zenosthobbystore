@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui/icon";
 import { formatVnd } from "@/lib/format";
 import { fetchPublicOrder } from "@/lib/api/orders";
 import type { ApiOrder } from "@/lib/api-types";
+import { ShippingDetailsForm } from "./_components/shipping-details-form";
 
 export const metadata: Metadata = {
   title: "Theo dõi đơn hàng",
@@ -73,6 +74,23 @@ export default async function PublicOrderPage({ params }: { params: Promise<{ co
         </header>
 
         <div className="space-y-8 p-6 md:p-9">
+          <ShippingDetailsForm
+            code={order.publicCode}
+            initialDetails={{
+              recipientName: order.recipientName || order.facebookName,
+              phone: order.phone ?? "",
+              addressFormat: order.addressFormat ?? "new_2_level",
+              provinceCode: order.provinceCode ?? "",
+              provinceName: order.provinceName ?? "",
+              districtCode: order.districtCode ?? "",
+              districtName: order.districtName ?? "",
+              wardCode: order.wardCode ?? "",
+              wardName: order.wardName ?? "",
+              addressDetail: order.addressDetail ?? "",
+            }}
+            locked={["shipped", "picked_up", "delivered", "cancelled"].includes(order.status)}
+          />
+
           <div>
             <p className="text-sm text-on-surface-variant">Khách hàng</p>
             <p className="mt-1 text-lg font-bold text-on-surface">{order.facebookName}</p>

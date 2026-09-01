@@ -25,8 +25,10 @@ export function OrdersTable({
   onSearchChange,
   total,
   page,
+  pageSize,
   totalPages,
   onPageChange,
+  onPageSizeChange,
   isRefreshing,
 }: {
   orders: ApiOrder[];
@@ -36,8 +38,10 @@ export function OrdersTable({
   onSearchChange: (value: string) => void;
   total: number;
   page: number;
+  pageSize: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   isRefreshing: boolean;
 }) {
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
@@ -135,11 +139,23 @@ export function OrdersTable({
           </tbody>
         </table>
       </div>
-      <div className="px-md py-xs bg-surface-container-low flex justify-between items-center border-t border-outline-variant/40">
+      <div className="px-md py-xs bg-surface-container-low flex flex-wrap justify-between items-center gap-2 border-t border-outline-variant/40">
         <span className="font-label-sm text-label-sm text-on-surface-variant">
           Hiển thị {orders.length} trên {total} đơn hàng
         </span>
         <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2 text-xs font-medium text-on-surface-variant">
+            Hiển thị
+            <select
+              value={pageSize}
+              onChange={(event) => onPageSizeChange(Number(event.target.value))}
+              className="h-8 rounded-lg border border-outline-variant/50 bg-white px-2 text-xs text-on-surface outline-none focus:border-primary"
+              aria-label="Số đơn hàng hiển thị trên một trang"
+            >
+              {[10, 20, 50, 100].map((value) => <option key={value} value={value}>{value}</option>)}
+            </select>
+            đơn
+          </label>
           <button type="button" onClick={() => onPageChange(page - 1)} disabled={page <= 1} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-outline-variant/50 text-on-surface-variant hover:bg-white disabled:cursor-not-allowed disabled:opacity-35" aria-label="Trang trước"><Icon name="chevron_left" className="!text-[18px]" /></button>
           <span className="min-w-20 text-center text-xs font-medium text-on-surface-variant">Trang {page}/{totalPages}</span>
           <button type="button" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-outline-variant/50 text-on-surface-variant hover:bg-white disabled:cursor-not-allowed disabled:opacity-35" aria-label="Trang sau"><Icon name="chevron_right" className="!text-[18px]" /></button>
