@@ -18,6 +18,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
   const [order, setOrder] = useState<ApiOrder | null | undefined>(undefined);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [shippingCopied, setShippingCopied] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
@@ -86,7 +87,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
               type="button"
               onClick={async () => {
                 const trackingUrl = `https://zenosthobbystore.com/theo-doi-don-hang/${order.publicCode}`;
-                const message = `Shop đang đồng bộ đơn hàng lên web để dễ quản lý và khách dễ theo dõi trạng thái. Ae hãy kéo xuống dưới kiểm tra tên, chi tiết đơn hàng, số lượng, tổng tiền và tiền đặt cọc giúp mình nhé, nếu có sai sót báo lại để mình kiểm tra.\n\n(copy link mở bằng trình duyệt để theo dõi dễ hơn)\n${trackingUrl}`;
+                const message = `Đây là link theo dõi trên website. Bạn vui lòng vào link để điền đầy đủ thông tin chính xác, tiếp theo là thời gian và trạng thái đơn hàng. Sau đó kéo xuống kiểm tra chi tiết đơn hàng: Sản phẩm, giá tiền, số tiền đã đặt cọc...\n\n(Copy và mở trong trình duyệt để dễ thao tác)\n(Link): ${trackingUrl}`;
                 await navigator.clipboard.writeText(message);
                 setCopied(true);
                 window.setTimeout(() => setCopied(false), 2000);
@@ -213,7 +214,33 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
           </section>
 
           <section className="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/20 space-y-md">
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">Giao hàng</h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-headline-sm text-headline-sm text-on-surface">Giao hàng</h2>
+              <button
+                type="button"
+                disabled={!order.recipientName || !order.phone || !order.shippingAddress}
+                onClick={async () => {
+                  const shippingText = `${order.recipientName}, ${order.phone}, ${order.shippingAddress}`;
+                  await navigator.clipboard.writeText(shippingText);
+                  setShippingCopied(true);
+                  window.setTimeout(() => setShippingCopied(false), 2000);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 px-3 py-2 text-xs font-bold text-primary transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                <Icon name={shippingCopied ? "check" : "content_copy"} className="!text-[16px]" />
+                {shippingCopied ? "Đã sao chép" : "Copy cho SPX"}
+              </button>
+            </div>
+            <div className="space-y-2 text-sm text-on-surface-variant">
+              <p className="flex items-start gap-sm">
+                <Icon name="person" className="shrink-0 text-primary !text-[19px]" />
+                {order.recipientName || "Chưa cập nhật tên người nhận"}
+              </p>
+              <p className="flex items-start gap-sm">
+                <Icon name="call" className="shrink-0 text-primary !text-[19px]" />
+                {order.phone || "Chưa cập nhật số điện thoại"}
+              </p>
+            </div>
             <p className="flex items-start gap-sm text-body-md text-on-surface-variant">
               <Icon name="location_on" className="text-primary shrink-0" />
               {order.shippingAddress || "Chưa cập nhật địa chỉ"}

@@ -32,6 +32,29 @@ export function fetchPublicOrder(code: string) {
   return apiFetch<{ order: PublicOrder }>(`/orders/public/${encodeURIComponent(code.toLowerCase())}`);
 }
 
+export type PublicShippingDetailsInput = {
+  recipientName: string;
+  phone: string;
+  addressFormat: ApiOrder["addressFormat"];
+  provinceCode: string;
+  districtCode: string;
+  wardCode: string;
+  addressDetail: string;
+};
+
+export type PublicShippingDetails = PublicShippingDetailsInput & {
+  provinceName: string;
+  districtName: string;
+  wardName: string;
+};
+
+export function updatePublicShippingDetails(code: string, input: PublicShippingDetailsInput) {
+  return apiFetch<{ shippingDetails: PublicShippingDetails }>(
+    `/orders/public/${encodeURIComponent(code.toLowerCase())}/shipping-details`,
+    { method: "PATCH", body: input },
+  );
+}
+
 export type OrderListParams = {
   status?: ApiOrder["status"][];
   q?: string;
@@ -142,7 +165,7 @@ export function splitOrder(id: string, input: SplitOrderInput) {
 
 export function updateOrderDetails(
   id: string,
-  input: Partial<Pick<ApiOrder, "orderType" | "facebookName" | "facebookUrl" | "phone" | "addressDetail" | "total" | "depositAmount">>,
+  input: Partial<Pick<ApiOrder, "orderType" | "facebookName" | "facebookUrl" | "recipientName" | "phone" | "addressDetail" | "total" | "depositAmount">>,
 ) {
   return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/details`, {
     method: "PATCH",

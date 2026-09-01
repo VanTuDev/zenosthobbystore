@@ -13,7 +13,7 @@ import { ApiRequestError } from "@/lib/api-client";
 import { useToast } from "@/components/ui/toast";
 import type { ApiOrder } from "@/lib/api-types";
 
-const PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 10;
 
 function tabToStatuses(tab: StatusTabKey): ApiOrder["status"][] | undefined {
   if (tab === "all") return undefined;
@@ -29,6 +29,7 @@ export function AdminOrdersSection() {
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [orders, setOrders] = useState<ApiOrder[]>([]);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +43,7 @@ export function AdminOrdersSection() {
   useEffect(() => {
     let cancelled = false;
     if (hasLoadedOrders.current) setIsRefreshing(true);
-    fetchOrders({ status: tabToStatuses(activeTab), q: deferredSearchQuery, page, pageSize: PAGE_SIZE })
+    fetchOrders({ status: tabToStatuses(activeTab), q: deferredSearchQuery, page, pageSize })
       .then((res) => {
         if (cancelled) return;
         setOrders(res.items);
@@ -64,7 +65,7 @@ export function AdminOrdersSection() {
     return () => {
       cancelled = true;
     };
-  }, [activeTab, deferredSearchQuery, page]);
+  }, [activeTab, deferredSearchQuery, page, pageSize]);
 
   useEffect(() => {
     Promise.all([
@@ -132,8 +133,10 @@ export function AdminOrdersSection() {
           onSearchChange={(value) => { setSearchQuery(value); setPage(1); }}
           total={total}
           page={page}
+          pageSize={pageSize}
           totalPages={totalPages}
           onPageChange={setPage}
+          onPageSizeChange={(value) => { setPageSize(value); setPage(1); }}
           isRefreshing={isRefreshing}
         />
       )}
@@ -142,10 +145,10 @@ export function AdminOrdersSection() {
         <CreateOrderModal
           onClose={() => setShowCreateModal(false)}
           onCreated={(order) => {
-            setOrders((prev) => page === totalPages && prev.length < PAGE_SIZE ? [...prev, order] : prev);
+            setOrders((prev) => page === totalPages && prev.length < pageSize ? [...prev, order] : prev);
             setTotal((prev) => {
               const nextTotal = prev + 1;
-              setTotalPages(Math.max(1, Math.ceil(nextTotal / PAGE_SIZE)));
+              setTotalPages(Math.max(1, Math.ceil(nextTotal / pageSize)));
               return nextTotal;
             });
             setStats((prev) => ({

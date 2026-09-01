@@ -148,10 +148,14 @@ export type ApiOrder = {
   facebookName: string;
   facebookUrl: string;
   customerName: string;
+  recipientName: string;
   customerEmail: string;
   phone: string;
+  addressFormat: "legacy_3_level" | "new_2_level";
   provinceCode: string;
   provinceName: string;
+  districtCode: string;
+  districtName: string;
   wardCode: string;
   wardName: string;
   addressDetail: string;
@@ -200,6 +204,16 @@ export type PublicOrder = Pick<
   | "publicCode"
   | "orderType"
   | "facebookName"
+  | "recipientName"
+  | "phone"
+  | "addressFormat"
+  | "provinceCode"
+  | "provinceName"
+  | "districtCode"
+  | "districtName"
+  | "wardCode"
+  | "wardName"
+  | "addressDetail"
   | "items"
   | "subtotal"
   | "total"
