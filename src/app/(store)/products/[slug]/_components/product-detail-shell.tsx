@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { ProductGallery } from "./product-gallery";
 import { ProductPricePanel } from "./product-price-panel";
@@ -54,6 +55,13 @@ export function ProductDetailShell({
           <h1 className="font-display-lg text-display-lg-mobile md:text-[40px] text-on-surface leading-tight mb-2">
             {product.name}
           </h1>
+          <Link
+            href={`/products/${encodeURIComponent(product.slug)}/bao-gia`}
+            className="mb-3 inline-flex items-center gap-2 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-bold text-primary transition-colors hover:bg-primary/10"
+          >
+            <Icon name="request_quote" className="!text-[19px]" />
+            Báo giá
+          </Link>
           <p className="font-headline-sm text-headline-sm text-on-surface-variant font-medium">
             {product.category}
             {product.scale !== "Không tỷ lệ" ? ` ${product.scale}` : ""} | {product.universe}
