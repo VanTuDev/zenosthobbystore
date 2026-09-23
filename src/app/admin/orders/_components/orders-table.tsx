@@ -7,6 +7,7 @@ import { formatVnd } from "@/lib/format";
 import { ORDER_STATUS_META, PAYMENT_STATUS_META } from "@/components/ui/order-status-badge";
 import { TabGroup, type Tab } from "@/components/admin/tab-group";
 import { StatusDot } from "@/components/admin/status-dot";
+import { PaymentProofModal } from "./payment-proof-modal";
 import type { ApiOrder } from "@/lib/api-types";
 
 export const STATUS_TABS = [
@@ -30,6 +31,7 @@ export function OrdersTable({
   onPageChange,
   onPageSizeChange,
   isRefreshing,
+  onOrderUpdated,
 }: {
   orders: ApiOrder[];
   activeTab: StatusTabKey;
@@ -43,17 +45,22 @@ export function OrdersTable({
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   isRefreshing: boolean;
+  onOrderUpdated: (order: ApiOrder) => void;
 }) {
   const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
+  const [proofOrder, setProofOrder] = useState<ApiOrder | null>(null);
 
   async function copyShareLink(order: ApiOrder) {
     if (!order.publicCode) return;
-    await navigator.clipboard.writeText(`${window.location.origin}/theo-doi-don-hang/${order.publicCode}`);
+    const trackingUrl = `https://zenosthobbystore.com/theo-doi-don-hang/${order.publicCode}`;
+    const message = `Đây là link theo dõi trên website. Bạn vui lòng vào link để điền đầy đủ thông tin chính xác, tiếp theo là thời gian và trạng thái đơn hàng. Sau đó kéo xuống kiểm tra chi tiết đơn hàng: Sản phẩm, giá tiền, số tiền đã đặt cọc...\n\n(Copy và mở trong trình duyệt để dễ thao tác)\n(Link): ${trackingUrl}`;
+    await navigator.clipboard.writeText(message);
     setCopiedOrderId(order.id);
     window.setTimeout(() => setCopiedOrderId((current) => current === order.id ? null : current), 1800);
   }
 
   return (
+    <>
     <section className="bg-surface-container-lowest rounded-lg border border-outline-variant/40 overflow-hidden">
       <div className="px-md py-sm border-b border-outline-variant/40 flex flex-wrap gap-sm justify-between items-center bg-surface-container-low">
         <h3 className="font-label-md text-label-md text-on-surface font-bold">Danh sách đơn hàng</h3>
@@ -68,13 +75,13 @@ export function OrdersTable({
           <thead>
             <tr className="bg-surface-container-low text-on-surface-variant uppercase text-[10px] tracking-wide font-bold">
               <th className="w-12 border border-outline-variant/30 px-2 py-xs text-center whitespace-nowrap">Share</th>
-              <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Mã đơn</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Khách hàng</th>
-              <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Loại đơn</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap text-right">SL SP</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap text-right">Tổng tiền</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap text-right">Tiền cọc</th>
+              <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap text-right">Còn lại</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Thanh toán</th>
+              <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap text-center">Giao dịch</th>
               <th className="px-sm py-xs border border-outline-variant/30 whitespace-nowrap">Trạng thái</th>
               <th className="px-sm py-xs border border-outline-variant/30 w-8" />
             </tr>
@@ -93,14 +100,8 @@ export function OrdersTable({
                       <Icon name={copiedOrderId === order.id ? "check" : "share"} className="!text-[18px]" />
                     </button>
                   </td>
-                  <td className="px-sm py-xs border border-outline-variant/30 font-bold text-on-surface whitespace-nowrap">
-                    {(order.publicCode || order.id.slice(-6)).toUpperCase()}
-                  </td>
                   <td className="px-sm py-xs border border-outline-variant/30 text-on-surface whitespace-nowrap">
                     {order.facebookName || order.customerName}
-                  </td>
-                  <td className="px-sm py-xs border border-outline-variant/30 text-on-surface-variant whitespace-nowrap">
-                    {order.orderType === "pre_order" ? "Hàng order" : "Hàng có sẵn"}
                   </td>
                   <td className="px-sm py-xs border border-outline-variant/30 text-on-surface-variant text-right">
                     {order.items.reduce((sum, i2) => sum + i2.quantity, 0)}
@@ -111,8 +112,26 @@ export function OrdersTable({
                   <td className="px-sm py-xs border border-outline-variant/30 font-medium text-primary text-right whitespace-nowrap">
                     {formatVnd(order.depositAmount ?? 0)}
                   </td>
+                  <td className="px-sm py-xs border border-outline-variant/30 font-medium text-on-surface text-right whitespace-nowrap">
+                    {formatVnd(Math.max(0, order.total - (order.depositAmount ?? 0)))}
+                  </td>
                   <td className="px-sm py-xs border border-outline-variant/30">
                     <StatusDot tone={paymentMeta.tone} label={paymentMeta.label} />
+                  </td>
+                  <td className="px-2 py-xs border border-outline-variant/30 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setProofOrder(order)}
+                      className={`inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-bold transition-colors ${
+                        order.paymentProofImages?.length
+                          ? "bg-[#dcfce7] text-[#15803d] hover:bg-[#bbf7d0]"
+                          : "border border-primary/25 text-primary hover:bg-primary/5"
+                      }`}
+                      title={order.paymentProofImages?.length ? "Xem hoặc quản lý ảnh giao dịch" : "Thêm ảnh giao dịch"}
+                    >
+                      <Icon name={order.paymentProofImages?.length ? "photo_library" : "add_photo_alternate"} className="!text-[17px]" />
+                      {order.paymentProofImages?.length ? `${order.paymentProofImages.length} ảnh` : "Thêm ảnh"}
+                    </button>
                   </td>
                   <td className="px-sm py-xs border border-outline-variant/30">
                     <StatusDot tone={statusMeta.tone} label={statusMeta.label} />
@@ -162,5 +181,16 @@ export function OrdersTable({
         </div>
       </div>
     </section>
+    {proofOrder && (
+      <PaymentProofModal
+        order={proofOrder}
+        onClose={() => setProofOrder(null)}
+        onUpdated={(updatedOrder) => {
+          setProofOrder(updatedOrder);
+          onOrderUpdated(updatedOrder);
+        }}
+      />
+    )}
+    </>
   );
 }

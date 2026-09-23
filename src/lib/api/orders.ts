@@ -130,6 +130,13 @@ export function updateOrderPaymentStatus(id: string, paymentStatus: ApiOrder["pa
   });
 }
 
+export function updateOrderPaymentProof(id: string, paymentProofImages: ApiOrder["paymentProofImages"]) {
+  return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/payment-proof`, {
+    method: "PATCH",
+    body: { paymentProofImages },
+  });
+}
+
 export function enableAutomaticOrderStatus(id: string) {
   return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/status/automatic`, { method: "PATCH" });
 }

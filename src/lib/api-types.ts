@@ -186,6 +186,7 @@ export type ApiOrder = {
   trackingCode: string;
   paymentMethod: "Chuyển khoản" | "COD" | "Thẻ tín dụng" | "Ví điện tử";
   paymentStatus: "not_deposited" | "deposited" | "paid" | "unpaid" | "refunded";
+  paymentProofImages: Array<{ url: string; publicId: string }>;
   placedAt: string;
   userId: string | null;
   promotionCode: string | null;

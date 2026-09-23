@@ -138,6 +138,9 @@ export function AdminOrdersSection() {
           onPageChange={setPage}
           onPageSizeChange={(value) => { setPageSize(value); setPage(1); }}
           isRefreshing={isRefreshing}
+          onOrderUpdated={(updatedOrder) => {
+            setOrders((current) => current.map((order) => order.id === updatedOrder.id ? updatedOrder : order));
+          }}
         />
       )}
 
