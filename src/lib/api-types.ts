@@ -184,6 +184,7 @@ export type ApiOrder = {
     | "cancelled";
   statusMode: "auto" | "manual";
   trackingCode: string;
+  trackingCodes: string[];
   paymentMethod: "Chuyển khoản" | "COD" | "Thẻ tín dụng" | "Ví điện tử";
   paymentStatus: "not_deposited" | "deposited" | "paid" | "unpaid" | "refunded";
   paymentProofImages: Array<{ url: string; publicId: string }>;
@@ -222,6 +223,7 @@ export type PublicOrder = Pick<
   | "remainingAmount"
   | "status"
   | "trackingCode"
+  | "trackingCodes"
   | "placedAt"
   | "updatedAt"
   | "sourceOrderCode"

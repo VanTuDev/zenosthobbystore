@@ -63,6 +63,8 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
     );
   }
 
+  const trackingCodes = order.trackingCodes?.length ? order.trackingCodes : order.trackingCode ? [order.trackingCode] : [];
+
   return (
     <>
       <Link
@@ -111,7 +113,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
             </div>
           )}
         </div>
-        <OrderStatusEditor key={`${order.orderType}-${order.status}-${order.statusMode}-${order.paymentStatus}-${order.trackingCode}`} order={order} onUpdated={setOrder} />
+        <OrderStatusEditor key={`${order.orderType}-${order.status}-${order.statusMode}-${order.paymentStatus}-${trackingCodes.join("|")}`} order={order} onUpdated={setOrder} />
         <OrderDetailsEditor order={order} onUpdated={setOrder} />
       </div>
 
@@ -249,10 +251,16 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
 
           <section className="bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/20 space-y-md">
             <h2 className="font-headline-sm text-headline-sm text-on-surface">Thông tin vận chuyển</h2>
-            <p className="flex items-center gap-sm text-body-md text-on-surface-variant">
-              <Icon name="local_shipping" className="text-primary" />
-              {order.trackingCode || "Chưa có mã vận đơn"}
-            </p>
+            {trackingCodes.length > 0 ? (
+              <div className="space-y-2">
+                {trackingCodes.map((trackingCode, index) => (
+                  <p key={`${trackingCode}-${index}`} className="flex items-center gap-sm text-body-md text-on-surface-variant">
+                    <Icon name="local_shipping" className="text-primary" />
+                    {trackingCode}
+                  </p>
+                ))}
+              </div>
+            ) : <p className="text-body-md text-on-surface-variant">Chưa có mã vận đơn</p>}
             {order.paymentProvider === "payos" && (
               <p className="flex items-center gap-sm text-label-sm text-on-surface-variant">
                 <Icon name="qr_code_2" className="text-primary !text-[18px]" />

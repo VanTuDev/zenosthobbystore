@@ -20,6 +20,11 @@ const STATUS_OPTIONS: Record<ApiOrder["orderType"], ApiOrder["status"][]> = {
 };
 const PAYMENT_STATUS_OPTIONS: ApiOrder["paymentStatus"][] = ["not_deposited", "deposited", "paid"];
 
+function orderTrackingCodes(order: ApiOrder) {
+  const codes = order.trackingCodes?.length ? order.trackingCodes : order.trackingCode ? [order.trackingCode] : [];
+  return codes.map((code) => code.trim()).filter(Boolean);
+}
+
 function EditorGroup({
   label,
   currentBadge,
@@ -49,16 +54,18 @@ export function OrderStatusEditor({
 }) {
   const { showToast } = useToast();
   const [statusDraft, setStatusDraft] = useState<ApiOrder["status"]>(order.status);
-  const [trackingCode, setTrackingCode] = useState(order.trackingCode ?? "");
+  const [trackingCodes, setTrackingCodes] = useState<string[]>(() => orderTrackingCodes(order).length ? orderTrackingCodes(order) : [""]);
   const [paymentDraft, setPaymentDraft] = useState<ApiOrder["paymentStatus"]>(order.paymentStatus);
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingPayment, setSavingPayment] = useState(false);
-  const trackingChanged = statusDraft === "shipped" && trackingCode.trim() !== (order.trackingCode ?? "").trim();
+  const normalizedTrackingCodes = trackingCodes.map((code) => code.trim().toUpperCase()).filter(Boolean);
+  const trackingChanged = statusDraft === "shipped"
+    && JSON.stringify(normalizedTrackingCodes) !== JSON.stringify(orderTrackingCodes(order).map((code) => code.toUpperCase()));
 
   async function handleSaveStatus() {
     setSavingStatus(true);
     try {
-      const { order: updated } = await updateOrderStatus(order.id, statusDraft, statusDraft === "shipped" ? trackingCode.trim() : undefined);
+      const { order: updated } = await updateOrderStatus(order.id, statusDraft, statusDraft === "shipped" ? normalizedTrackingCodes : undefined);
       onUpdated(updated);
       showToast("Đã cập nhật trạng thái đơn hàng.", "success");
     } catch (err) {
@@ -129,13 +136,31 @@ export function OrderStatusEditor({
           <p className="w-full text-xs font-medium text-[#15803d]">● Đang tự động theo sản phẩm có tiến độ chậm nhất</p>
         )}
         {statusDraft === "shipped" && (
-          <input
-            value={trackingCode}
-            onChange={(event) => setTrackingCode(event.target.value)}
-            placeholder="Mã vận đơn"
-            aria-label="Mã vận đơn"
-            className="w-full rounded-xl bg-surface-container-low px-3 py-2.5 text-sm outline-none ring-1 ring-outline-variant/50 focus:ring-2 focus:ring-primary"
-          />
+          <div className="w-full space-y-2">
+            <p className="text-xs font-bold text-on-surface-variant">Mã vận đơn</p>
+            {trackingCodes.map((trackingCode, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  value={trackingCode}
+                  onChange={(event) => setTrackingCodes((current) => current.map((code, codeIndex) => codeIndex === index ? event.target.value : code))}
+                  placeholder={`Mã vận đơn ${index + 1}`}
+                  aria-label={`Mã vận đơn ${index + 1}`}
+                  className="min-w-0 flex-1 rounded-xl bg-surface-container-low px-3 py-2.5 text-sm uppercase outline-none ring-1 ring-outline-variant/50 focus:ring-2 focus:ring-primary"
+                />
+                {trackingCodes.length > 1 && (
+                  <button type="button" onClick={() => setTrackingCodes((current) => current.filter((_, codeIndex) => codeIndex !== index))} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-error/30 text-error hover:bg-error/5" aria-label={`Xóa mã vận đơn ${index + 1}`}>
+                    <Icon name="delete" className="!text-[18px]" />
+                  </button>
+                )}
+              </div>
+            ))}
+            {trackingCodes.length < 10 && (
+              <button type="button" onClick={() => setTrackingCodes((current) => [...current, ""])} className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 px-3 py-2 text-xs font-bold text-primary hover:bg-primary/5">
+                <Icon name="add" className="!text-[17px]" />
+                Thêm mã vận đơn
+              </button>
+            )}
+          </div>
         )}
       </EditorGroup>
 

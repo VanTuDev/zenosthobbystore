@@ -53,6 +53,7 @@ export default async function PublicOrderPage({ params }: { params: Promise<{ co
   const response = await fetchPublicOrder(code).catch(() => null);
   if (!response) notFound();
   const order = response.order;
+  const trackingCodes = order.trackingCodes?.length ? order.trackingCodes : order.trackingCode ? [order.trackingCode] : [];
   const steps = order.status === "picked_up"
     ? STATUS_STEPS[order.orderType].map((status) => (status === "shipped" ? "picked_up" : status))
     : STATUS_STEPS[order.orderType];
@@ -119,17 +120,22 @@ export default async function PublicOrderPage({ params }: { params: Promise<{ co
                         )}
                       </div>
                       {current && <p className="mt-1 text-xs text-on-surface-variant">Trạng thái hiện tại</p>}
-                      {status === "shipped" && current && order.trackingCode && (
+                      {status === "shipped" && current && trackingCodes.length > 0 && (
                         <div className="mt-4 flex items-start gap-3 rounded-2xl bg-primary/5 p-4 sm:p-5">
                           <Icon name="local_shipping" className="mt-0.5 shrink-0 text-primary !text-[24px]" />
-                          <div className="min-w-0">
-                            <p className="text-xs text-on-surface-variant">Mã vận đơn</p>
-                            <p className="font-bold text-on-surface">{order.trackingCode}</p>
-                            <p>Theo dõi ngay tại:</p>
-                            <a href={`https://spx.vn/track?${encodeURIComponent(order.trackingCode.trim())}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex max-w-full items-center gap-1 break-all text-sm font-medium text-primary underline underline-offset-2 hover:brightness-75">
-                              https://spx.vn/track?{order.trackingCode.trim()}
-                              <Icon name="open_in_new" className="shrink-0 !text-[15px]" />
-                            </a>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs text-on-surface-variant">{trackingCodes.length > 1 ? `${trackingCodes.length} mã vận đơn` : "Mã vận đơn"}</p>
+                            <div className="mt-2 space-y-3">
+                              {trackingCodes.map((trackingCode, trackingIndex) => (
+                                <div key={`${trackingCode}-${trackingIndex}`}>
+                                  <p className="font-bold text-on-surface">{trackingCode}</p>
+                                  <a href={`https://spx.vn/track?${encodeURIComponent(trackingCode.trim())}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex max-w-full items-center gap-1 break-all text-sm font-medium text-primary underline underline-offset-2 hover:brightness-75">
+                                    https://spx.vn/track?{trackingCode.trim()}
+                                    <Icon name="open_in_new" className="shrink-0 !text-[15px]" />
+                                  </a>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}

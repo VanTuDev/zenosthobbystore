@@ -116,10 +116,10 @@ export function updateFactoryOrderedQuantity(productKey: string, variantName: st
   });
 }
 
-export function updateOrderStatus(id: string, status: ApiOrder["status"], trackingCode?: string) {
+export function updateOrderStatus(id: string, status: ApiOrder["status"], trackingCodes?: string[]) {
   return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/status`, {
     method: "PATCH",
-    body: { status, trackingCode },
+    body: { status, trackingCodes },
   });
 }
 
