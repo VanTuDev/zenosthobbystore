@@ -123,45 +123,6 @@ export function updateOrderStatus(id: string, status: ApiOrder["status"], tracki
   });
 }
 
-export type ShippingScanInput = {
-  trackingCode: string;
-  recipientName: string;
-  phone: string;
-  address: string;
-};
-
-export type ShippingScanCandidate = {
-  order: {
-    id: string;
-    publicCode: string;
-    facebookName: string;
-    recipientName: string;
-    phone: string;
-    address: string;
-    status: ApiOrder["status"];
-    itemCount: number;
-    total: number;
-  };
-  score: number;
-  confidence: "high" | "medium" | "low";
-  signals: { phoneExact: boolean; nameScore: number; addressScore: number };
-};
-
-export function matchShippingLabel(input: ShippingScanInput) {
-  return apiFetch<{
-    scan: ShippingScanInput;
-    candidates: ShippingScanCandidate[];
-    recommendedOrderId: string | null;
-  }>("/orders/shipping-scan/match", { method: "POST", body: input });
-}
-
-export function confirmShippingLabel(orderId: string, trackingCode: string) {
-  return apiFetch<{ order: ApiOrder; alreadyUpdated: boolean }>("/orders/shipping-scan/confirm", {
-    method: "POST",
-    body: { orderId, trackingCode },
-  });
-}
-
 export function updateOrderPaymentStatus(id: string, paymentStatus: ApiOrder["paymentStatus"]) {
   return apiFetch<{ order: ApiOrder }>(`/orders/${encodeURIComponent(id)}/payment-status`, {
     method: "PATCH",

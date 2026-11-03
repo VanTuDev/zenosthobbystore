@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 
 const NAV_ITEMS = [
   { href: "/admin/products", label: "Quản lý Sản phẩm", icon: "inventory_2" },
   { href: "/admin/orders", label: "Đơn Facebook", icon: "receipt_long" },
-  { href: "/admin/shipping-scan", label: "Quét nhãn vận đơn", icon: "document_scanner" },
   { href: "/admin/tickets", label: "Ticket liên hệ", icon: "support_agent" },
   { href: "/admin/ordered-products", label: "Sản phẩm đang order", icon: "inventory" },
   { href: "/admin/categories", label: "Danh mục", icon: "category" },
@@ -19,6 +18,8 @@ const NAV_ITEMS = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => setOpen(false), [pathname]);
 
   return (
     <>
@@ -44,7 +45,6 @@ export function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              onClick={() => setOpen(false)}
               aria-current={isActive ? "page" : undefined}
               className={
                 isActive
