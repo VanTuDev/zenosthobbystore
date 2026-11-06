@@ -10,6 +10,7 @@ import { Icon } from "@/components/ui/icon";
 import { OrderStatusEditor } from "../../_components/order-status-editor";
 import { OrderDetailsEditor } from "../../_components/order-details-editor";
 import { OrderFulfillmentManager } from "../../_components/order-fulfillment-manager";
+import { AdditionalPaymentQrModal } from "./additional-payment-qr-modal";
 import { ApiRequestError } from "@/lib/api-client";
 import type { ApiOrder } from "@/lib/api-types";
 
@@ -20,6 +21,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
   const [copied, setCopied] = useState(false);
   const [shippingCopied, setShippingCopied] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showAdditionalPaymentQr, setShowAdditionalPaymentQr] = useState(false);
 
   async function handleDelete() {
     if (!order || !window.confirm(`Xóa vĩnh viễn đơn #${(order.publicCode || order.id.slice(-6)).toUpperCase()}? Thao tác này không thể hoàn tác.`)) return;
@@ -100,6 +102,10 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
               {copied ? "Đã sao chép nội dung" : "Copy link đơn hàng"}
             </button>
           )}
+            <button type="button" onClick={() => setShowAdditionalPaymentQr(true)} className="inline-flex items-center gap-1.5 rounded-xl border border-primary px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5">
+              <Icon name="qr_code_2" className="!text-[17px]" />
+              Tạo QR thanh toán thêm
+            </button>
             <button type="button" disabled={deleting} onClick={() => void handleDelete()} className="inline-flex items-center gap-1.5 rounded-xl border border-error/40 px-4 py-2.5 text-sm font-bold text-error transition hover:bg-error/5 disabled:opacity-50">
               <Icon name={deleting ? "progress_activity" : "delete"} className={`!text-[17px] ${deleting ? "animate-spin" : ""}`} />
               {deleting ? "Đang xóa..." : "Xóa đơn hàng"}
@@ -276,6 +282,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
           </section>
         </div>
       </div>
+      {showAdditionalPaymentQr && <AdditionalPaymentQrModal order={order} onClose={() => setShowAdditionalPaymentQr(false)} />}
     </>
   );
 }

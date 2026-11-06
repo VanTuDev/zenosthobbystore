@@ -23,6 +23,7 @@ export const DEPOSIT_PREVIEW_STORAGE_PREFIX = "zenost-deposit-preview:";
 
 export type DepositPreviewDraft = {
   createdAt: number;
+  paymentMode?: "initial_deposit" | "additional_payment";
   facebookName: string;
   facebookUrl: string;
   items: Array<{
@@ -35,6 +36,9 @@ export type DepositPreviewDraft = {
   total: number;
   depositAmount: number;
   remainingAmount: number;
+  currentTotal?: number;
+  currentDepositAmount?: number;
+  additionalPaymentAmount?: number;
   useSecondaryAccount?: boolean;
 };
 

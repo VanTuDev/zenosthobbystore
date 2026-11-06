@@ -61,6 +61,9 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
 
   const transferContent = getDepositTransferContent(draft.facebookName);
   const qrUrl = getDepositQrUrl(draft.depositAmount, draft.facebookName, activeAccount);
+  const isAdditionalPayment = draft.paymentMode === "additional_payment";
+  const currentDepositAmount = draft.currentDepositAmount ?? 0;
+  const paidAfterPayment = currentDepositAmount + (draft.additionalPaymentAmount ?? draft.depositAmount);
   const usingAlternateAccount = activeAccount.accountNumber !== BANK_PAYMENT.accountNumber
     || activeAccount.bankId !== BANK_PAYMENT.bankId;
 
@@ -90,8 +93,8 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
       <section className="overflow-hidden rounded-3xl border border-outline-variant/30 bg-white shadow-sm">
         <header className="flex flex-col justify-between gap-2 bg-on-surface px-5 py-4 text-white sm:flex-row sm:items-center md:px-7">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/55">Xác nhận thông tin đặt cọc</p>
-            <h1 className="mt-1 text-2xl font-bold md:text-3xl">Đơn hàng của {draft.facebookName}</h1>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/55">{isAdditionalPayment ? "Xác nhận thanh toán thêm" : "Xác nhận thông tin đặt cọc"}</p>
+            <h1 className="mt-1 text-2xl font-bold md:text-3xl">{isAdditionalPayment ? "Thanh toán thêm của" : "Đơn hàng của"} {draft.facebookName}</h1>
           </div>
           <p className="text-xs text-white/65">Thông tin tạm tính trước khi shop tạo đơn hàng</p>
         </header>
@@ -127,22 +130,34 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
               </ul>
             </section>
 
-            <section className="space-y-2 rounded-xl bg-surface-container-low p-4 text-base">
-              <div className="flex justify-between gap-4"><span>Tổng tiền hàng</span><strong>{formatVnd(draft.total)}</strong></div>
-              <div className="flex justify-between gap-4 text-primary"><span>Tiền cần đặt cọc</span><strong>{formatVnd(draft.depositAmount)}</strong></div>
-              <div className="flex justify-between gap-4 border-t border-outline-variant/30 pt-2 text-lg"><span>Số tiền còn lại</span><strong>{formatVnd(draft.remainingAmount)}</strong></div>
-            </section>
+            {isAdditionalPayment ? (
+              <section className="space-y-2 rounded-xl bg-surface-container-low p-4 text-base">
+                <div className="flex justify-between gap-4"><span>Giá trị đơn hiện tại</span><strong>{formatVnd(draft.currentTotal ?? draft.total)}</strong></div>
+                <div className="flex justify-between gap-4"><span>Tiền cọc hiện tại</span><strong>{formatVnd(currentDepositAmount)}</strong></div>
+                <div className="flex justify-between gap-4"><span>Giá trị đơn mới</span><strong>{formatVnd(draft.total)}</strong></div>
+                <div className="flex justify-between gap-4 text-primary"><span>Số tiền thanh toán thêm</span><strong>{formatVnd(draft.additionalPaymentAmount ?? draft.depositAmount)}</strong></div>
+                <div className="flex justify-between gap-4"><span>Tổng đã cọc sau lần này</span><strong>{formatVnd(paidAfterPayment)}</strong></div>
+                <div className="flex justify-between gap-4 border-t border-outline-variant/30 pt-2 text-lg"><span>Số tiền còn lại</span><strong>{formatVnd(draft.remainingAmount)}</strong></div>
+              </section>
+            ) : (
+              <section className="space-y-2 rounded-xl bg-surface-container-low p-4 text-base">
+                <div className="flex justify-between gap-4"><span>Tổng tiền hàng</span><strong>{formatVnd(draft.total)}</strong></div>
+                <div className="flex justify-between gap-4 text-primary"><span>Tiền cần đặt cọc</span><strong>{formatVnd(draft.depositAmount)}</strong></div>
+                <div className="flex justify-between gap-4 border-t border-outline-variant/30 pt-2 text-lg"><span>Số tiền còn lại</span><strong>{formatVnd(draft.remainingAmount)}</strong></div>
+              </section>
+            )}
 
             <div className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm leading-5 text-on-surface-variant">
-              Kiểm tra kỹ tên Facebook, sản phẩm, biến thể, số lượng và số tiền. Sau khi chuyển khoản, vui lòng gửi ảnh giao dịch cho shop; đơn chỉ được tạo khi shop xác nhận đã nhận cọc.
+              {isAdditionalPayment
+                ? "Kiểm tra kỹ giá trị đơn mới và số tiền thanh toán thêm. Sau khi chuyển khoản, vui lòng gửi ảnh giao dịch cho shop; số tiền cọc chỉ được cập nhật khi shop xác nhận đã nhận tiền."
+                : "Kiểm tra kỹ tên Facebook, sản phẩm, biến thể, số lượng và số tiền. Sau khi chuyển khoản, vui lòng gửi ảnh giao dịch cho shop; đơn chỉ được tạo khi shop xác nhận đã nhận cọc."}
             </div>
           </div>
 
           <section className="rounded-2xl border border-primary/15 bg-primary/5 p-4 text-center lg:sticky lg:top-24">
             <div className="flex items-center justify-between gap-2">
               <div className="text-left">
-                <h2 className="text-sm font-bold uppercase tracking-wider">Quét mã để đặt cọc</h2>
-                {usingAlternateAccount && <span className="mt-1 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">Đang dùng tài khoản phụ</span>}
+                <h2 className="text-sm font-bold uppercase tracking-wider">{isAdditionalPayment ? "Quét mã để thanh toán thêm" : "Quét mã để đặt cọc"}</h2>
               </div>
               <div className="flex flex-wrap justify-end gap-1.5">
                 <button type="button" onClick={() => setActiveAccount(usingAlternateAccount ? BANK_PAYMENT : SECONDARY_BANK_PAYMENT)} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary/25 bg-white px-2.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/5">
@@ -159,7 +174,7 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
             <div className="mt-2 space-y-0.5 text-sm">
               <p><strong>{activeAccount.bankName}</strong> · {activeAccount.accountNumber}</p>
               <p>{activeAccount.accountName}</p>
-              <p>Số tiền: <strong className="text-primary">{formatVnd(draft.depositAmount)}</strong></p>
+              <p>{isAdditionalPayment ? "Thanh toán thêm" : "Số tiền"}: <strong className="text-primary">{formatVnd(draft.depositAmount)}</strong></p>
               <p>Nội dung: <strong>{transferContent}</strong></p>
             </div>
           </section>
