@@ -46,7 +46,7 @@ export function AdditionalPaymentQrModal({ order, onClose }: { order: ApiOrder; 
   }
 
   return (
-    <Modal onClose={onClose} labelledBy="additional-payment-qr-title" icon="qr_code_2" title="Tạo QR thanh toán thêm" subtitle={`Đơn #${order.publicCode.toUpperCase()}`} maxWidthClassName="max-w-xl">
+    <Modal onClose={onClose} labelledBy="additional-payment-qr-title" icon="qr_code_2" title="Tạo QR thanh toán thêm" subtitle={`Đơn #${order.publicCode.toUpperCase()}`} maxWidthClassName="sm:max-w-[640px]">
       <div className="space-y-4 overflow-y-auto p-4 sm:p-6">
         <section className="grid grid-cols-2 gap-3 rounded-xl bg-surface-container-low p-4 text-sm">
           <div><p className="text-on-surface-variant">Giá trị đơn hiện tại</p><p className="mt-1 font-bold">{formatVnd(order.total)}</p></div>
