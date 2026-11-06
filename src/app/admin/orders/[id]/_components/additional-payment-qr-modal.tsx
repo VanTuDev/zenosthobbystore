@@ -4,14 +4,19 @@ import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Icon } from "@/components/ui/icon";
 import { FieldLabel, textFieldClass } from "@/components/ui/form-field";
+import { useToast } from "@/components/ui/toast";
 import { formatVnd } from "@/lib/format";
 import { DEPOSIT_PREVIEW_STORAGE_PREFIX, type DepositPreviewDraft } from "@/lib/bank-payment";
+import { updateOrderDetails } from "@/lib/api/orders";
+import { ApiRequestError } from "@/lib/api-client";
 import type { ApiOrder } from "@/lib/api-types";
 
-export function AdditionalPaymentQrModal({ order, onClose }: { order: ApiOrder; onClose: () => void }) {
+export function AdditionalPaymentQrModal({ order, onClose, onUpdated }: { order: ApiOrder; onClose: () => void; onUpdated: (order: ApiOrder) => void }) {
+  const { showToast } = useToast();
   const [newTotalInput, setNewTotalInput] = useState(String(order.total));
   const [additionalPaymentInput, setAdditionalPaymentInput] = useState("");
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const currentDeposit = Math.max(0, order.depositAmount ?? 0);
   const newTotal = Math.max(0, Number(newTotalInput) || 0);
@@ -19,11 +24,17 @@ export function AdditionalPaymentQrModal({ order, onClose }: { order: ApiOrder; 
   const paidAfterPayment = currentDeposit + additionalPayment;
   const remainingAfterPayment = Math.max(0, newTotal - paidAfterPayment);
 
+  function validateAmounts() {
+    if (newTotal <= 0) return "Giá trị đơn mới phải lớn hơn 0.";
+    if (additionalPayment <= 0) return "Số tiền thanh toán thêm phải lớn hơn 0.";
+    if (paidAfterPayment > newTotal) return "Tổng tiền đã cọc không được lớn hơn giá trị đơn mới.";
+    return "";
+  }
+
   function createPreview(useSecondaryAccount: boolean) {
     setError("");
-    if (newTotal <= 0) return setError("Giá trị đơn mới phải lớn hơn 0.");
-    if (additionalPayment <= 0) return setError("Số tiền thanh toán thêm phải lớn hơn 0.");
-    if (paidAfterPayment > newTotal) return setError("Tổng tiền đã cọc không được lớn hơn giá trị đơn mới.");
+    const validationError = validateAmounts();
+    if (validationError) return setError(validationError);
 
     const draftId = crypto.randomUUID();
     const draft: DepositPreviewDraft = {
@@ -45,8 +56,27 @@ export function AdditionalPaymentQrModal({ order, onClose }: { order: ApiOrder; 
     if (previewWindow) previewWindow.opener = null;
   }
 
+  async function saveReceivedPayment() {
+    setError("");
+    const validationError = validateAmounts();
+    if (validationError) return setError(validationError);
+    if (!window.confirm(`Xác nhận đã nhận ${formatVnd(additionalPayment)} từ khách và cập nhật tiền cọc của đơn?`)) return;
+
+    setSaving(true);
+    try {
+      const response = await updateOrderDetails(order.id, { total: newTotal, depositAmount: paidAfterPayment });
+      onUpdated(response.order);
+      showToast("Đã lưu giá trị đơn và số tiền khách thanh toán thêm.", "success");
+      onClose();
+    } catch (saveError) {
+      setError(saveError instanceof ApiRequestError ? saveError.message : "Không thể cập nhật số tiền của đơn hàng.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
-    <Modal onClose={onClose} labelledBy="additional-payment-qr-title" icon="qr_code_2" title="Tạo QR thanh toán thêm" subtitle={`Đơn #${order.publicCode.toUpperCase()}`} maxWidthClassName="sm:max-w-[640px]">
+    <Modal onClose={onClose} closeDisabled={saving} labelledBy="additional-payment-qr-title" icon="qr_code_2" title="Tạo QR thanh toán thêm" subtitle={`Đơn #${order.publicCode.toUpperCase()}`} maxWidthClassName="sm:max-w-[640px]">
       <div className="space-y-4 overflow-y-auto p-4 sm:p-6">
         <section className="grid grid-cols-2 gap-3 rounded-xl bg-surface-container-low p-4 text-sm">
           <div><p className="text-on-surface-variant">Giá trị đơn hiện tại</p><p className="mt-1 font-bold">{formatVnd(order.total)}</p></div>
@@ -74,9 +104,10 @@ export function AdditionalPaymentQrModal({ order, onClose }: { order: ApiOrder; 
       </div>
 
       <div className="flex flex-wrap justify-end gap-2 border-t border-outline-variant/30 px-4 py-3 sm:px-6">
-        <button type="button" onClick={onClose} className="rounded-xl border border-outline-variant/60 px-4 py-2 text-sm text-on-surface-variant">Hủy</button>
-        <button type="button" onClick={() => createPreview(true)} className="inline-flex items-center gap-1.5 rounded-xl border border-outline-variant/60 px-4 py-2 text-sm font-bold"><Icon name="account_balance" className="!text-[18px]" /> QR phụ</button>
-        <button type="button" onClick={() => createPreview(false)} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white"><Icon name="qr_code_2" className="!text-[18px]" /> Tạo QR</button>
+        <button type="button" onClick={onClose} disabled={saving} className="rounded-xl border border-outline-variant/60 px-4 py-2 text-sm text-on-surface-variant disabled:opacity-50">Hủy</button>
+        <button type="button" onClick={() => createPreview(true)} disabled={saving} className="inline-flex items-center gap-1.5 rounded-xl border border-outline-variant/60 px-4 py-2 text-sm font-bold disabled:opacity-50"><Icon name="account_balance" className="!text-[18px]" /> QR phụ</button>
+        <button type="button" onClick={() => createPreview(false)} disabled={saving} className="inline-flex items-center gap-1.5 rounded-xl border border-primary px-4 py-2 text-sm font-bold text-primary disabled:opacity-50"><Icon name="qr_code_2" className="!text-[18px]" /> Tạo QR</button>
+        <button type="button" onClick={() => void saveReceivedPayment()} disabled={saving} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-50"><Icon name={saving ? "progress_activity" : "payments"} className={`!text-[18px] ${saving ? "animate-spin" : ""}`} /> {saving ? "Đang lưu..." : "Đã nhận tiền & lưu"}</button>
       </div>
     </Modal>
   );

@@ -282,7 +282,7 @@ export function AdminOrderDetailView({ orderId }: { orderId: string }) {
           </section>
         </div>
       </div>
-      {showAdditionalPaymentQr && <AdditionalPaymentQrModal order={order} onClose={() => setShowAdditionalPaymentQr(false)} />}
+      {showAdditionalPaymentQr && <AdditionalPaymentQrModal order={order} onClose={() => setShowAdditionalPaymentQr(false)} onUpdated={setOrder} />}
     </>
   );
 }
