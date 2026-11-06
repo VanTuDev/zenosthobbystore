@@ -85,7 +85,7 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
     });
   }
 
-  function handleDepositPreview() {
+  function handleDepositPreview(useSecondaryAccount = false) {
     setError(null);
     if (!facebookName.trim()) return setError("Vui lòng nhập tên Facebook khách trước khi tạo QR cọc.");
     if (!facebookUrl.trim()) return setError("Vui lòng nhập link Facebook khách trước khi tạo QR cọc.");
@@ -102,6 +102,7 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
       total,
       depositAmount: deposit,
       remainingAmount: remaining,
+      useSecondaryAccount,
     };
     localStorage.setItem(`${DEPOSIT_PREVIEW_STORAGE_PREFIX}${draftId}`, JSON.stringify(draft));
     const previewWindow = window.open(`/xac-nhan-dat-coc/${draftId}`, "_blank");
@@ -272,7 +273,10 @@ export function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; 
         {error ? <p className="text-xs text-error">{error}</p> : <span />}
         <div className="ml-auto flex gap-2">
           <button type="button" onClick={onClose} disabled={saving} className="rounded-xl border border-outline-variant/60 px-4 py-2 text-sm text-on-surface-variant">Hủy</button>
-          <button type="button" onClick={handleDepositPreview} disabled={saving} className="inline-flex items-center gap-1.5 rounded-xl border border-primary px-4 py-2 text-sm font-bold text-primary hover:bg-primary/5">
+          <button type="button" onClick={() => handleDepositPreview(true)} disabled={saving} className="inline-flex items-center gap-1.5 rounded-xl border border-outline-variant/60 px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container-low">
+            <Icon name="account_balance" className="!text-[18px]" /> Tạo QR phụ
+          </button>
+          <button type="button" onClick={() => handleDepositPreview(false)} disabled={saving} className="inline-flex items-center gap-1.5 rounded-xl border border-primary px-4 py-2 text-sm font-bold text-primary hover:bg-primary/5">
             <Icon name="qr_code_2" className="!text-[18px]" /> Tạo QR cọc
           </button>
           <Button type="submit" form="create-order-form" disabled={saving}>{saving ? "Đang lưu..." : "Tạo đơn hàng"}</Button>

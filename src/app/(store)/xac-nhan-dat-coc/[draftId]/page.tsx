@@ -7,8 +7,10 @@ import { formatVnd } from "@/lib/format";
 import {
   BANK_PAYMENT,
   DEPOSIT_PREVIEW_STORAGE_PREFIX,
+  SECONDARY_BANK_PAYMENT,
   getDepositQrUrl,
   getDepositTransferContent,
+  type BankPaymentAccount,
   type DepositPreviewDraft,
 } from "@/lib/bank-payment";
 
@@ -19,6 +21,7 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
   const [draft, setDraft] = useState<DepositPreviewDraft | null>(null);
   const [ready, setReady] = useState(false);
   const [downloadingQr, setDownloadingQr] = useState(false);
+  const [activeAccount, setActiveAccount] = useState<BankPaymentAccount>(BANK_PAYMENT);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -32,6 +35,7 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
           return;
         }
         setDraft(parsed);
+        setActiveAccount(parsed.useSecondaryAccount ? SECONDARY_BANK_PAYMENT : BANK_PAYMENT);
       } catch {
         localStorage.removeItem(storageKey);
       } finally {
@@ -56,7 +60,9 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
   }
 
   const transferContent = getDepositTransferContent(draft.facebookName);
-  const qrUrl = getDepositQrUrl(draft.depositAmount, draft.facebookName);
+  const qrUrl = getDepositQrUrl(draft.depositAmount, draft.facebookName, activeAccount);
+  const usingAlternateAccount = activeAccount.accountNumber !== BANK_PAYMENT.accountNumber
+    || activeAccount.bankId !== BANK_PAYMENT.bankId;
 
   async function handleDownloadQr() {
     const facebookName = draft!.facebookName;
@@ -67,7 +73,7 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
       const blobUrl = URL.createObjectURL(await response.blob());
       const anchor = document.createElement("a");
       anchor.href = blobUrl;
-      anchor.download = `QR-coc-${facebookName.replace(/[^a-zA-Z0-9À-ỹ]+/g, "-")}.png`;
+      anchor.download = `QR-coc-${facebookName.replace(/[^a-zA-Z0-9À-ỹ]+/g, "-")}${usingAlternateAccount ? "-tai-khoan-phu" : ""}.png`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -134,17 +140,25 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
 
           <section className="rounded-2xl border border-primary/15 bg-primary/5 p-4 text-center lg:sticky lg:top-24">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-sm font-bold uppercase tracking-wider">Quét mã để đặt cọc</h2>
-              <button type="button" onClick={() => void handleDownloadQr()} disabled={downloadingQr} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary/25 bg-white px-2.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/5 disabled:opacity-60">
-                <Icon name="download" className="!text-[16px]" /> {downloadingQr ? "Đang tải" : "Tải ảnh QR"}
-              </button>
+              <div className="text-left">
+                <h2 className="text-sm font-bold uppercase tracking-wider">Quét mã để đặt cọc</h2>
+                {usingAlternateAccount && <span className="mt-1 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">Đang dùng tài khoản phụ</span>}
+              </div>
+              <div className="flex flex-wrap justify-end gap-1.5">
+                <button type="button" onClick={() => setActiveAccount(usingAlternateAccount ? BANK_PAYMENT : SECONDARY_BANK_PAYMENT)} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary/25 bg-white px-2.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/5">
+                  <Icon name="account_balance" className="!text-[16px]" /> {usingAlternateAccount ? "Dùng QR mặc định" : "Tạo QR phụ"}
+                </button>
+                <button type="button" onClick={() => void handleDownloadQr()} disabled={downloadingQr} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary/25 bg-white px-2.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/5 disabled:opacity-60">
+                  <Icon name="download" className="!text-[16px]" /> {downloadingQr ? "Đang tải" : "Tải QR"}
+                </button>
+              </div>
             </div>
             {/* VietQR Quick Link returns the draft-specific transfer QR as an image. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qrUrl} alt={`Mã QR đặt cọc của ${draft.facebookName}`} width={280} height={280} className="mx-auto mt-2 h-auto w-full max-w-[280px] rounded-xl bg-white" />
             <div className="mt-2 space-y-0.5 text-sm">
-              <p><strong>{BANK_PAYMENT.bankName}</strong> · {BANK_PAYMENT.accountNumber}</p>
-              <p>{BANK_PAYMENT.accountName}</p>
+              <p><strong>{activeAccount.bankName}</strong> · {activeAccount.accountNumber}</p>
+              <p>{activeAccount.accountName}</p>
               <p>Số tiền: <strong className="text-primary">{formatVnd(draft.depositAmount)}</strong></p>
               <p>Nội dung: <strong>{transferContent}</strong></p>
             </div>

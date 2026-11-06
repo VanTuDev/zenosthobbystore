@@ -1,9 +1,23 @@
-export const BANK_PAYMENT = {
+export type BankPaymentAccount = {
+  bankId: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+};
+
+export const BANK_PAYMENT: BankPaymentAccount = {
   bankId: process.env.NEXT_PUBLIC_BANK_ID ?? "VPB",
   bankName: process.env.NEXT_PUBLIC_BANK_NAME ?? "VPBank",
   accountNumber: process.env.NEXT_PUBLIC_BANK_ACCOUNT_NUMBER ?? "0868237043",
   accountName: process.env.NEXT_PUBLIC_BANK_ACCOUNT_NAME ?? "PHUNG HUY CUONG",
 } as const;
+
+export const SECONDARY_BANK_PAYMENT: BankPaymentAccount = {
+  bankId: process.env.NEXT_PUBLIC_SECONDARY_BANK_ID ?? "MB",
+  bankName: process.env.NEXT_PUBLIC_SECONDARY_BANK_NAME ?? "MB Bank",
+  accountNumber: process.env.NEXT_PUBLIC_SECONDARY_BANK_ACCOUNT_NUMBER ?? "0925237031",
+  accountName: process.env.NEXT_PUBLIC_SECONDARY_BANK_ACCOUNT_NAME ?? "PHUNG HUY CUONG",
+};
 
 export const DEPOSIT_PREVIEW_STORAGE_PREFIX = "zenost-deposit-preview:";
 
@@ -21,10 +35,10 @@ export type DepositPreviewDraft = {
   total: number;
   depositAmount: number;
   remainingAmount: number;
+  useSecondaryAccount?: boolean;
 };
 
 export function getDepositTransferContent(facebookName: string) {
-  const suffix = " CT";
   const normalizedName = facebookName
     .trim()
     .normalize("NFD")
@@ -32,16 +46,15 @@ export function getDepositTransferContent(facebookName: string) {
     .replace(/đ/g, "d")
     .replace(/Đ/g, "D")
     .toUpperCase();
-  const name = normalizedName.slice(0, 25 - suffix.length).trimEnd();
-  return `${name}${suffix}`;
+  return normalizedName.slice(0, 25).trimEnd();
 }
 
-export function getDepositQrUrl(amount: number, facebookName: string) {
+export function getDepositQrUrl(amount: number, facebookName: string, account: BankPaymentAccount = BANK_PAYMENT) {
   const query = new URLSearchParams({
     amount: String(Math.max(0, Math.round(amount))),
     addInfo: getDepositTransferContent(facebookName),
-    accountName: BANK_PAYMENT.accountName,
+    accountName: account.accountName,
   });
 
-  return `https://img.vietqr.io/image/${BANK_PAYMENT.bankId}-${BANK_PAYMENT.accountNumber}-qr_only.png?${query.toString()}`;
+  return `https://img.vietqr.io/image/${account.bankId}-${account.accountNumber}-qr_only.png?${query.toString()}`;
 }
