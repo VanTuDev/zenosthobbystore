@@ -1,22 +1,7 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
 import { BUSINESS_INFO } from "@/lib/business-info";
 import "./globals.css";
-
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin", "vietnamese"],
-  weight: ["400", "600", "700", "800"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "vietnamese"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zenosthobbystore.com"),
@@ -68,7 +53,7 @@ export default function RootLayout({
     <html
       lang="vi"
       translate="no"
-      className={`${montserrat.variable} ${inter.variable} scroll-smooth h-full antialiased notranslate`}
+      className="scroll-smooth h-full antialiased notranslate"
       suppressHydrationWarning
     >
       <head>
