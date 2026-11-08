@@ -4,6 +4,12 @@ import { ProductCatalogClient } from "./_components/product-catalog-client";
 import { fetchCategories } from "@/lib/api/categories";
 import { fetchProductFacets } from "@/lib/api/products";
 
+/**
+ * Rendered per request (like the homepage): the catalog changes live via the admin CMS, and a
+ * static build would otherwise fail whenever the backend is unreachable at build time.
+ */
+export const dynamic = "force-dynamic";
+
 type SearchParams = Promise<{ q?: string }>;
 
 export async function generateMetadata({
