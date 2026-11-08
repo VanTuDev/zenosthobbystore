@@ -54,7 +54,7 @@ export default async function HomePage() {
       <section className="relative h-screen min-h-[640px] flex flex-col items-center justify-center pt-xl overflow-hidden bg-on-surface">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvwQ0f86ZUBeXffdd5itRCijimyP9QYcccuAser2hE3-IN12KM9eCRy1-c-i5PtpfAAU-knVEC7W0_-bojhggh3lhObxhuoUVuCAtOpcQDGoUF0CXkyz8a3yKVS-W0-BDvYn5znYCgKTqIsuomBAvef_onZzmmdpi3NMHF6mfWIKqtvJqB9cXInkeR43dysgF9Ib3Ez2mA-K-slydemNGaSxuHD0f0rMgL3f5QdSp3_frw2AkGRgVDx0A3gSjksovRy1_dcOuIdjY"
+            src="/images/home/hero.webp"
             alt="Phòng trưng bày mô hình anime cao cấp phong cách gallery tối giản"
             fill
             priority
@@ -66,29 +66,33 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-surface" />
         </div>
         <div className="relative z-10 text-center px-margin-mobile">
-          <Reveal delay={100}>
-            <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg mb-base tracking-tighter uppercase text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]">
-              Phòng Trưng Bày Đam Mê
-            </h1>
-          </Reveal>
-          <Reveal delay={220}>
-            <p className="font-body-lg text-body-lg text-white/90 max-w-2xl mx-auto mb-lg drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-              Tuyển chọn những mô hình anime hiếm và được săn đón nhất thế giới trong một không
-              gian tinh tế và đẳng cấp dành cho những nhà sưu tập sành sỏi.
-            </p>
-          </Reveal>
-          <Reveal delay={340}>
-            <div className="flex flex-col sm:flex-row gap-base justify-center">
-              <Button href="/products">Khám Phá Bộ Sưu Tập</Button>
-              <Button
-                href="/products?sort=moi-nhap"
-                variant="secondary"
-                className="!border-white !text-white hover:!bg-white hover:!text-on-surface"
-              >
-                Sản Phẩm Mới
-              </Button>
-            </div>
-          </Reveal>
+          {/* Hero copy is the LCP candidate: it must be visible in the server HTML, so it uses a
+              CSS-only slide-in (.hero-rise, opacity never 0) instead of the JS-gated <Reveal>. */}
+          <h1
+            className="hero-rise font-display-lg text-display-lg-mobile md:text-display-lg mb-base tracking-tighter uppercase text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+          >
+            Phòng Trưng Bày Đam Mê
+          </h1>
+          <p
+            className="hero-rise font-body-lg text-body-lg text-white/90 max-w-2xl mx-auto mb-lg drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
+            style={{ animationDelay: "120ms" }}
+          >
+            Tuyển chọn những mô hình anime hiếm và được săn đón nhất thế giới trong một không
+            gian tinh tế và đẳng cấp dành cho những nhà sưu tập sành sỏi.
+          </p>
+          <div
+            className="hero-rise flex flex-col sm:flex-row gap-base justify-center"
+            style={{ animationDelay: "240ms" }}
+          >
+            <Button href="/products">Khám Phá Bộ Sưu Tập</Button>
+            <Button
+              href="/products?sort=moi-nhap"
+              variant="secondary"
+              className="!border-white !text-white hover:!bg-white hover:!text-on-surface"
+            >
+              Sản Phẩm Mới
+            </Button>
+          </div>
         </div>
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-xs text-white/70">
           <span className="font-label-sm text-label-sm uppercase tracking-widest">
@@ -109,7 +113,7 @@ export default async function HomePage() {
               className="group relative block h-full min-h-[280px] overflow-hidden rounded-xl bg-surface-container-low"
             >
               <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj_VtrYxpfkUxmNxnreA8SSullKepaUw_6kErmPsyH3wG295ukLmvBoshOA_vNBAOaB2hqbxwvvO-M38ie14ACLzUJj1Gdm3UtY5HhqEJCcIi6Sey809haGeNiVs1Mp59pC79_Fc05p-KQAUxKy5PBstSfYSg0oEfi-z8OULBFY5bGMSKCc4YVqeT_LjlX6corhC983gJM3eFKnjTWrZSpiMwCFGdDp3r7qH9Tn1iFPRFJNc9MboWB-rTzd_0fmOa-g4qRXhaDKEc"
+                src="/images/home/home-1.webp"
                 alt="Mô hình anime tỉ lệ 1/7 cao cấp đang được mở hộp trong studio"
                 fill
                 sizes="(min-width: 768px) 66vw, 100vw"
@@ -140,7 +144,7 @@ export default async function HomePage() {
                 className="group relative block h-full min-h-[130px] overflow-hidden rounded-xl bg-surface-container-low"
               >
                 <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzbvCnonCCZp5orRaR-eBrchBv7rAxNs_NhGvXTuK-Qa5QfZKM_tSBg7CB8VsjavujhanFgip6niVlzDeFsgqwp7gjLnotwPiv-9167M16IvwTDhIPTIkaeXqJP4E5vcS2eij_bskwQWOnnxqUDQJioIexGTRQ_dZdly5evQbjhE_9fkpp9I_b6ntHVaGKj5R9pSZiI5Cc_l9Xhg82WykZ8YTREfZyVuLn6Yk5EQ0Ugp1izKMEG1F49sYCoeRkVupq_USCVpgn1l0"
+                  src="/images/home/home-2.webp"
                   alt="Mô hình Gundam lắp ráp bán chạy nhất với chi tiết cơ khí sắc nét"
                   fill
                   sizes="(min-width: 768px) 33vw, 100vw"
@@ -160,7 +164,7 @@ export default async function HomePage() {
                 className="group relative block h-full min-h-[130px] overflow-hidden rounded-xl bg-surface-container-low"
               >
                 <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdgqf4eyHdU6mqLSGczR7NSniVNNKSyrXA_iy8jT11Qrtx7nyVsz-SdYN5SgKKS-70DDfIsfY_f0zcdCaLyGgbq-KYTeBl9NLCJWfLPqsRDElfkFJmcSqSPeOf9bZAQgwK8VvZIkd3ob3ZDMZaojIWX84D79r36m7-DL9pHPZS8OOM3CbHIb45l1hc1OQVk7rB2-nOnayZeGV6O_RqKLWQeNooUUpovbVp0x-ReJw75BTth0ijarDG2k2RXU6r8KLVxV1z_vH3LSc"
+                  src="/images/home/home-3.webp"
                   alt="Bộ sưu tập Nendoroid hiếm được trưng bày trong tủ kính tối giản"
                   fill
                   sizes="(min-width: 768px) 33vw, 100vw"
@@ -255,7 +259,7 @@ export default async function HomePage() {
           </Reveal>
           <Reveal from="right" delay={150}>
             <Image
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqgDcS3xEDNEr2BqM2nvUFgJFGlUBwvv_IHsnMfPdVo_zNpKQvDkdbbj1_6h5bU9rRx8rIFOluKNt4l4Se_4iFycL3cnSY4JhNBJkk4WQ2IXifGI01D2EHXFDGNSd5IRWY1u4TJoo7QAupzqOGjIEcTXoKLhCYddQ9oyex4ktihf0-j2zoFDK90l24vq_xtAENwZdq7dM--8PTqODE1P4Qowa-FD-kjZmnefzE0JMMyhKUOGobXpvYhxDzZwxpdcf9j78IBWMNjf8"
+              src="/images/home/home-4.webp"
               alt="Tượng Mewtwo cao cấp"
               width={720}
               height={900}
@@ -297,7 +301,7 @@ export default async function HomePage() {
           </Reveal>
           <Reveal from="left" delay={150} className="md:w-1/2 relative">
             <Image
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuF9qZVyDLyWmEcQ_t2D4XF9D4AIx13-KHTWoRQNLyLDjcDqkpxtCxucFlkZyW8KVKN_TqivI-l-4luLTIDF4SUQoBFVEHxuwpuuNLJzhbHQJgj6xiVY5Ep2r85IVCmQS4xkA5ZI_WfdoWN2ysO-MEPn7mgBXw3MGmPL6ceke-6MqoDuC8csHehnN6iOHlTIzROBVVI-Ie7z_HEVF-EADS0ktikWTdxGIivAVuMdwqzx_DenBw48MM5G7fbgpsJS9ke13VPVe9oNM"
+              src="/images/home/home-5.webp"
               alt="Cận cảnh đầu mô hình Gundam RX-78-2"
               width={720}
               height={900}
@@ -324,7 +328,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-2 gap-md">
               <div className="aspect-square relative rounded-xl overflow-hidden group">
                 <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-M3ZzuTrG4PXY2WnzM3S0dsif9Cd8161-dXwogwk1ftLogPOkzSwlaUsoJTKMmi--BnBHmFsspuCsWuo6oscUIeFEhkIkA3dfCMGvyeYEK4AIjbFLdUc6K7W4oNeDAc-XMadvXqFFF7tEbFWlzDU2tAsEksPVg4ZC4yxdl-RmmepqTHAafzosLm7Ldt4eg_C9gh9fn4VP8HAtOsXT4Va2H8ExeWZZq2cnv926wQr3hM2P_dWDg9Qx63J4fQtZ7F-rN-h2bFnqwSY"
+                  src="/images/home/home-6.webp"
                   alt="Mô hình Naruto Chế Độ Hiền Nhân"
                   fill
                   sizes="(min-width: 768px) 25vw, 50vw"
@@ -337,7 +341,7 @@ export default async function HomePage() {
               </div>
               <div className="aspect-square relative rounded-xl overflow-hidden group">
                 <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlcosw1dTfVrUzxQTj1ITC4zSxR5PElKUK3sTdC_6MuJOzwU-BQCjhPmuOHsm02cECdKx3W9_dtQY7Z614eveccGldfrht3q2TTfOST_kq5tykFfpXycKeF7qoUoANwRdTrPM1rQ8pRPrAbyA99qLyTXL7oFH1dzh7hdWi_OfpwxAjf4Zfi3yFFlqkfq_NVwdzd4Dh-YbFBtfiXfzX_RJhWiQH42TKoaaNHojF2wBMyTcszgde8vFwGyMme-ieK5cM2azJjnMk9Bc"
+                  src="/images/home/home-7.webp"
                   alt="Mô hình Sasuke Susanoo"
                   fill
                   sizes="(min-width: 768px) 25vw, 50vw"
@@ -352,7 +356,7 @@ export default async function HomePage() {
           </Reveal>
           <Reveal from="right" delay={150}>
             <Image
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVcHL9Ulcs17ajbeUIKB4-YvYNZqkF2A6pBaYakVs0l01bb4BBcltv-heXyGHVjp0PP245ONDaKXXaeBMJ-W9VYIE9F1kgRlhDjoq2uOJD6GQhYsbabEkhvtznvGK-lLSvc--r2VNTJoCwwN47iack4q3HjJ7VYJ9antQNGzD0dW2qqKvCsf-cn_mKRIyX9en2ua90ynKLgrMStW6ldClchybmHcMpPB12P_VTrjSiHWNV5jixe7hSHCkfBNzQ5jKMVezX5COX9Q8"
+              src="/images/home/home-8.webp"
               alt="Bộ trưng bày các nhân vật Naruto"
               width={720}
               height={900}

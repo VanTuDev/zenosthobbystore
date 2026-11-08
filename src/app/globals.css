@@ -242,6 +242,21 @@ input[type="search"]::-webkit-search-decoration {
   animation: hero-zoom 12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Hero copy slide-in. Deliberately transform-only (opacity stays 1): text that starts at
+   opacity 0 is not an LCP candidate until the animation/JS reveals it. */
+@keyframes hero-rise {
+  from {
+    transform: translateY(16px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.hero-rise {
+  animation: hero-rise 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @keyframes soft-bounce {
   0%,
   100% {
@@ -292,6 +307,7 @@ input[type="search"]::-webkit-search-decoration {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-zoom,
+  .hero-rise,
   .animate-soft-bounce,
   .animate-pop,
   .animate-fade-in {

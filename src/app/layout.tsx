@@ -29,9 +29,9 @@ export const metadata: Metadata = {
     siteName: BUSINESS_INFO.tradeName,
     images: [
       {
-        url: "https://lh3.googleusercontent.com/aida-public/AB6AXuCvwQ0f86ZUBeXffdd5itRCijimyP9QYcccuAser2hE3-IN12KM9eCRy1-c-i5PtpfAAU-knVEC7W0_-bojhggh3lhObxhuoUVuCAtOpcQDGoUF0CXkyz8a3yKVS-W0-BDvYn5znYCgKTqIsuomBAvef_onZzmmdpi3NMHF6mfWIKqtvJqB9cXInkeR43dysgF9Ib3Ez2mA-K-slydemNGaSxuHD0f0rMgL3f5QdSp3_frw2AkGRgVDx0A3gSjksovRy1_dcOuIdjY",
-        width: 1600,
-        height: 900,
+        url: "/images/home/hero-og.jpg",
+        width: 1200,
+        height: 630,
         alt: `Phòng trưng bày mô hình anime cao cấp ${BUSINESS_INFO.tradeName}`,
       },
     ],
@@ -64,11 +64,36 @@ export default function RootLayout({
           console — nothing in this app renders that markup. These two signals opt the page out.
         */}
         <meta name="google" content="notranslate" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font -- App Router root layout is the correct place for a global font stylesheet next/font/google doesn't cover */}
+        {/*
+          Material Symbols stylesheet loaded WITHOUT blocking first paint: media="print" makes the
+          browser fetch it at low priority without holding rendering, and the inline script flips
+          it to "all" once loaded (the <noscript> copy covers no-JS). display=block keeps icon
+          ligature names (e.g. "keyboard_arrow_down") invisible until the font arrives, instead of
+          flashing as raw text. suppressHydrationWarning: the script mutates `media` before hydration.
+        */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font, @next/next/google-font-display -- display=block is intentional (hides icon ligature text until loaded); App Router root layout is the correct place for a global font stylesheet next/font/google doesn't cover */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          id="material-symbols-css"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
           rel="stylesheet"
+          media="print"
+          suppressHydrationWarning
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var l=document.getElementById('material-symbols-css');if(!l)return;function s(){l.media='all'}if(l.sheet){s()}else{l.addEventListener('load',s)}})();",
+          }}
+        />
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-page-custom-font, @next/next/google-font-display */}
+          <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
+            rel="stylesheet"
+          />
+        </noscript>
       </head>
       {/*
         suppressHydrationWarning here (same as on <html> above) only ignores attribute mismatches
