@@ -60,7 +60,6 @@ export function AdditionalPaymentQrModal({ order, onClose, onUpdated }: { order:
     setError("");
     const validationError = validateAmounts();
     if (validationError) return setError(validationError);
-    if (!window.confirm(`Xác nhận đã nhận ${formatVnd(additionalPayment)} từ khách và cập nhật tiền cọc của đơn?`)) return;
 
     setSaving(true);
     try {

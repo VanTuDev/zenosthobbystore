@@ -148,9 +148,18 @@ export default function DepositPreviewPage({ params }: { params: Promise<{ draft
             )}
 
             <div className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm leading-5 text-on-surface-variant">
-              {isAdditionalPayment
-                ? "Kiểm tra kỹ giá trị đơn mới và số tiền thanh toán thêm. Sau khi chuyển khoản, vui lòng gửi ảnh giao dịch cho shop; số tiền cọc chỉ được cập nhật khi shop xác nhận đã nhận tiền."
-                : "Kiểm tra kỹ tên Facebook, sản phẩm, biến thể, số lượng và số tiền. Sau khi chuyển khoản, vui lòng gửi ảnh giao dịch cho shop; đơn chỉ được tạo khi shop xác nhận đã nhận cọc."}
+              {isAdditionalPayment ? (
+                "Kiểm tra kỹ giá trị đơn mới và số tiền thanh toán thêm. Sau khi chuyển khoản, vui lòng gửi ảnh giao dịch cho shop; số tiền cọc chỉ được cập nhật khi shop xác nhận đã nhận tiền."
+              ) : (
+                <div className="space-y-1.5">
+                  <p className="font-bold text-on-surface">Kiểm tra thông tin chi tiết về đơn hàng trước khi chuyển khoản.</p>
+                  <p><strong>Chính sách bảo hành và đóng gói:</strong> Toàn bộ sản phẩm về shop sẽ được kiểm tra trước về khớp và phụ kiện.</p>
+                  <p>Quy trình đóng gói luôn được bọc xốp và đóng hộp carton bên ngoài.</p>
+                  <p>Bảo hành toàn bộ các vấn đề liên quan về: gãy, vỡ, thiếu phụ kiện hoặc thiếu bộ phận.</p>
+                  <p>Không bảo hành các trường hợp sơn lem, trầy xước và box đối với các sản phẩm giá rẻ.</p>
+                  <p>Khách hàng nhận hàng vui lòng quay video chi tiết để được hỗ trợ xử lý nhanh chóng và khiếu nại với ĐVVC khi cần thiết.</p>
+                </div>
+              )}
             </div>
           </div>
 
