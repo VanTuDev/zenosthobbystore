@@ -55,6 +55,9 @@ export function ProductDetailShell({
           <h1 className="font-display-lg text-display-lg-mobile md:text-[40px] text-on-surface leading-tight mb-2">
             {product.name}
           </h1>
+          <Link href={`/products/${encodeURIComponent(product.slug)}/list`} className="mb-3 mr-2 inline-flex items-center gap-2 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-bold text-primary hover:bg-primary/10">
+            <Icon name="view_list" className="!text-[19px]" />List
+          </Link>
           <Link
             href={`/products/${encodeURIComponent(product.slug)}/bao-gia`}
             className="mb-3 inline-flex items-center gap-2 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 text-sm font-bold text-primary transition-colors hover:bg-primary/10"

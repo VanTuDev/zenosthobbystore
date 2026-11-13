@@ -16,6 +16,7 @@ export type ProductVideo = {
 };
 
 export type ProductVariant = {
+  manufacturer?: string;
   name: string;
   price: number;
   stockCount: number;

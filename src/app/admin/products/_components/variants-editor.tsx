@@ -11,10 +11,10 @@ import type { ApiProductVariant } from "@/lib/api-types";
 const MAX_VARIANTS = 100;
 
 /** A blank/new row keeps its price as a plain string so PriceInput's thousands-formatting works before the number is parsed on save. */
-export type DraftVariant = { name: string; price: string; stockCount: string; image: string };
+export type DraftVariant = { manufacturer?: string; name: string; price: string; stockCount: string; image: string };
 
 export function draftFromVariant(variant: ApiProductVariant): DraftVariant {
-  return { name: variant.name, price: String(variant.price), stockCount: String(variant.stockCount), image: variant.image };
+  return { manufacturer: variant.manufacturer ?? "", name: variant.name, price: String(variant.price), stockCount: String(variant.stockCount), image: variant.image };
 }
 
 function VariantImagePicker({ image, onChange }: { image: string; onChange: (url: string) => void }) {
@@ -192,6 +192,10 @@ export function VariantsEditor({
               >
                 <Icon name="close" className="!text-[16px]" />
               </button>
+              <label className="col-span-full mb-3 flex min-w-0 items-center gap-2 text-xs text-on-surface-variant sm:col-start-3">
+                <span className="shrink-0">Xưởng SX</span>
+                <input value={variant.manufacturer ?? ""} maxLength={120} onChange={(e) => update(index, { manufacturer: e.target.value })} placeholder="Tên xưởng sản xuất" className="min-w-0 flex-1 rounded-lg border border-outline-variant bg-white px-3 py-2" />
+              </label>
             </div>
           ))}
         </div>

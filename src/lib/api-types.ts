@@ -9,6 +9,7 @@ export type ApiProductVideo = {
 
 /** Mirrors ProductVariant from Backend-zenosthobbystore/src/models/product.model.ts */
 export type ApiProductVariant = {
+  manufacturer?: string;
   name: string;
   price: number;
   stockCount: number;
@@ -17,6 +18,7 @@ export type ApiProductVariant = {
 
 /** Mirrors ProductDoc#toJSON() from Backend-zenosthobbystore/src/models/product.model.ts */
 export type ApiProduct = {
+  manufacturerReviews?: { manufacturer: string; review: string }[];
   id: string;
   name: string;
   slug: string;

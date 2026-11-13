@@ -68,6 +68,7 @@ export function ProductFormModal({
   const [activeTab, setActiveTab] = useState<TabId>("basic");
   const [name, setName] = useState(product?.name ?? "");
   const [brand, setBrand] = useState(product?.brand ?? "");
+  const [manufacturerReviews, setManufacturerReviews] = useState(product?.manufacturerReviews ?? []);
   const [universe, setUniverse] = useState(product?.universe ?? "");
   const [scale, setScale] = useState(product?.scale ?? "");
   const [productType, setProductType] = useState<"in_stock" | "pre_order">(
@@ -128,6 +129,7 @@ export function ProductFormModal({
       .filter((v) => v.name.trim())
       .map((v) => ({
         name: v.name.trim(),
+        manufacturer: v.manufacturer?.trim() ?? "",
         price: parseNumber(v.price) ?? 0,
         stockCount: parseNumber(v.stockCount) ?? 0,
         image: v.image,
@@ -172,6 +174,7 @@ export function ProductFormModal({
         heroImage: readyImages[0] ?? "/placeholder-product.svg",
         videos,
         variants: cleanVariants,
+        manufacturerReviews,
         categoryId,
       };
 
@@ -391,6 +394,20 @@ export function ProductFormModal({
                 khi có ít nhất 1 biến thể còn tồn kho.
               </p>
               <VariantsEditor variants={variants} onChange={setVariants} />
+              <div className="space-y-3 border-t border-outline-variant pt-4">
+                <p className={labelClass}>Đánh giá xưởng trên Tier List</p>
+                {Array.from(new Map(variants.map((v) => {
+                  const name = v.manufacturer?.trim() || brand.trim() || "Chưa rõ xưởng";
+                  return [name.toLocaleLowerCase("vi"), name];
+                })).values()).map((manufacturer) => (
+                  <label key={manufacturer} className="block space-y-1 text-sm">
+                    <span className="font-bold">{manufacturer}</span>
+                    <textarea maxLength={2000} rows={2} placeholder="Nhập đánh giá cho xưởng này…" className="w-full rounded-lg border border-outline-variant bg-white p-3"
+                      value={manufacturerReviews.find((r) => r.manufacturer.toLocaleLowerCase("vi") === manufacturer.toLocaleLowerCase("vi"))?.review ?? ""}
+                      onChange={(e) => setManufacturerReviews((rows) => [...rows.filter((r) => r.manufacturer.toLocaleLowerCase("vi") !== manufacturer.toLocaleLowerCase("vi")), { manufacturer, review: e.target.value }])} />
+                  </label>
+                ))}
+              </div>
             </div>
           )}
 

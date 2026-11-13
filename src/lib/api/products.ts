@@ -49,6 +49,7 @@ export function fetchProductFacets() {
 
 /** Mirrors the backend's `productSchema` (src/routes/products.routes.ts) — admin create/update payload. */
 export type ProductInput = {
+  manufacturerReviews?: { manufacturer: string; review: string }[];
   name: string;
   slug?: string;
   brand?: string;
