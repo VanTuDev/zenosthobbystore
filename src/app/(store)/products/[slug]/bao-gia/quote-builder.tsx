@@ -13,6 +13,7 @@ type QuoteLine = {
   name: string;
   image: string;
   price: number;
+  stockCount: number;
   deposit: number;
   sortOrder: number;
 };
@@ -24,6 +25,7 @@ function initialLines(product: ApiProduct): QuoteLine[] {
     name: variant.name,
     image: variant.image || product.heroImage,
     price: variant.price,
+    stockCount: variant.stockCount,
     deposit: 0,
     sortOrder: variantIndex + 1,
   }));
@@ -67,6 +69,7 @@ export function QuoteBuilder({ product }: { product: ApiProduct }) {
       name: variant.name,
       image: variant.image || product.heroImage,
       price: variant.price,
+      stockCount: variant.stockCount,
       deposit: 0,
       sortOrder: Math.max(0, ...current.map((line) => line.sortOrder)) + 1,
     }]);
@@ -126,7 +129,18 @@ export function QuoteBuilder({ product }: { product: ApiProduct }) {
                 className="min-w-0 rounded-xl border border-outline-variant/30 bg-white p-3"
               >
                 <div className="mb-2 flex min-w-0 items-center justify-between gap-2">
-                  <h2 className="truncate text-sm font-bold" title={line.name}>{line.name}</h2>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <h2 className="truncate text-sm font-bold" title={line.name}>{line.name}</h2>
+                    <span
+                      className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-extrabold ${
+                        line.stockCount > 0
+                          ? "border-emerald-200 bg-emerald-100 text-emerald-700"
+                          : "border-amber-200 bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {line.stockCount > 0 ? "(Sẵn)" : "(Order)"}
+                    </span>
+                  </div>
                   <button type="button" onClick={() => setLines((current) => current.filter((item) => item.key !== line.key))} aria-label={`Xóa ${line.name}`} className="shrink-0 rounded-lg p-1.5 text-error hover:bg-error/10">
                     <Icon name="delete" className="!text-[17px]" />
                   </button>
